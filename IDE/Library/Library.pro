@@ -9,7 +9,8 @@ QMAKE_CFLAGS_WARN_ON += -Wno-unknown-pragmas
 QMAKE_CXXFLAGS_WARN_ON += -Wno-unknown-pragmas
 
 INCLUDEPATH += ../../Src/Library \
-			../../Ext/
+               ../../Ext/ \
+                ../../Ext/gmock/gtest/include
 
 DESTDIR += ../../Deployment/Bin/
 
@@ -17,3 +18,8 @@ unix {
 	target.path = /usr/lib
 	INSTALLS += target
 }
+
+HEADERS += \
+    ../../Src/ValpineBase/Test/Test.h \
+    ../../Src/ValpineBase/Test/Assert.h \
+    ../../Src/ValpineBase/Property.h

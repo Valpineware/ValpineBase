@@ -14,7 +14,7 @@ DESTDIR += ../../Deployment/Bin/
 
 INCLUDEPATH += ../../Src/ \
                 ../../Ext/ \
-                ../../Ext/gtest/inc/
+                ../../Ext/gmock/gtest/include/
 
 unix|win32: LIBS += -L$$OUT_PWD/../../Deployment/Bin/ -lgtest
 unix|win32: LIBS += -L$$OUT_PWD/../../Deployment/Bin/ -lValpineBase
