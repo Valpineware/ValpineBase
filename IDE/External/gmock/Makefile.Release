@@ -75,7 +75,7 @@ $(DESTDIR_TARGET):  $(OBJECTS)
 	$(LIB) $(DESTDIR_TARGET) $(OBJECTS) 
 
 qmake: FORCE
-	@$(QMAKE) -spec win32-g++ -o Makefile.Release gmock.pro
+	@$(QMAKE) -spec win32-g++ CONFIG+=debug -o Makefile.Release gmock.pro
 
 qmake_all: FORCE
 

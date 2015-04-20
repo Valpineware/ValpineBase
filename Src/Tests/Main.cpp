@@ -1,8 +1,10 @@
-#include <QtCore/QDebug>
+#include <ValpineBase/Test/Test.h>
+
+bool ValpineBase::Test::Assert::mFatalOnAssert = true;
 
 int main(int argc, char *argv[])
 {
-    qDebug("Hey");
+    ::testing::InitGoogleTest(&argc, argv);
 
-    return 0;
+    return RUN_ALL_TESTS();
 }

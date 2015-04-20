@@ -14,7 +14,7 @@ CXX           = g++
 DEFINES       = -DUNICODE -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -fno-keep-inline-dllexport -O2 -Wall -Wextra -Wno-unknown-pragmas $(DEFINES)
 CXXFLAGS      = -pipe -fno-keep-inline-dllexport -O2 -std=c++0x -frtti -Wall -Wextra -Wno-unknown-pragmas -fexceptions -mthreads $(DEFINES)
-INCPATH       = -I"." -I"..\..\Src\Library" -I"..\..\Ext" -I"C:\Qt\5.4\mingw491_32\include" -I"C:\Qt\5.4\mingw491_32\include\QtGui" -I"C:\Qt\5.4\mingw491_32\include\QtCore" -I"release" -I"C:\Qt\5.4\mingw491_32\mkspecs\win32-g++" 
+INCPATH       = -I"." -I"..\..\Src\Library" -I"..\..\Ext" -I"..\..\Ext\gmock\gtest\include" -I"C:\Qt\5.4\mingw491_32\include" -I"C:\Qt\5.4\mingw491_32\include\QtGui" -I"C:\Qt\5.4\mingw491_32\include\QtCore" -I"release" -I"C:\Qt\5.4\mingw491_32\mkspecs\win32-g++" 
 LIB        =        ar -ru
 QMAKE         = C:\Qt\5.4\mingw491_32\bin\qmake.exe
 IDC           = idc
@@ -44,7 +44,9 @@ OBJECTS_DIR   = release
 SOURCES       =  
 OBJECTS       = 
 
-DIST          =   
+DIST          =  ..\..\Src\ValpineBase\Test\Test.h \
+		..\..\Src\ValpineBase\Test\Assert.h \
+		..\..\Src\ValpineBase\Property.h 
 QMAKE_TARGET  = ValpineBase
 DESTDIR        = ..\..\Deployment\Bin\ #avoid trailing-slash linebreak
 TARGET         = libValpineBase.a
@@ -75,7 +77,7 @@ $(DESTDIR_TARGET):  $(OBJECTS)
 	$(LIB) $(DESTDIR_TARGET) $(OBJECTS) 
 
 qmake: FORCE
-	@$(QMAKE) -spec win32-g++ -o Makefile.Release Library.pro
+	@$(QMAKE) -spec win32-g++ CONFIG+=debug -o Makefile.Release Library.pro
 
 qmake_all: FORCE
 

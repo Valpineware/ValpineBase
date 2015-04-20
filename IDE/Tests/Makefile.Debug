@@ -14,7 +14,7 @@ CXX           = g++
 DEFINES       = -DUNICODE -DQT_GUI_LIB -DQT_TESTLIB_LIB -DQT_CORE_LIB -DQT_TESTCASE_BUILDDIR=\"C:/Users/Dan/Dropbox/Dev/Valpineware/ValpineBase/IDE/Tests\"
 CFLAGS        = -pipe -fno-keep-inline-dllexport -g -Wall -Wextra -Wno-unknown-pragmas $(DEFINES)
 CXXFLAGS      = -pipe -fno-keep-inline-dllexport -g -std=c++0x -frtti -Wall -Wextra -Wno-unknown-pragmas -fexceptions -mthreads $(DEFINES)
-INCPATH       = -I"." -I"..\..\Src" -I"..\..\Ext" -I"..\..\Ext\gtest\inc" -I"C:\Qt\5.4\mingw491_32\include" -I"C:\Qt\5.4\mingw491_32\include\QtGui" -I"C:\Qt\5.4\mingw491_32\include\QtTest" -I"C:\Qt\5.4\mingw491_32\include\QtCore" -I"debug" -I"C:\Qt\5.4\mingw491_32\mkspecs\win32-g++" 
+INCPATH       = -I"." -I"..\..\Src" -I"..\..\Ext" -I"..\..\Ext\gmock\gtest\include" -I"C:\Qt\5.4\mingw491_32\include" -I"C:\Qt\5.4\mingw491_32\include\QtGui" -I"C:\Qt\5.4\mingw491_32\include\QtTest" -I"C:\Qt\5.4\mingw491_32\include\QtCore" -I"debug" -I"C:\Qt\5.4\mingw491_32\mkspecs\win32-g++" 
 LINKER      =        g++
 LFLAGS        =        -Wl,-subsystem,console -mthreads
 LIBS        =        -lglu32 -lopengl32 -lgdi32 -luser32 -LC:/Users/Dan/Dropbox/Dev/Valpineware/ValpineBase/IDE/Tests/../../Deployment/Bin/ -lgtest -lValpineBase -LC:/Qt/5.4/mingw491_32/lib -lQt5Guid -lQt5Testd -lQt5Cored 
@@ -80,7 +80,7 @@ $(DESTDIR_TARGET):  $(OBJECTS)
 	$(LINKER) $(LFLAGS) -o $(DESTDIR_TARGET) $(OBJECTS)  $(LIBS)
 
 qmake: FORCE
-	@$(QMAKE) -spec win32-g++ -o Makefile.Debug Tests.pro
+	@$(QMAKE) -spec win32-g++ CONFIG+=debug -o Makefile.Debug Tests.pro
 
 qmake_all: FORCE
 
@@ -189,7 +189,96 @@ debug/Main.o: ../../Src/Tests/Main.cpp C:/Qt/5.4/mingw491_32/include/QtCore/QDeb
 		C:/Qt/5.4/mingw491_32/include/QtCore/qcontiguouscache.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\Main.o ..\..\Src\Tests\Main.cpp
 
-debug/Test_Property.o: ../../Src/Tests/Test_Property.cpp ../../Src/ValpineBase/Test/Test.h
+debug/Test_Property.o: ../../Src/Tests/Test_Property.cpp ../../Src/ValpineBase/Test/Test.h \
+		../../Ext/gmock/gtest/include/gtest/gtest.h \
+		../../Ext/gmock/gtest/include/gtest/internal/gtest-internal.h \
+		../../Ext/gmock/gtest/include/gtest/internal/gtest-port.h \
+		../../Ext/gmock/gtest/include/gtest/internal/gtest-tuple.h \
+		../../Ext/gmock/gtest/include/gtest/gtest-message.h \
+		../../Ext/gmock/gtest/include/gtest/internal/gtest-string.h \
+		../../Ext/gmock/gtest/include/gtest/internal/gtest-filepath.h \
+		../../Ext/gmock/gtest/include/gtest/internal/gtest-type-util.h \
+		../../Ext/gmock/gtest/include/gtest/gtest-death-test.h \
+		../../Ext/gmock/gtest/include/gtest/internal/gtest-death-test-internal.h \
+		../../Ext/gmock/gtest/include/gtest/gtest-param-test.h \
+		../../Ext/gmock/gtest/include/gtest/internal/gtest-param-util.h \
+		../../Ext/gmock/gtest/include/gtest/internal/gtest-linked_ptr.h \
+		../../Ext/gmock/gtest/include/gtest/gtest-printers.h \
+		../../Ext/gmock/gtest/include/gtest/internal/gtest-param-util-generated.h \
+		../../Ext/gmock/gtest/include/gtest/gtest_prod.h \
+		../../Ext/gmock/gtest/include/gtest/gtest-test-part.h \
+		../../Ext/gmock/gtest/include/gtest/gtest-typed-test.h \
+		../../Ext/gmock/gtest/include/gtest/gtest_pred_impl.h \
+		../../Src/ValpineBase/Test/Assert.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/QDebug \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qdebug.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qalgorithms.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qglobal.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qconfig.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qfeatures.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qsystemdetection.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qprocessordetection.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qcompilerdetection.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qtypeinfo.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qtypetraits.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qsysinfo.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qlogging.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qflags.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qatomic.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qbasicatomic.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qatomic_bootstrap.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qgenericatomic.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qatomic_msvc.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qatomic_armv7.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qatomic_armv6.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qatomic_armv5.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qatomic_ia64.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qatomic_mips.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qatomic_x86.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qatomic_cxx11.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qatomic_gcc.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qatomic_unix.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qglobalstatic.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qmutex.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qnumeric.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qhash.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qchar.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qiterator.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qlist.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qrefcount.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qarraydata.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qbytearraylist.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qbytearray.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qnamespace.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qstring.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qstringbuilder.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qpair.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qmap.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qtextstream.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qiodevice.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qobject.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qobjectdefs.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qobjectdefs_impl.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qcoreevent.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qscopedpointer.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qmetatype.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qvarlengtharray.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qcontainerfwd.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qisenum.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qobject_impl.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qlocale.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qvariant.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qstringlist.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qdatastream.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qregexp.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qstringmatcher.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qshareddata.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qvector.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qpoint.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qset.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/qcontiguouscache.h \
+		C:/Qt/5.4/mingw491_32/include/QtCore/QString \
+		../../Src/ValpineBase/Property.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\Test_Property.o ..\..\Src\Tests\Test_Property.cpp
 
 ####### Install

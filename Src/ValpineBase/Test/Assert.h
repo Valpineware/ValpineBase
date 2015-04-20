@@ -2,6 +2,8 @@
 #define _ValpineBase_Test_Assert_h
 
 #include <gtest/gtest.h>
+#include <QtCore/QDebug>
+#include <QtCore/QString>
 
 namespace ValpineBase { namespace Test
 {

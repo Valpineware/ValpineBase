@@ -14,7 +14,7 @@ CXX           = g++
 DEFINES       = -DUNICODE -DQT_NO_DEBUG
 CFLAGS        = -pipe -fno-keep-inline-dllexport -O2 -Wall -Wextra -w $(DEFINES)
 CXXFLAGS      = -pipe -fno-keep-inline-dllexport -O2 -std=c++0x -frtti -Wall -Wextra -w -fexceptions -mthreads $(DEFINES)
-INCPATH       = -I"." -I"..\..\..\Ext\gmock\gtest\include\gtest" -I"..\..\..\Ext\gmock\gtest" -I"C:\Qt\5.4\mingw491_32\mkspecs\win32-g++" 
+INCPATH       = -I"." -I"..\..\..\Ext\gmock\gtest\include" -I"..\..\..\Ext\gmock\gtest" -I"C:\Qt\5.4\mingw491_32\mkspecs\win32-g++" 
 LIB        =        ar -ru
 QMAKE         = C:\Qt\5.4\mingw491_32\bin\qmake.exe
 IDC           = idc
@@ -75,7 +75,7 @@ $(DESTDIR_TARGET):  $(OBJECTS)
 	$(LIB) $(DESTDIR_TARGET) $(OBJECTS) 
 
 qmake: FORCE
-	@$(QMAKE) -spec win32-g++ -o Makefile.Release gtest.pro
+	@$(QMAKE) -spec win32-g++ CONFIG+=debug -o Makefile.Release gtest.pro
 
 qmake_all: FORCE
 
@@ -105,7 +105,27 @@ compiler_clean:
 
 ####### Compile
 
-release/gtest-all.o: ../../../Ext/gmock/gtest/src/gtest-all.cc ../../../Ext/gmock/gtest/src/gtest.cc \
+release/gtest-all.o: ../../../Ext/gmock/gtest/src/gtest-all.cc ../../../Ext/gmock/gtest/include/gtest/gtest.h \
+		../../../Ext/gmock/gtest/include/gtest/internal/gtest-internal.h \
+		../../../Ext/gmock/gtest/include/gtest/internal/gtest-port.h \
+		../../../Ext/gmock/gtest/include/gtest/internal/gtest-tuple.h \
+		../../../Ext/gmock/gtest/include/gtest/gtest-message.h \
+		../../../Ext/gmock/gtest/include/gtest/internal/gtest-string.h \
+		../../../Ext/gmock/gtest/include/gtest/internal/gtest-filepath.h \
+		../../../Ext/gmock/gtest/include/gtest/internal/gtest-type-util.h \
+		../../../Ext/gmock/gtest/include/gtest/gtest-death-test.h \
+		../../../Ext/gmock/gtest/include/gtest/internal/gtest-death-test-internal.h \
+		../../../Ext/gmock/gtest/include/gtest/gtest-param-test.h \
+		../../../Ext/gmock/gtest/include/gtest/internal/gtest-param-util.h \
+		../../../Ext/gmock/gtest/include/gtest/internal/gtest-linked_ptr.h \
+		../../../Ext/gmock/gtest/include/gtest/gtest-printers.h \
+		../../../Ext/gmock/gtest/include/gtest/internal/gtest-param-util-generated.h \
+		../../../Ext/gmock/gtest/include/gtest/gtest_prod.h \
+		../../../Ext/gmock/gtest/include/gtest/gtest-test-part.h \
+		../../../Ext/gmock/gtest/include/gtest/gtest-typed-test.h \
+		../../../Ext/gmock/gtest/include/gtest/gtest_pred_impl.h \
+		../../../Ext/gmock/gtest/src/gtest.cc \
+		../../../Ext/gmock/gtest/include/gtest/gtest-spi.h \
 		../../../Ext/gmock/gtest/src/gtest-internal-inl.h \
 		../../../Ext/gmock/gtest/src/gtest-death-test.cc \
 		../../../Ext/gmock/gtest/src/gtest-filepath.cc \
