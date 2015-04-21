@@ -1,9 +1,15 @@
 TARGET = ValpineBase
 TEMPLATE = lib
-CONFIG += staticlib
-CONFIG += c++14
-CONFIG += object_parallel_to_source
+
 QT += core
+
+CONFIG += staticlib
+CONFIG += c++14 c++11
+
+#CONFIG += object_parallel_to_source
+#NOTE: I decided the best way to get around object files with the same name
+#is to make sub projects when collisions occur.
+# http://stackoverflow.com/questions/7765147/how-to-use-qmake-with-two-source-files-which-have-the-same-name
 
 INCLUDEPATH += ../../Src/Library \
                ../../Ext/ \
@@ -11,12 +17,10 @@ INCLUDEPATH += ../../Src/Library \
 
 DESTDIR += ../../Deployment/Bin/
 
-unix {
-	target.path = /usr/lib
-	INSTALLS += target
-}
-
 HEADERS += \
     ../../Src/ValpineBase/Test/Test.h \
     ../../Src/ValpineBase/Test/Assert.h \
     ../../Src/ValpineBase/Property.h
+
+
+SOURCES += ../../Src/ValpineBase/Test/Assert.cpp

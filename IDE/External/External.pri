@@ -1,5 +1,6 @@
 CONFIG += staticlib
-CONFIG += c++14
+CONFIG += c++14 c++11
+CONFIG += warn_off
 
 
 INCLUDEPATH += ../../../Ext/gmock/gtest/include/ \

@@ -2,6 +2,6 @@ TEMPLATE = subdirs
 
 CONFIG += ordered
 
-SUBDIRS += IDE/Library \
-        IDE/External \
+SUBDIRS += IDE/External \
+        IDE/Library \
         IDE/Tests
