@@ -12,11 +12,22 @@ INCLUDEPATH += ../../Src/ \
 				../../Ext/gmock/gtest/include/
 
 
-DESTDIR += ../../Deployment/Bin/
+DESTDIR = ../../Deployment/Bin/
 
 unix|win32: LIBS += -L$$OUT_PWD/../../Deployment/Bin/ -lgtest
 unix|win32: LIBS += -L$$OUT_PWD/../../Deployment/Bin/ -lgmock
 unix|win32: LIBS += -L$$OUT_PWD/../../Deployment/Bin/ -lValpineBase
+
+msvc {
+	PRE_TARGETDEPS += $$DESTDIR/ValpineBase.lib \
+						$$DESTDIR/gmock.lib \
+						$$DESTDIR/gtest.lib
+}
+else {
+	PRE_TARGETDEPS += $$DESTDIR/libValpineBase.a \
+						$$DESTDIR/libgmock.a \
+						$$DESTDIR/libgtest.a
+}
 
 SOURCES += \
     ../../Src/Tests/Main.cpp \
