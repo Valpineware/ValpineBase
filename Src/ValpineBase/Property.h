@@ -9,6 +9,7 @@
 #define _ValpineBase_Property_h
 
 #include <functional>
+#include <QtCore/QList>
 
 namespace ValpineBase
 {
@@ -19,6 +20,7 @@ namespace ValpineBase
 		using SetFunction = std::function<void(const T&)>;
 		using GetFunction = std::function<T(void)>;	//TODO return copy or cosnt ref?
 													//maybe we can template-specialize primitives to return by value
+		using ListenerFunction = std::function<void(void)>;
 
 #define DEFAULT_SET [this](const T &_new) { mValue = _new; }
 #define DEFAULT_GET [this]() -> T { return mValue; }
@@ -101,16 +103,31 @@ namespace ValpineBase
 		Property<T>& operator=(const T &rhs)
 		{
 			mSetFunction(rhs);
+			notifyOnChangedListeners();
+
 			return *this;
 		}
 
 
 		T& raw() { return mValue; }
 
+
+		void addOnChangedListener(ListenerFunction listenerFunction)
+		{
+			mOnChangedListeners.append(listenerFunction);
+		}
+
 	private:
 		T mValue;
+		QList<ListenerFunction> mOnChangedListeners;
 		mutable SetFunction mSetFunction;
 		mutable GetFunction mGetFunction;
+
+		void notifyOnChangedListeners()
+		{
+			for (ListenerFunction &lf : mOnChangedListeners)
+				lf();
+		}
 	};
 }
 

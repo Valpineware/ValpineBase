@@ -217,3 +217,23 @@ TEST_CASE(MacroCustomSetterGetter)
 	Assert::Eq(99.0, t1.pAmount);
 	Assert::Eq(103.0, t1.pAmount.raw());
 }
+
+
+/*
+ * Custom onChanged listeners
+ */
+
+TEST_CASE(CustomOnChangedListener)
+{
+	Property<bool> pEnabled = true;
+	bool wasNotified1 = false;
+	bool wasNotified2 = false;
+
+	pEnabled.addOnChangedListener([&]{ wasNotified1 = true; });
+	pEnabled.addOnChangedListener([&]{ wasNotified2 = true; });
+
+	pEnabled = !pEnabled;
+
+	Assert::True(wasNotified1, "On changed listener 1 was not notified");
+	Assert::True(wasNotified2, "On changed listener 2 was not notified");
+}

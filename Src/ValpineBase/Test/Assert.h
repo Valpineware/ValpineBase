@@ -23,15 +23,15 @@ namespace ValpineBase { namespace Test
          * Asserts if \what evaluates to false.
          */
         template<typename T>
-        static void True(const T &what)
+		static void True(const T &what, const QString &message="")
         {
             if (mFatalOnAssert)
             {
                 if (static_cast<bool>(what) == false)
-                    qFatal("Not true");
+					qFatal(message.toStdString().c_str());
             }
             else
-                ASSERT_TRUE(what);
+				ASSERT_TRUE(what) << message.toStdString();
         }
 
 
