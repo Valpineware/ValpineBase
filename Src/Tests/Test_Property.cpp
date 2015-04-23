@@ -1,6 +1,7 @@
 #include <ValpineBase/Test/Test.h>
 #include <ValpineBase/Property.h>
 
+using namespace ValpineBase;
 using namespace ValpineBase::Test;
 
 #define CLASS Test_Property
@@ -108,7 +109,6 @@ TEST_CASE(CustomSetter2)
 }
 
 
-
 TEST_CASE(CustomSetter_NoDefaultValue)
 {
 	Property<int> pSize([](const int &_new, int &_value)
@@ -121,5 +121,3 @@ TEST_CASE(CustomSetter_NoDefaultValue)
 	pSize = 4;
 	Assert::Eq(4, pSize);
 }
-
-
