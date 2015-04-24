@@ -35,8 +35,36 @@ namespace ValpineBase
 		{
 		}
 
+
 		/**
-		 * @param value Default property value.
+		 * @brief Property<T> Copy constructor. Only the value of the property
+		 * is copied. Custom set/get functions and on change listeners are not
+		 * copied into the new property.
+		 * @param rhs
+		 */
+		Property<T>(const Property<T> &rhs) :
+			mValue(rhs.mValue),
+			mSetFunction(DEFAULT_SET),
+			mGetFunction(DEFAULT_GET)
+		{
+		}
+
+
+		/**
+		 * @brief Property<T> Copy assignment operator. Only the value of the
+		 * property is copied. Custom set/get functions and on change listeners
+		 * are not copied into the new property.
+		 * @param rhs
+		 */
+		Property<T> operator=(const Property<T> &rhs)
+		{
+			set(rhs.raw());
+			return *this;
+		}
+
+
+		/*
+		 *
 		 */
 		Property<T>(const T &value) :
 			Property<T>()
@@ -44,11 +72,7 @@ namespace ValpineBase
 			*this = value;
 		}
 
-		/**
-		 * @brief Constructor
-		 * @param value Default property value.
-		 * @param setFunction Custom set function.
-		 */
+
 		Property<T>(const T &value, const SetFunction &setFunction) :
 			mSetFunction(setFunction),
 			mGetFunction(DEFAULT_GET)
@@ -56,21 +80,14 @@ namespace ValpineBase
 			*this = value;
 		}
 
-		/**
-		 * @brief Constructor
-		 * @param setFunction Custom set function
-		 */
+
 		Property<T>(const SetFunction &setFunction) :
 			mSetFunction(setFunction),
 			mGetFunction(DEFAULT_GET)
 		{
 		}
 
-		/**
-		 * @brief Constructor
-		 * @param value Default property value
-		 * @param getFunction Custom get function.
-		 */
+
 		Property<T>(const T &value, const GetFunction &getFunction) :
 			mSetFunction(DEFAULT_SET),
 			mGetFunction(getFunction)
@@ -79,12 +96,6 @@ namespace ValpineBase
 		}
 
 
-		/**
-		 * @brief Constructor
-		 * @param value Default property value
-		 * @param setFunction Custom set function
-		 * @param getFunction Custom get function
-		 */
 		Property<T>(const T &value,
 					const SetFunction &setFunction,
 					const GetFunction &getFunction) :
@@ -102,14 +113,13 @@ namespace ValpineBase
 
 		Property<T>& operator=(const T &rhs)
 		{
-			mSetFunction(rhs);
-			notifyOnChangedListeners();
-
+			set(rhs);
 			return *this;
 		}
 
 
 		T& raw() { return mValue; }
+		const T& raw() const { return mValue; }
 
 
 		void addOnChangedListener(ListenerFunction listenerFunction)
@@ -122,6 +132,13 @@ namespace ValpineBase
 		QList<ListenerFunction> mOnChangedListeners;
 		mutable SetFunction mSetFunction;
 		mutable GetFunction mGetFunction;
+
+		void set(const T &value)
+		{
+			mSetFunction(value);
+			notifyOnChangedListeners();
+		}
+
 
 		void notifyOnChangedListeners()
 		{

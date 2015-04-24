@@ -79,6 +79,41 @@ TEST_CASE(ImplicitUse)
 }
 
 
+TEST_CASE(InitializationFromOtherProperty)
+{
+	Property<int> pA = 10;
+	Property<int> pB = pA;
+	pA = 5;
+
+	Assert::Eq(5, pA);
+	Assert::Eq(10, pB);
+}
+
+
+TEST_CASE(AssignmentFromOtherProperty)
+{
+
+	struct Test
+	{
+		bool setterCalled = true;
+
+		Property_Set(int, pA, 5, {
+			pA.raw() = _newValue;
+			setterCalled = true;
+		})
+
+		Property<int> pB = 60;
+	} t1;
+
+	t1.pA = t1.pB;
+	t1.pB = 7;
+
+	Assert::Eq(60, t1.pA);
+	Assert::Eq(7, t1.pB);
+	Assert::True(t1.setterCalled);
+}
+
+
 /*
  * Custom setters and getters
  */
