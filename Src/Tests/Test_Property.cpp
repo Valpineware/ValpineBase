@@ -272,3 +272,21 @@ TEST_CASE(CustomOnChangedListener)
 	Assert::True(wasNotified1, "On changed listener 1 was not notified");
 	Assert::True(wasNotified2, "On changed listener 2 was not notified");
 }
+
+
+TEST_CASE(CustomTypeUsage)
+{
+	struct Test
+	{
+		int size;
+
+		Test& operator +=(const Test &rhs)
+		{
+			size += rhs.size;
+			return *this;
+		}
+	};
+
+	Property<Test> p1;
+	p1().size = 10;
+}

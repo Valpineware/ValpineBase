@@ -9,7 +9,9 @@
 #define _ValpineBase_Property_h
 
 #include <functional>
+#include <utility>
 #include <QtCore/QList>
+#include <QtCore/QVariant>
 
 namespace ValpineBase
 {
@@ -35,7 +37,6 @@ namespace ValpineBase
 		{
 		}
 
-
 		/**
 		 * @brief Property<T> Copy constructor. Only the value of the property
 		 * is copied. Custom set/get functions and on change listeners are not
@@ -49,7 +50,6 @@ namespace ValpineBase
 		{
 		}
 
-
 		/**
 		 * @brief Property<T> Copy assignment operator. Only the value of the
 		 * property is copied. Custom set/get functions and on change listeners
@@ -62,16 +62,11 @@ namespace ValpineBase
 			return *this;
 		}
 
-
-		/*
-		 *
-		 */
 		Property<T>(const T &value) :
 			Property<T>()
 		{
 			*this = value;
 		}
-
 
 		Property<T>(const T &value, const SetFunction &setFunction) :
 			mSetFunction(setFunction),
@@ -80,13 +75,11 @@ namespace ValpineBase
 			*this = value;
 		}
 
-
 		Property<T>(const SetFunction &setFunction) :
 			mSetFunction(setFunction),
 			mGetFunction(DEFAULT_GET)
 		{
 		}
-
 
 		Property<T>(const T &value, const GetFunction &getFunction) :
 			mSetFunction(DEFAULT_SET),
@@ -94,7 +87,6 @@ namespace ValpineBase
 		{
 			*this = value;
 		}
-
 
 		Property<T>(const T &value,
 					const SetFunction &setFunction,
@@ -105,11 +97,16 @@ namespace ValpineBase
 			*this = value;
 		}
 
+
 		operator T() const
 		{
 			return const_cast<Property<T>*>(this)->mGetFunction();
 		}
 
+
+		T& operator()() { return mValue; }
+		const T& operator()() const { return mValue; }
+		operator QVariant() const { return mValue; }
 
 		Property<T>& operator=(const T &rhs)
 		{
@@ -118,13 +115,35 @@ namespace ValpineBase
 		}
 
 
-		T& raw() { return mValue; }
+		T& raw() { return mValue; }	//TODO this really should call the get func
 		const T& raw() const { return mValue; }
 
 
 		void addOnChangedListener(ListenerFunction listenerFunction)
 		{
 			mOnChangedListeners.append(listenerFunction);
+		}
+
+
+		/////////////////////////////////////////
+		// Extra operators
+
+		template<typename U=T>
+		Property<T> operator +=(const U &rhs)
+		{
+			mValue += rhs;
+			return *this;
+		}
+
+		template<typename U=T>
+		bool operator ==(const U &rhs) const
+		{
+			return mValue == rhs;
+		}
+
+		T operator -() const
+		{
+			return -mValue;
 		}
 
 	private:
@@ -146,6 +165,13 @@ namespace ValpineBase
 				lf();
 		}
 	};
+
+
+	template <typename T>
+	T operator -(const T &lhs, const Property<T> &rhs)
+	{
+		return lhs-rhs.raw();
+	}
 }
 
 #define Property_Set(type, name, defaultValue, setBody) \
