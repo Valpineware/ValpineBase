@@ -17,10 +17,11 @@ INCLUDEPATH += ../../Src/Library \
 
 DESTDIR += ../../Deployment/Bin/
 
-HEADERS += \
-    ../../Src/ValpineBase/Test/Test.h \
-    ../../Src/ValpineBase/Test/Assert.h \
-    ../../Src/ValpineBase/Property.h
-
-
-SOURCES += ../../Src/ValpineBase/Test/Assert.cpp
+unix {
+	SOURCES += $$system("find ../../Src/ValpineBase/ -name '*.cpp'")
+	HEADERS += $$system("find ../../Src/ValpineBase/ -name '*.h'")
+}
+win32 {
+	SOURCES += $$system("dir ..\..\Src\ValpineBase\*.cpp /b /s")
+	HEADERS += $$system("dir ..\..\Src\ValpineBase\*.h /b /s")
+}
