@@ -2,8 +2,9 @@
 #define _ValpineBase_Test_Assert_h
 
 #include <gtest/gtest.h>
-#include <QtCore/QDebug>
 #include <QtCore/QString>
+
+#include "../System.h"
 
 namespace ValpineBase { namespace Test
 {
@@ -26,9 +27,9 @@ namespace ValpineBase { namespace Test
 		static void True(const T &what, const QString &message="")
         {
             if (mFatalOnAssert)
-            {
+            {                
                 if (static_cast<bool>(what) == false)
-					qFatal(message.toStdString().c_str());
+					System::fatal(message);
             }
             else
 				ASSERT_TRUE(what) << message.toStdString();
@@ -44,7 +45,7 @@ namespace ValpineBase { namespace Test
             if (mFatalOnAssert)
             {
                 if (static_cast<bool>(what) == true)
-                    qFatal("Not false");
+                    System::fatal("Not false");
             }
             else
                 ASSERT_FALSE(what);
@@ -60,7 +61,7 @@ namespace ValpineBase { namespace Test
             if (mFatalOnAssert)
             {
                 if (!(a == b))
-                    qFatal("Unequal");
+                    System::fatal("Unequal");
             }
             else
                 ASSERT_EQ(a, b);
@@ -76,7 +77,7 @@ namespace ValpineBase { namespace Test
             if (mFatalOnAssert)
             {
                 if (a != b)
-                    qFatal("Unequal");
+                    System::fatal("Unequal");
             }
             else
                 ASSERT_EQ(a, b);
@@ -92,7 +93,7 @@ namespace ValpineBase { namespace Test
             if (mFatalOnAssert)
             {
                 if (what != nullptr)
-                    qFatal("Is NOT nullptr");
+                    System::fatal("Is NOT nullptr");
             }
             else
                 ASSERT_FALSE(static_cast<bool>(what)) << "Nullptr NOT detected";
@@ -108,7 +109,7 @@ namespace ValpineBase { namespace Test
             if (mFatalOnAssert)
             {
                 if (what == nullptr)
-                    qFatal("Is nullptr");
+                    System::fatal("Is nullptr");
             }
             else
                 ASSERT_TRUE(static_cast<bool>(what)) << "Nullptr detected";
