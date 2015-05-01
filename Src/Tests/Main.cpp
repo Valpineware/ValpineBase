@@ -1,5 +1,5 @@
 #include <ValpineBase/Test/Test.h>
-
+#include "Main.h"
 
 void compare()
 {

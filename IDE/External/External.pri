@@ -8,5 +8,3 @@ INCLUDEPATH += ../../../Ext/gmock/gtest/include/ \
 				../../../Ext/gmock/include/ \
 				../../../Ext/gmock/gtest/include/ \
 			   ../../../Ext/gmock/
-
-DESTDIR += ../../../Deployment/Bin/

@@ -12,22 +12,21 @@ INCLUDEPATH += ../../Src/ \
 				../../Ext/gmock/gtest/include/
 
 
-DESTDIR = ../../Deployment/Bin/
-
-unix|win32: LIBS += -L$$OUT_PWD/../../Deployment/Bin/ -lgtest
-unix|win32: LIBS += -L$$OUT_PWD/../../Deployment/Bin/ -lgmock
-unix|win32: LIBS += -L$$OUT_PWD/../../Deployment/Bin/ -lValpineBase
-
-
-PRE_TARGETDEPS += $$DESTDIR/libValpineBase.a \
-                  $$DESTDIR/libgmock.a \
-                  $$DESTDIR/libgtest.a
-
 unix {
     SOURCES += $$system("find ../../Src/Tests/ -name '*.cpp'")
     HEADERS += $$system("find ../../Src/Tests/ -name '*.h'")
 }
 win32 {
 	SOURCES += $$system("dir ..\..\Src\Tests\*.cpp /b /s")
-	#HEADERS += $$system("dir ..\..\Src\Tests\*.h /b /s")
+	HEADERS += $$system("dir ..\..\Src\Tests\*.h /b /s")
 }
+
+
+
+debug: CONFIG_DIR = debugs
+release: CONFIG_DIR = release
+
+LIBS += -L../Library/$$CONFIG_DIR/ -lValpineBase
+LIBS += -L../External/gtest/$$CONFIG_DIR/ -lgtest
+LIBS += -L../External/gmock/$$CONFIG_DIR/ -lgmock
+

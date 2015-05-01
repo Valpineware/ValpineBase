@@ -15,8 +15,6 @@ INCLUDEPATH += ../../Src/Library \
                ../../Ext/ \
                 ../../Ext/gmock/gtest/include
 
-DESTDIR += ../../Deployment/Bin/
-
 unix {
 	SOURCES += $$system("find ../../Src/ValpineBase/ -name '*.cpp'")
 	HEADERS += $$system("find ../../Src/ValpineBase/ -name '*.h'")
