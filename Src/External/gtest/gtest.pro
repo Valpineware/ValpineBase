@@ -1,5 +1,3 @@
-QT       -= core gui
-
 TARGET = gtest
 TEMPLATE = lib
 

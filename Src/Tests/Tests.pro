@@ -23,10 +23,13 @@ win32 {
 
 
 
-debug: CONFIG_DIR = debugs
-release: CONFIG_DIR = release
+Release: CONFIG_DIR = release
+Debug: CONFIG_DIR = debug
 
 LIBS += -L../ValpineBase/$$CONFIG_DIR/ -lValpineBase
 LIBS += -L../External/gtest/$$CONFIG_DIR/ -lgtest
 LIBS += -L../External/gmock/$$CONFIG_DIR/ -lgmock
 
+PRE_TARGETDEPS += ../ValpineBase/$$CONFIG_DIR/libValpineBase.a \
+					../External/gtest/$$CONFIG_DIR/libgtest.a \
+					../External/gmock/$$CONFIG_DIR/libgmock.a
