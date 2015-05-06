@@ -10,7 +10,7 @@
 
 #include <string>
 
-namespace ValpineBase
+namespace vbase
 {
 	/**
 	 * \brief Represents a 2D rectangle with a point and size

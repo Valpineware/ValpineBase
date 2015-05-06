@@ -6,7 +6,7 @@
 
 #include "../System.h"
 
-namespace ValpineBase { namespace Test
+namespace vbase { namespace Test
 {
     /**
      * \brief Custom assert wrapper for convenience.

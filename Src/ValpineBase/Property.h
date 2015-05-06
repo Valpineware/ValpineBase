@@ -13,7 +13,7 @@
 #include <QtCore/QList>
 #include <QtCore/QVariant>
 
-namespace ValpineBase
+namespace vbase
 {
 	template <typename T>
 	class Property

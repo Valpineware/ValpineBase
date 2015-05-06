@@ -10,7 +10,7 @@
 
 #include <QtCore/QDebug>
 
-namespace ValpineBase
+namespace vbase
 {
 	class System
 	{

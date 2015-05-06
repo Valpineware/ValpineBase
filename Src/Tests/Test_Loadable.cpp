@@ -1,10 +1,10 @@
 #include <ValpineBase/Test/Test.h>
 #include <ValpineBase/Loadable.h>
 
-using namespace ValpineBase;
-using namespace ValpineBase::Test;
+using namespace vbase;
+using namespace vbase::Test;
 
-#define CLASS Test_Property
+#define CLASS Test_Loadable
 TEST_CLASS
 {
 protected:
@@ -18,17 +18,20 @@ TEST_CASE(SimpleSetCheck1)
 {
 	Loadable loadable;
 
-	auto f = []
-	{
+    bool didIsLoading = false;
+    loadable.pIsLoading.addOnChangedListener([&didIsLoading]
+    {
+        didIsLoading = true;
+    });
+
+    auto f = [&]
+    {
 		Loadable::Begin b(&loadable);
 	};
 
 	Assert::False(loadable.pHasLoaded);
 	f();
 	Assert::True(loadable.pHasLoaded);
-
-
-	//TODO need a way to know if an error occured even though
-	//we have at least loaded already
+    Assert::True(didIsLoading);
 }
 

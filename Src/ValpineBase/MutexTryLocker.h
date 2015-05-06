@@ -8,9 +8,9 @@
 #ifndef t3d_core_MutexTryLocker_H
 #define t3d_core_MutexTryLocker_H
 
-#include <Library.h>
+#include <QObject>
 
-namespace t3d { namespace core
+namespace vbase
 {
 	class MutexTryLocker
 	{
@@ -27,6 +27,6 @@ namespace t3d { namespace core
 		QMutex *mMutex;
 		bool mIsLocked = false;
 	};
-}}
+}
 
 #endif

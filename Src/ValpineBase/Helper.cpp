@@ -10,7 +10,7 @@
 
 #include "Helper.h"
 
-namespace ValpineBase
+namespace vbase
 {
 	double toDouble(const std::string &text)
     {

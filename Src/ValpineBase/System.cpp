@@ -7,7 +7,7 @@
 
 #include "System.h"
 
-namespace ValpineBase
+namespace vbase
 {
 	void System::warning(const QString &message)
 	{

@@ -1,3 +1,3 @@
 #include "Assert.h"
 
-bool ValpineBase::Test::Assert::mFatalOnAssert = false;
+bool vbase::Test::Assert::mFatalOnAssert = false;

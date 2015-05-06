@@ -10,14 +10,38 @@
 
 #include "Property.h"
 
-namespace ValpineBase
+namespace vbase
 {
+    /**
+     * @brief Manages the conceptual state of loading for a particular system.
+     *
+     * Users should publicly subclass Loadable.
+     */
 	class Loadable
 	{
 	public:
 		virtual ~Loadable() {}
 
-		Property<bool> pIsLoading = false;
+        /**
+         * @brief pIsLoading True if the client is currently using a begin lock or if the client explicitly set to true.
+         */
+        Property<bool> pIsLoading = false;
+                                            //TODO make this a ReadProperty since users of clients shouldn't be able
+                                            //to modify this. Same wtih pHasLoaded.
+
+        //TODO one issue with this Property<T> class is both read and write access must be on the same level.
+        //Once I implement the various ReadProperty<T> and WriteProperty<T> things, those can be set to reference
+        //a real property which can be declared on a more restricted level. For example:
+        //         private: Property<float> _pAmount = 42.0f;
+        //         public: ReadProperty<float> pAmount = &_pAmount;
+        //I"m thinking WriteProperty<T> will be pointless though.
+
+        /**
+         * @brief pHasLoaded True if pIsLoading has gone from true to false. This does not necessarily mean whatever
+         * was loaded is in a valid state. TODO add an error type so users can check for error that might have occured
+         * while loading.
+         */
+        Property<bool> pHasLoaded = false;
 
 		/**
 		 * \brief RAII type for properly setting the pIsLoading property.
