@@ -2,7 +2,6 @@
 #include <ValpineBase/Property.h>
 
 using namespace vbase;
-using namespace vbase::Test;
 
 #define CLASS Test_Property
 TEST_CLASS
@@ -17,16 +16,16 @@ protected:
 TEST_CASE(SimpleSetCheck1)
 {
     Property<int> pSize = 10;
-	Assert::Eq(10, pSize);
+	ASSERT_EQ(10, pSize);
 }
 
 
 TEST_CASE(SimpleSetCheck2)
 {
     Property<bool> pEnabled = true;
-	Assert::True(pEnabled);
+	ASSERT_TRUE(pEnabled);
     pEnabled = false;
-	Assert::False(pEnabled);
+	ASSERT_FALSE(pEnabled);
 }
 
 
@@ -39,7 +38,7 @@ TEST_CASE(AsMember)
 
     A a1;
     a1.value = 40.0f;
-	Assert::Eq(40.0f, a1.value);
+	ASSERT_EQ(40.0f, a1.value);
 }
 
 
@@ -51,16 +50,16 @@ TEST_CASE(AsMember2)
     };
 
     A a1;
-	Assert::Eq(123456, a1.value);
+	ASSERT_EQ(123456, a1.value);
 }
 
 
 TEST_CASE(Assign)
 {
 	Property<int> size = 35;
-	Assert::Eq(35, size);
+	ASSERT_EQ(35, size);
 	size = 40;
-	Assert::Eq(40, size);
+	ASSERT_EQ(40, size);
 }
 
 
@@ -75,7 +74,7 @@ TEST_CASE(ImplicitUse)
 	} usage;
 
 	usage.use(amount);
-	Assert::Eq(77.4f, usage.implicit);
+	ASSERT_EQ(77.4f, usage.implicit);
 }
 
 
@@ -85,8 +84,8 @@ TEST_CASE(InitializationFromOtherProperty)
 	Property<int> pB = pA;
 	pA = 5;
 
-	Assert::Eq(5, pA);
-	Assert::Eq(10, pB);
+	ASSERT_EQ(5, pA);
+	ASSERT_EQ(10, pB);
 }
 
 
@@ -108,9 +107,9 @@ TEST_CASE(AssignmentFromOtherProperty)
 	t1.pA = t1.pB;
 	t1.pB = 7;
 
-	Assert::Eq(60, t1.pA);
-	Assert::Eq(7, t1.pB);
-	Assert::True(t1.setterCalled);
+	ASSERT_EQ(60, t1.pA);
+	ASSERT_EQ(7, t1.pB);
+	ASSERT_TRUE(t1.setterCalled);
 }
 
 
@@ -125,7 +124,7 @@ TEST_CASE(CustomSetter1)
 		pSize.raw() = std::max(std::min(100, _new), 0);
 	});
 
-	Assert::Eq(100, pSize);
+	ASSERT_EQ(100, pSize);
 }
 
 
@@ -136,11 +135,11 @@ TEST_CASE(CustomSetter2)
 		pSize.raw() = std::max(std::min(850, _new), 0);
 	});
 
-	Assert::Eq(850, pSize);
+	ASSERT_EQ(850, pSize);
 	pSize = 430;
-	Assert::Eq(430, pSize);
+	ASSERT_EQ(430, pSize);
 	pSize = 853;
-	Assert::Eq(850, pSize);
+	ASSERT_EQ(850, pSize);
 }
 
 
@@ -152,9 +151,9 @@ TEST_CASE(CustomSetter_NoDefaultValue)
 	});
 
 	pSize = 49;
-	Assert::Eq(5, pSize);
+	ASSERT_EQ(5, pSize);
 	pSize = 4;
-	Assert::Eq(4, pSize);
+	ASSERT_EQ(4, pSize);
 }
 
 
@@ -166,7 +165,7 @@ TEST_CASE(CustomGetter1)
 	});
 
 	pSize = 1234;
-	Assert::Eq(1334, pSize);
+	ASSERT_EQ(1334, pSize);
 }
 
 
@@ -180,7 +179,7 @@ TEST_CASE(CustomGetter2)
 		});
 	} t1;
 
-	Assert::Eq(100, t1.pSize);
+	ASSERT_EQ(100, t1.pSize);
 }
 
 
@@ -198,8 +197,8 @@ TEST_CASE(CustomSetterAndGetter)
 				});
 	} t1;
 
-	Assert::Eq(20, t1.pAmount);
-	Assert::Eq(19, t1.pAmount.raw());
+	ASSERT_EQ(20, t1.pAmount);
+	ASSERT_EQ(19, t1.pAmount.raw());
 }
 
 
@@ -218,7 +217,7 @@ TEST_CASE(MacroCustomSetter)
 		})
 	} t1;
 
-	Assert::Eq(76, t1.pAmount);
+	ASSERT_EQ(76, t1.pAmount);
 }
 
 
@@ -232,7 +231,7 @@ TEST_CASE(MacroCustomGetter)
 		})
 	} t1;
 
-	Assert::Eq(86, t1.pAmount);
+	ASSERT_EQ(86, t1.pAmount);
 }
 
 
@@ -249,8 +248,8 @@ TEST_CASE(MacroCustomSetterGetter)
 		})
 	} t1;
 
-	Assert::Eq(99.0, t1.pAmount);
-	Assert::Eq(103.0, t1.pAmount.raw());
+	ASSERT_EQ(99.0, t1.pAmount);
+	ASSERT_EQ(103.0, t1.pAmount.raw());
 }
 
 
@@ -269,8 +268,8 @@ TEST_CASE(CustomOnChangedListener)
 
 	pEnabled = !pEnabled;
 
-	Assert::True(wasNotified1, "On changed listener 1 was not notified");
-	Assert::True(wasNotified2, "On changed listener 2 was not notified");
+	ASSERT_TRUE(wasNotified1) << "On changed listener 1 was not notified";
+	ASSERT_TRUE(wasNotified2) << "On changed listener 2 was not notified";
 }
 
 

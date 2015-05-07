@@ -2,7 +2,6 @@
 #include <ValpineBase/Loadable.h>
 
 using namespace vbase;
-using namespace vbase::Test;
 
 #define CLASS Test_Loadable
 TEST_CLASS
@@ -29,9 +28,10 @@ TEST_CASE(SimpleSetCheck1)
 		Loadable::Begin b(&loadable);
 	};
 
-	Assert::False(loadable.pHasLoaded);
+
+	ASSERT_FALSE(loadable.pHasLoaded);
 	f();
-	Assert::True(loadable.pHasLoaded);
-    Assert::True(didIsLoading);
+	ASSERT_TRUE(loadable.pHasLoaded);
+	ASSERT_TRUE(didIsLoading);
 }
 
