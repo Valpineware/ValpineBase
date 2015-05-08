@@ -29,7 +29,7 @@ namespace vbase
 		Property_Set(bool, pIsLoading, false,
 		{
 			if (pIsLoading.raw() && !_newValue)
-				pHasLoaded = true;
+				pHasLoaded.raw() = true;
 
 			pIsLoading.raw() = _newValue;
 		})

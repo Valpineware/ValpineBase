@@ -63,16 +63,17 @@ namespace vbase
 		}
 
 		Property<T>(const T &value) :
-			Property<T>()
+			mValue(value),
+			mSetFunction(DEFAULT_SET),
+			mGetFunction(DEFAULT_GET)
 		{
-			*this = value;
 		}
 
 		Property<T>(const T &value, const SetFunction &setFunction) :
+			mValue(value),
 			mSetFunction(setFunction),
 			mGetFunction(DEFAULT_GET)
 		{
-			*this = value;
 		}
 
 		Property<T>(const SetFunction &setFunction) :
@@ -82,19 +83,19 @@ namespace vbase
 		}
 
 		Property<T>(const T &value, const GetFunction &getFunction) :
+			mValue(value),
 			mSetFunction(DEFAULT_SET),
 			mGetFunction(getFunction)
 		{
-			*this = value;
 		}
 
 		Property<T>(const T &value,
 					const SetFunction &setFunction,
 					const GetFunction &getFunction) :
+			mValue(value),
 			mSetFunction(setFunction),
 			mGetFunction(getFunction)
 		{
-			*this = value;
 		}
 
 

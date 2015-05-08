@@ -29,7 +29,7 @@ TEST_CASE(SimpleSetCheck2)
 }
 
 
-TEST_CASE(AsMember)
+TEST_CASE(AsMember1)
 {
     struct A
     {
@@ -119,22 +119,24 @@ TEST_CASE(AssignmentFromOtherProperty)
 
 TEST_CASE(CustomSetter1)
 {
-	Property<int> pSize(277, [&](const int &_new)
+	Property<int> pSize(0, [&](const int &_new)
 	{
 		pSize.raw() = std::max(std::min(100, _new), 0);
 	});
 
+	pSize = 400;
 	ASSERT_EQ(100, pSize);
 }
 
 
 TEST_CASE(CustomSetter2)
 {
-	Property<int> pSize(1501, [&](const int &_new)
+	Property<int> pSize(0, [&](const int &_new)
 	{
 		pSize.raw() = std::max(std::min(850, _new), 0);
 	});
 
+	pSize = 1238;
 	ASSERT_EQ(850, pSize);
 	pSize = 430;
 	ASSERT_EQ(430, pSize);
@@ -159,11 +161,15 @@ TEST_CASE(CustomSetter_NoDefaultValue)
 
 TEST_CASE(CustomGetter1)
 {
+	bool getCalled = false;
+
 	Property<int> pSize(0, [&]() -> int
 	{
+		getCalled = true;
 		return pSize.raw() + 100;
 	});
 
+	ASSERT_FALSE(getCalled);
 	pSize = 1234;
 	ASSERT_EQ(1334, pSize);
 }
@@ -187,18 +193,28 @@ TEST_CASE(CustomSetterAndGetter)
 {
 	struct Test
 	{
+		bool setCalled = false;
+		bool getCalled = false;
+
 		Property<int> pAmount = Property<int>(14,
 				[this](const int &_new) {
+					setCalled = true;
 					pAmount.raw() = _new+5;
 				},
 
 				[this]() -> int {
+					getCalled = true;
 					return pAmount.raw()+1;
 				});
 	} t1;
 
-	ASSERT_EQ(20, t1.pAmount);
-	ASSERT_EQ(19, t1.pAmount.raw());
+	ASSERT_FALSE(t1.setCalled);
+	ASSERT_FALSE(t1.getCalled);
+
+	ASSERT_EQ(15, t1.pAmount);
+	t1.pAmount = 15;
+	ASSERT_EQ(21, t1.pAmount);
+	ASSERT_EQ(20, t1.pAmount.raw());
 }
 
 
@@ -211,12 +227,13 @@ TEST_CASE(MacroCustomSetter)
 {
 	struct Test
 	{
-		Property_Set(int, pAmount, 80,
+		Property_Set(int, pAmount, 100,
 		{
 			pAmount.raw() = _newValue-4;
 		})
 	} t1;
 
+	t1.pAmount = 80;
 	ASSERT_EQ(76, t1.pAmount);
 }
 
@@ -248,8 +265,10 @@ TEST_CASE(MacroCustomSetterGetter)
 		})
 	} t1;
 
-	ASSERT_EQ(99.0, t1.pAmount);
-	ASSERT_EQ(103.0, t1.pAmount.raw());
+	ASSERT_EQ(100.0, t1.pAmount.raw());
+	t1.pAmount = 96.0;
+	ASSERT_EQ(95.0, t1.pAmount);
+	ASSERT_EQ(99.0, t1.pAmount.raw());
 }
 
 
@@ -288,4 +307,35 @@ TEST_CASE(CustomTypeUsage)
 
 	Property<Test> p1;
 	p1().size = 10;
+}
+
+
+/*
+ * Extra constraints
+ */
+TEST_CASE(DoNotCallSetterOnInitialization)
+{
+	//this is so that when a setter uses another property in the same
+	//class that the initialization order doesn't mess up when one
+	//property is initialized before the other one it accesses is
+	//initialized
+
+	struct Test
+	{
+		Property_Set(int, pAmount, 80,
+		{
+			pAmount.raw() = _newValue;
+			pIsModdified = true;
+		})
+
+		Property<bool> pIsModdified = false;
+	} t1;
+
+	ASSERT_EQ(80, t1.pAmount);
+	ASSERT_FALSE(t1.pIsModdified);
+
+	t1.pAmount = 45;
+
+	ASSERT_EQ(45, t1.pAmount);
+	ASSERT_TRUE(t1.pIsModdified);
 }
