@@ -16,7 +16,71 @@
 namespace vbase
 {
     /**
+     * \brief A wrapper that behaves like the template type without the need for
+     * declaring boilerplate setters, getters, and onChanged signals.
      *
+     * A Property<T> should be declared as a public instance variable to replace
+     * the need for a setter, getter, and/or onChanged signal. A Property<T> has
+     * the following behavior:
+     *      - Implicitly converts to type T
+     *      - Assigns from another:
+     *          -# T
+     *          -# Property<T>
+     *          -# Implicitly convertible Property<U> (TODO really?)
+     *      - Forwards operators to the underlying T
+     *
+     * By default, a Property<T> declared as a public instance variable may be
+     * treated as such. It will behave semantically the same as if it was simply
+     * declared as a T. There is, however, a slight performance penalty with a
+     * Property<T> because every read and write operation requires an additional
+     * call to a custom read/write implementation. A simple, default Property
+     * may be declared as in the following example:
+     *
+     * \code{.cpp}
+     * class A
+     * {
+     * public:
+     *      Property<int> pAmount = 100;
+     * };
+     *
+     * int main()
+     * {
+     *      A a1;
+     *      a1.pAmount += 15;
+     *      qDebug() << a1.pAmount;     //output is "115"
+     * }
+     * \endcode
+     *
+     * Custom setters and getters may be supplied with ease using the macros
+     * Property_Set, Property_Get, or Property_SetGet. Note that initializing
+     * a property with a value does not run through the setter. For example:
+     *
+     * \code{.cpp}
+     * class A
+     * {
+     * public:
+     *      Property_SetGet(int, pAmount, 75,
+     *
+     *      //custom setter with _newValue as an argument defined in the real
+     *      //lamda under the hood. Only assign to raw() to avoid stackoverflow.
+     *      {
+     *          qDebug() << "Setting";
+     *          pAmount.raw() = _newValue;
+     *      },
+     *      //custom getter. Only access from raw() to avoid stackoverflow.
+     *      {
+     *          qDebug() << "Getting";
+     *          return pAmount.raw();
+     *      })
+     * };
+     *
+     * int main()
+     * {
+     *      A a1;
+     *      a1 = 50;        //prints "Setting"
+     *      int b = a1;     //prints "Getting"
+     * }
+     * \endcode
      */
 	template <typename T>
 	class Property
