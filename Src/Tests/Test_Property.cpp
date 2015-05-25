@@ -294,19 +294,19 @@ TEST_CASE(CustomOnChangedListener)
 
 TEST_CASE(CustomTypeUsage)
 {
-	struct Test
-	{
-		int size;
+    struct Test
+    {
+        Property_Set(QString, pName, QString("D"),
+        {
+            pName.raw() = _newValue;
+            setCalled = true;
+        })
 
-		Test& operator +=(const Test &rhs)
-		{
-			size += rhs.size;
-			return *this;
-		}
-	};
+        bool setCalled = false;
+    } t;
 
-	Property<Test> p1;
-	p1().size = 10;
+    t.pName += "an";
+    ASSERT_TRUE(t.setCalled);
 }
 
 

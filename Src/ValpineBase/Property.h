@@ -15,6 +15,9 @@
 
 namespace vbase
 {
+    /**
+     *
+     */
 	template <typename T>
 	class Property
 	{
@@ -56,11 +59,11 @@ namespace vbase
 		 * are not copied into the new property.
 		 * @param rhs
 		 */
-		Property<T> operator=(const Property<T> &rhs)
-		{
-			set(rhs.raw());
-			return *this;
-		}
+        Property<T> operator=(const Property<T> &rhs)
+        {
+            set(rhs.raw());
+            return *this;
+        }
 
 		Property<T>(const T &value) :
 			mValue(value),
@@ -132,9 +135,37 @@ namespace vbase
 		template<typename U=T>
 		Property<T> operator +=(const U &rhs)
 		{
-			mValue += rhs;
+            set(mValue + rhs);
 			return *this;
 		}
+
+        template<typename U=T>
+        Property<T> operator -=(const U &rhs)
+        {
+            set(mValue - rhs);
+            return *this;
+        }
+
+        template<typename U=T>
+        Property<T> operator *=(const U &rhs)
+        {
+            set(mValue * rhs);
+            return *this;
+        }
+
+        template<typename U=T>
+        Property<T> operator /=(const U &rhs)
+        {
+            set(mValue / rhs);
+            return *this;
+        }
+
+        template<typename U=T>
+        Property<T> operator %=(const U &rhs)
+        {
+            set(mValue % rhs);
+            return *this;
+        }
 
 		template<typename U=T>
 		bool operator ==(const U &rhs) const
@@ -176,15 +207,15 @@ namespace vbase
 }
 
 #define Property_Set(type, name, defaultValue, setBody) \
-			Property<type> name = Property<type>(defaultValue, \
+            ::vbase::Property<type> name = ::vbase::Property<type>(defaultValue, \
 					[this](const type &_newValue) setBody);
 
 #define Property_Get(type, name, defaultValue, getBody) \
-			Property<type> name = Property<type>(defaultValue, \
+            ::vbase::Property<type> name = ::vbase::Property<type>(defaultValue, \
 					[this]() -> type getBody);
 
 #define Property_SetGet(type, name, defaultValue, setBody, getBody) \
-			Property<type> name = Property<type>(defaultValue, \
+            ::vbase::Property<type> name = ::vbase::Property<type>(defaultValue, \
 				[this](const type &_newValue) setBody, \
 				[this]() -> type getBody);
 

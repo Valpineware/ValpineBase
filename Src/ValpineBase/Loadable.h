@@ -26,7 +26,7 @@ namespace vbase
          * @brief pIsLoading True if the client is currently using a begin lock or if the client explicitly set to true.
          */
 		//Property<bool> pIsLoading = false;
-		Property_Set(bool, pIsLoading, false,
+        Property_Set(bool, pIsLoading, false,
 		{
 			if (pIsLoading.raw() && !_newValue)
 				pHasLoaded.raw() = true;
