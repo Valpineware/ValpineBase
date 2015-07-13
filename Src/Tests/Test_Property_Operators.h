@@ -7,10 +7,9 @@
 
 using namespace vbase;
 
-#define CLASS Test_Property_Operators
-TEST_CLASS
+class Test_Property_Operators : public QObject
 {
-protected:
+private:
     struct A
     {
         A() = default;
@@ -52,33 +51,35 @@ protected:
 
         (t.pA.*f)(amount);
 
-        ASSERT_TRUE(t.setCalled);
-        ASSERT_EQ(expected, t.pA);
+        QVERIFY(t.setCalled);
+        QCOMPARE(t.pA, expected);
+    }
+
+private slots:
+    void Operator_AddAssign()
+    {
+        assertCompoundAssignment(&Property<A>::operator+=, 50, 150);
+    }
+
+    void Operator_SubtractAssign()
+    {
+        assertCompoundAssignment(&Property<A>::operator-=, 50, 50);
+    }
+
+    void Operator_MultiplyAssign()
+    {
+        assertCompoundAssignment(&Property<A>::operator*=, 2, 200);
+    }
+
+    void Operator_DivideAssign()
+    {
+        assertCompoundAssignment(&Property<A>::operator/=, 2, 50);
+    }
+
+    void Operator_ModuloAssign()
+    {
+        assertCompoundAssignment(&Property<A>::operator%=, 3, 1);
     }
 };
 
-
-TEST_CASE(Operator_AddAssign)
-{
-    assertCompoundAssignment(&Property<A>::operator+=, 50, 150);
-}
-
-TEST_CASE(Operator_SubtractAssign)
-{
-    assertCompoundAssignment(&Property<A>::operator-=, 50, 50);
-}
-
-TEST_CASE(Operator_MultiplyAssign)
-{
-    assertCompoundAssignment(&Property<A>::operator*=, 2, 200);
-}
-
-TEST_CASE(Operator_DivideAssign)
-{
-    assertCompoundAssignment(&Property<A>::operator/=, 2, 50);
-}
-
-TEST_CASE(Operator_ModuloAssign)
-{
-    assertCompoundAssignment(&Property<A>::operator%=, 3, 1);
-}
+DECLARE_TEST(Test_Property_Operators)
