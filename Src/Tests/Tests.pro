@@ -8,8 +8,7 @@ QT += testlib core
 include(../Root.pri)
 
 INCLUDEPATH += ../../Src/ \
-				../../Ext/ \
-				../../Ext/gmock/gtest/include/
+                ../../Ext/ \
 
 
 unix {
@@ -27,9 +26,5 @@ Release: CONFIG_DIR = release
 Debug: CONFIG_DIR = debug
 
 LIBS += -L../ValpineBase/$$CONFIG_DIR/ -lValpineBase
-LIBS += -L../External/gtest/$$CONFIG_DIR/ -lgtest
-LIBS += -L../External/gmock/$$CONFIG_DIR/ -lgmock
 
-PRE_TARGETDEPS += ../ValpineBase/$$CONFIG_DIR/libValpineBase.a \
-					../External/gtest/$$CONFIG_DIR/libgtest.a \
-					../External/gmock/$$CONFIG_DIR/libgmock.a
+PRE_TARGETDEPS += ../ValpineBase/$$CONFIG_DIR/libValpineBase.a
