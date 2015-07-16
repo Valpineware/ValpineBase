@@ -14,11 +14,15 @@ CONFIG += c++14 c++11
 INCLUDEPATH += ../../Ext/ \
                 ../../Ext/gmock/gtest/include
 
-unix {
-	SOURCES += $$system("find ../../Src/ValpineBase/ -name '*.cpp'")
-	HEADERS += $$system("find ../../Src/ValpineBase/ -name '*.h'")
-}
-win32 {
-	SOURCES += $$system("dir ..\..\Src\ValpineBase\*.cpp /b /s")
-	HEADERS += $$system("dir ..\..\Src\ValpineBase\*.h /b /s")
-}
+HEADERS += \
+    Test/Test.h \
+    Helper.h \
+    Loadable.h \
+    MutexTryLocker.h \
+    Property.h \
+    System.h
+
+SOURCES += \
+    Helper.cpp \
+    System.cpp
+

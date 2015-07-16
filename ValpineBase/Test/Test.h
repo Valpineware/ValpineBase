@@ -42,13 +42,13 @@ namespace _private_Test
     }
 
 
-    inline int run(int argc, char *argv[])
+    inline int run()
     {
         int ret = 0;
 
         foreach (QObject* test, testList())
         {
-            ret += QTest::qExec(test, argc, argv);
+            ret += QTest::qExec(test, QStringList());
         }
 
         return ret;

@@ -1,5 +1,6 @@
 #include <ValpineBase/Test/Test.h>
 #include <ValpineBase/Property.h>
+#include <ValpineBase/System.h>
 
 using namespace vbase;
 

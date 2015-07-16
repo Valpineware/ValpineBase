@@ -1,8 +1,6 @@
 #include <ValpineBase/Test/Test.h>
 #include <ValpineBase/Property.h>
 
-#include <glm/glm.hpp>
-
 #include <functional>
 
 using namespace vbase;

@@ -1,10 +1,5 @@
 TEMPLATE = subdirs
 
-CONFIG += ordered
+SUBDIRS += ValpineBase Tests
 
-SUBDIRS += Src/External \
-		Src/ValpineBase \
-		Src/Tests
-
-IDE/Tests.depends = IDE/External
-IDE/Tests.depends = IDE/Library
+Tests.depends = ValpineBase

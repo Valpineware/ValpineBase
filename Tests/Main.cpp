@@ -7,5 +7,5 @@
 
 int main(int argc, char *argv[])
 {
-    return _private_Test::run(argc, argv);
+    return _private_Test::run();
 }
