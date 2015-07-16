@@ -5,6 +5,10 @@
 #include <QList>
 #include <QString>
 #include <QSharedPointer>
+#include <QTextStream>
+#include <QDateTime>
+#include <QTemporaryFile>
+#include <QDir>
 
 namespace _private_Test
 {
@@ -42,16 +46,45 @@ namespace _private_Test
     }
 
 
-    inline int run(int argc, char *argv[])
+    inline QString run(int argc, char *argv[])
     {
         int ret = 0;
 
+        QString result;
+
         foreach (QObject* test, testList())
         {
-            ret += QTest::qExec(test, argc, argv);
+            QTemporaryFile file;
+            file.open();
+
+            QStringList args;
+            for (int i=0; i<argc; i++)
+                args.append(argv[i]);
+            args << "-o" << file.fileName();
+
+            ret += QTest::qExec(test, args);
+            result += QString("\r\n") + file.readAll();
         }
 
-        return ret;
+        QString timestamp = QDateTime::currentDateTime().toString(Qt::ISODate);
+        {
+            timestamp.replace(" ", "");
+            timestamp.replace(":", "");
+            timestamp.replace("-", "");
+        }
+
+        const QString dirpath = QDir::currentPath() + "/TestResults/";
+        const QString filename = QString("run_") + timestamp + ".txt";
+        QDir().mkpath(dirpath);
+        QFile data(dirpath + filename);
+
+        if (data.open(QFile::WriteOnly))
+        {
+            QTextStream out(&data);
+            out << result;
+        }
+
+        return dirpath + filename;
     }
 
     template <class T>
@@ -66,7 +99,7 @@ namespace _private_Test
             _private_Test::addTest(child.data());
         }
     };
-};
+}
 
 #define DECLARE_TEST(className) static _private_Test::Test<className> t_##className(#className);
 

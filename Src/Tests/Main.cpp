@@ -1,3 +1,5 @@
+#include <QProcess>
+
 #include <ValpineBase/Test/Test.h>
 #include "Main.h"
 
@@ -7,5 +9,9 @@
 
 int main(int argc, char *argv[])
 {
-    return _private_Test::run(argc, argv);
+    auto resultFilepath = _private_Test::run(argc, argv);
+
+    QProcess::startDetached("QtTestReviewGUI", QStringList() << resultFilepath);
+
+    return 0;
 }
