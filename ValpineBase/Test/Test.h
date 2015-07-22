@@ -9,6 +9,7 @@
 #include <QDateTime>
 #include <QTemporaryFile>
 #include <QDir>
+#include <QProcess>
 
 namespace _private_Test
 {
@@ -46,7 +47,7 @@ namespace _private_Test
     }
 
 
-    inline QString run(int argc, char *argv[])
+    inline QString run(int argc, char *argv[], bool launchGUI=false)
     {
         int ret = 0;
 
@@ -77,7 +78,8 @@ namespace _private_Test
         const QString dirpath = QDir::currentPath() + "/TestResults/";
         const QString filename = QString("run_") + timestamp + ".txt";
         QDir().mkpath(dirpath);
-        QFile data(dirpath + filename);
+        const QString resultFilepath = dirpath + filename;
+        QFile data(resultFilepath);
 
         if (data.open(QFile::WriteOnly))
         {
@@ -85,7 +87,17 @@ namespace _private_Test
             out << result;
         }
 
-        return dirpath + filename;
+        qDebug() << "Test results saved to: " << resultFilepath;
+
+        if (launchGUI && !QProcess::startDetached("QtTestReviewGUI", QStringList() << resultFilepath))
+        {
+            qDebug() << "QtTestReviewGUI is not installed in the system path!";
+        }
+
+        for (const QString &line : result.split("\r\n"))
+            qDebug() << line;
+
+        return resultFilepath;
     }
 
     template <class T>

@@ -24,5 +24,6 @@ HEADERS += \
 
 SOURCES += \
     Helper.cpp \
-    System.cpp
+    System.cpp \
+    Test/Test.cpp
 
