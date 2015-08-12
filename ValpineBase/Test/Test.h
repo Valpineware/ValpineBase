@@ -1,7 +1,7 @@
 #ifndef _ValpineBase_Test_Test_h
 #define _ValpineBase_Test_Test_h
 
-#include <QTest>
+#include <QtTest/QTest>
 #include <QList>
 #include <QString>
 #include <QSharedPointer>
@@ -115,5 +115,7 @@ namespace _private_Test
 }
 
 #define DECLARE_TEST(className) static _private_Test::Test<className> t_##className(#className);
+
+#define QCOMPARE_WSTRINGS(a, b) QCOMPARE(QString::fromStdWString(a), QString::fromStdWString(b))
 
 #endif
