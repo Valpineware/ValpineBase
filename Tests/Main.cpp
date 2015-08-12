@@ -9,9 +9,7 @@
 
 int main(int argc, char *argv[])
 {
-    auto resultFilepath = _private_Test::run(argc>0 ? 1 : 0, argv);
-
-    QProcess::startDetached("QtTestReviewGUI", QStringList() << resultFilepath);
+    _private_Test::run(argc>0 ? 1 : 0, argv);
 
     return 0;
 }
