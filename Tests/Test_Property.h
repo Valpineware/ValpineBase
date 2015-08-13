@@ -1,3 +1,5 @@
+#include <QObject>
+
 #include <ValpineBase/Test/Test.h>
 #include <ValpineBase/Property.h>
 #include <ValpineBase/System.h>
@@ -6,6 +8,8 @@ using namespace vbase;
 
 class Test_Property : public QObject
 {
+    Q_OBJECT
+
 private slots:
     /*
      * General construction and assignment
@@ -14,7 +18,7 @@ private slots:
     void SimpleSetCheck1()
     {
         Property<int> pSize = 10;
-        QCOMPARE(pSize, 10);
+        QCOMPARE(pSize(), 10);
     }
 
 
@@ -36,7 +40,7 @@ private slots:
 
         A a1;
         a1.value = 40.0f;
-        QCOMPARE(a1.value, 40.0f);
+        QCOMPARE(a1.value(), 40.0f);
     }
 
 
@@ -48,16 +52,16 @@ private slots:
         };
 
         A a1;
-        QCOMPARE(a1.value, 123456);
+        QCOMPARE(a1.value(), 123456L);
     }
 
 
     void Assign()
     {
         Property<int> size = 35;
-        QCOMPARE(size, 35);
+        QCOMPARE(size(), 35);
         size = 40;
-        QCOMPARE(size, 40);
+        QCOMPARE(size(), 40);
     }
 
 
@@ -82,8 +86,8 @@ private slots:
         Property<int> pB = pA;
         pA = 5;
 
-        QCOMPARE(pA, 5);
-        QCOMPARE(pB, 10);
+        QCOMPARE(pA(), 5);
+        QCOMPARE(pB(), 10);
     }
 
 
@@ -105,8 +109,8 @@ private slots:
         t1.pA = t1.pB;
         t1.pB = 7;
 
-        QCOMPARE(t1.pA, 60);
-        QCOMPARE(t1.pB, 7);
+        QCOMPARE(t1.pA(), 60);
+        QCOMPARE(t1.pB(), 7);
         QVERIFY(t1.setterCalled);
     }
 
@@ -123,7 +127,7 @@ private slots:
         });
 
         pSize = 400;
-        QCOMPARE(pSize, 100);
+        QCOMPARE(pSize(), 100);
     }
 
 
@@ -135,11 +139,11 @@ private slots:
         });
 
         pSize = 1238;
-        QCOMPARE(pSize, 850);
+        QCOMPARE(pSize(), 850);
         pSize = 430;
-        QCOMPARE(pSize, 430);
+        QCOMPARE(pSize(), 430);
         pSize = 853;
-        QCOMPARE(pSize, 850);
+        QCOMPARE(pSize(), 850);
     }
 
 
@@ -151,9 +155,9 @@ private slots:
         });
 
         pSize = 49;
-        QCOMPARE(pSize, 5);
+        QCOMPARE(pSize(), 5);
         pSize = 4;
-        QCOMPARE(pSize, 4);
+        QCOMPARE(pSize(), 4);
     }
 
 
@@ -169,7 +173,7 @@ private slots:
 
         QVERIFY(!getCalled);
         pSize = 1234;
-        QCOMPARE(pSize, 1334);
+        QCOMPARE(pSize(), 1334);
     }
 
 
@@ -183,7 +187,7 @@ private slots:
             });
         } t1;
 
-        QCOMPARE(t1.pSize, 100);
+        QCOMPARE(t1.pSize(), 100);
     }
 
 
@@ -209,9 +213,9 @@ private slots:
         QVERIFY(!t1.setCalled);
         QVERIFY(!t1.getCalled);
 
-        QCOMPARE(t1.pAmount, 15);
+        QCOMPARE(t1.pAmount(), 15);
         t1.pAmount = 15;
-        QCOMPARE(t1.pAmount, 21);
+        QCOMPARE(t1.pAmount(), 21);
         QCOMPARE(t1.pAmount.raw(), 20);
     }
 
@@ -232,7 +236,7 @@ private slots:
         } t1;
 
         t1.pAmount = 80;
-        QCOMPARE(t1.pAmount, 76);
+        QCOMPARE(t1.pAmount(), 76);
     }
 
 
@@ -246,7 +250,7 @@ private slots:
             })
         } t1;
 
-        QCOMPARE(t1.pAmount, 86);
+        QCOMPARE(t1.pAmount(), 86);
     }
 
 
@@ -265,7 +269,7 @@ private slots:
 
         QCOMPARE(t1.pAmount.raw(), 100.0);
         t1.pAmount = 96.0;
-        QCOMPARE(t1.pAmount, 95.0);
+        QCOMPARE(t1.pAmount(), 95.0);
         QCOMPARE(t1.pAmount.raw(), 99.0);
     }
 
@@ -329,12 +333,12 @@ private slots:
             Property<bool> pIsModdified = false;
         } t1;
 
-        QCOMPARE(t1.pAmount, 80);
+        QCOMPARE(t1.pAmount(), 80);
         QVERIFY(!t1.pIsModdified);
 
         t1.pAmount = 45;
 
-        QCOMPARE(t1.pAmount, 45);
+        QCOMPARE(t1.pAmount(), 45);
         QVERIFY(t1.pIsModdified);
     }
 };

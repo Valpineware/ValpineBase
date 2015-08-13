@@ -89,6 +89,8 @@ namespace _private_Test
 
         qDebug() << "Test results saved to: " << resultFilepath;
 
+        qDebug() << resultFilepath;
+
         if (launchGUI && !QProcess::startDetached("QtTestReviewGUI", QStringList() << resultFilepath))
         {
             qDebug() << "QtTestReviewGUI is not installed in the system path!";
