@@ -1,8 +1,7 @@
 import qbs 1.0
 
 StaticLibrary {
-    name: "Src"
-    targetName: "ValpineBase"
+    name: "ValpineBase"
 	
 	cpp.cxxLanguageVersion: "c++14"
 	cpp.includePaths: [

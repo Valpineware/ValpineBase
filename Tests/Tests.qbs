@@ -1,8 +1,7 @@
 import qbs 1.0
 
 Application {
-    name: "Tests"
-    targetName: "ValpineBaseTests"
+    name: "ValpineBaseTests"
     consoleApplication: true
 
 	cpp.cxxLanguageVersion: "c++14"
@@ -22,5 +21,5 @@ Application {
     Depends { name: "Qt.core" }
 	Depends { name: "Qt.testlib" }
 
-    Depends { name: "Src" }
+    Depends { name: "ValpineBase" }
 }
