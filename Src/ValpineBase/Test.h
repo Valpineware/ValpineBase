@@ -10,6 +10,7 @@
 #include <QTemporaryFile>
 #include <QDir>
 #include <QProcess>
+#include <QDebug>
 
 namespace _private_Test
 {

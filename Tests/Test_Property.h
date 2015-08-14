@@ -1,6 +1,6 @@
 #include <QObject>
 
-#include <ValpineBase/Test/Test.h>
+#include <ValpineBase/Test.h>
 #include <ValpineBase/Property.h>
 #include <ValpineBase/System.h>
 

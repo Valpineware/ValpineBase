@@ -1,6 +1,6 @@
 #include <QProcess>
 
-#include <ValpineBase/Test/Test.h>
+#include <ValpineBase/Test.h>
 #include "Main.h"
 
 #include "Test_Loadable.h"

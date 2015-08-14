@@ -1,4 +1,4 @@
-#include <ValpineBase/Test/Test.h>
+#include <ValpineBase/Test.h>
 #include <ValpineBase/Loadable.h>
 
 using namespace vbase;
