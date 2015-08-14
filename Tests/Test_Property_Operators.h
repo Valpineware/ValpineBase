@@ -1,3 +1,8 @@
+//=============================================================================|
+// Copyright (C) 2015 Valpineware
+// This file is licensed under the MIT License.
+//=============================================================================|
+
 #include <ValpineBase/Test.h>
 #include <ValpineBase/Property.h>
 

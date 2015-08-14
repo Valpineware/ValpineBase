@@ -1,8 +1,7 @@
 import qbs 1.0
 
 Application {
-    name: "ValpineBaseTests"
-    consoleApplication: true
+    name: "ValpineBase_Tests"
 
 	cpp.cxxLanguageVersion: "c++14"
 	cpp.includePaths: [
