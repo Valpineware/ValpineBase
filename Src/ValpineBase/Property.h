@@ -147,13 +147,6 @@ namespace vbase
 		{
 		}
 
-		Property<T>(const T &value, const GetFunction &getFunction) :
-			mValue(value),
-			mSetFunction(DEFAULT_SET),
-			mGetFunction(getFunction)
-		{
-		}
-
 		Property<T>(const T &value,
 					const SetFunction &setFunction,
 					const GetFunction &getFunction) :
@@ -269,8 +262,8 @@ namespace vbase
 }
 
 #define Property_Set(type, name, defaultValue, setBody) \
-            ::vbase::Property<type> name = ::vbase::Property<type>(defaultValue, \
-					[this](const type &_newValue) setBody);
+            ::vbase::Property<type> name { ::vbase::Property<type>(defaultValue, \
+                    [this](const type &_newValue) setBody) };
 
 #define Property_Get(type, name, defaultValue, getBody) \
             ::vbase::Property<type> name = ::vbase::Property<type>(defaultValue, \
