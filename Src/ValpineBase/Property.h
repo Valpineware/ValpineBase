@@ -85,12 +85,13 @@ namespace vbase
 	{
 	public:
 		using SetFunction = std::function<void(const T&)>;
-		using GetFunction = std::function<T(void)>;	//TODO return copy or cosnt ref?
-													//maybe we can template-specialize primitives to return by value
+                using GetFunction = std::function<T&(void)>;
+                // ^ TODO return copy or reference? it would be nice for end user to customize this if needed
+
 		using ListenerFunction = std::function<void(void)>;
 
 #define DEFAULT_SET [this](const T &_new) { mValue = _new; }
-#define DEFAULT_GET [this]() -> T { return mValue; }
+#define DEFAULT_GET [this]() -> T& { return mValue; }
 
 	public:
 		/**
@@ -157,13 +158,15 @@ namespace vbase
 		}
 
 
+                //TODO we really need a test for all type of property access
+
 		operator T() const
 		{
-			return const_cast<Property<T>*>(this)->mGetFunction();
+                    return const_cast<Property<T>*>(this)->mGetFunction();
 		}
 
 
-		T& operator()() { return mValue; }
+                T& operator()() { return const_cast<T&>(mGetFunction()); }
 		const T& operator()() const { return mValue; }
 		operator QVariant() const { return mValue; }
 
@@ -267,12 +270,12 @@ namespace vbase
 
 #define Property_Get(type, name, defaultValue, getBody) \
             ::vbase::Property<type> name = ::vbase::Property<type>(defaultValue, \
-					[this]() -> type getBody);
+                                        [this]() -> type& getBody);
 
 #define Property_SetGet(type, name, defaultValue, setBody, getBody) \
             ::vbase::Property<type> name = ::vbase::Property<type>(defaultValue, \
 				[this](const type &_newValue) setBody, \
-				[this]() -> type getBody);
+                                [this]() -> type& getBody);
 
 #undef DEFAULT_SET
 #undef DEFAULT_GET

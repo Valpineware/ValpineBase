@@ -214,9 +214,9 @@ private slots:
                         pAmount.raw() = _new+5;
                     },
 
-                    [this]() -> int {
+                    [this]() -> int& {
                         getCalled = true;
-                        return pAmount.raw()+1;
+                        return pAmount.raw() += 1;
                     });
         } t1;
 
@@ -224,9 +224,9 @@ private slots:
         QVERIFY(!t1.getCalled);
 
         QCOMPARE(t1.pAmount(), 15);
-        t1.pAmount = 15;
+        t1.pAmount = 15; //excersice the setter
         QCOMPARE(t1.pAmount(), 21);
-        QCOMPARE(t1.pAmount.raw(), 20);
+        QCOMPARE(t1.pAmount.raw(), 21);
     }
 
 
@@ -274,14 +274,14 @@ private slots:
                 pAmount.raw() = _newValue + 3.0;
             },
             {
-                return pAmount.raw() - 4.0;
+                return pAmount.raw() -= 4.0;
             })
         } t1;
 
         QCOMPARE(t1.pAmount.raw(), 100.0);
         t1.pAmount = 96.0;
         QCOMPARE(t1.pAmount(), 95.0);
-        QCOMPARE(t1.pAmount.raw(), 99.0);
+        QCOMPARE(t1.pAmount.raw(), 95.0);
     }
 
 
