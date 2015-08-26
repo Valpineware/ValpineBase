@@ -6,9 +6,10 @@ StaticLibrary {
 	cpp.cxxLanguageVersion: "c++14"
 	cpp.includePaths: [
 		"../../Ext/",
-		"../../Ext/gmock/gtest/include"
+        "../../Ext/gmock/gtest/include",
+        "./"
 	]
-	
+
     Group {
         name: "C++"
         prefix: "**/"

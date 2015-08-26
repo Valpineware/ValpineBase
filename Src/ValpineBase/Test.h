@@ -17,6 +17,8 @@
 #include <QProcess>
 #include <QDebug>
 
+#include <ValpineBase/Test/Suite.h>
+
 namespace _private_Test
 {
     typedef QList<QObject*> TestList;
