@@ -1,3 +1,8 @@
+//=============================================================================|
+// Copyright (C) 2015 Valpineware
+// This file is licensed under the MIT License.
+//=============================================================================|
+
 #ifndef vbase_test_Suite_h
 #define vbase_test_Suite_h
 
@@ -9,6 +14,10 @@
 #include <QtCore/QMetaMethod>
 
 #include <memory>
+
+#include <ValpineBase/System.h>
+#include <ValpineBase/Test/Assert.h>
+#include <ValpineBase/Test/AssertException.h>
 
 namespace vbase { namespace test
 {
@@ -55,13 +64,28 @@ namespace vbase { namespace test
                         {
                             method.invoke(&testObject, Qt::DirectConnection);
                         }
-                        catch (std::exception &e)
+                        catch (const AssertException &e)
                         {
-                            qWarning() << metaObject->className() << "::"
-                                       << method.name() << "() failure.";
+                            printAssertException(*metaObject, method, e);
                         }
                     }
                 }
+            }
+
+        private:
+            void printAssertException(const QMetaObject &metaObject,
+                                      const QMetaMethod &metaMethod,
+                                      const AssertException &e)
+            {
+                System::warn() << "FAILURE: " << metaObject.className() << "::" << metaMethod.name() << "() ";
+
+                System::warn() << "{";
+
+                for (const QString &line : e.pMessage())
+                    System::warn() << "\t" << line;
+
+
+                System::warn(true) << "} filepath=" << e.pFilepath() << " lineNumber=" << QString::number(e.pLineNumber);
             }
         };
 

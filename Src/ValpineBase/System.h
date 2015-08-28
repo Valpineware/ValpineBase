@@ -13,15 +13,8 @@ namespace vbase
     class System
     {
     public:
-        static void warning(const QString &message)
-        {
-            qWarning("%s", message.toStdString().c_str());
-        }
-
-        static void fatal(const QString &message)
-        {
-            qFatal("%s", message.toStdString().c_str());
-        }
+        static QDebug warn(bool quote=false, bool space=false);
+        static void fatal(const QString &message);
     };
 }
 

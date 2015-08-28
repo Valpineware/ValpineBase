@@ -7,4 +7,21 @@
 
 namespace vbase
 {
+    QDebug System::warn(bool quote, bool space)
+    {
+        QDebug d = qDebug();
+
+        if (!quote)
+            d.noquote();
+
+        if (!space)
+            d.nospace();
+
+        return d;
+    }
+
+    void System::fatal(const QString &message)
+    {
+        qFatal("%s", message.toStdString().c_str());
+    }
 }
