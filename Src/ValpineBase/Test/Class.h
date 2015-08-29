@@ -9,10 +9,11 @@
 #include <QObject>
 
 #include <ValpineBase/Property.h>
-#include <ValpineBase/Test/Suite.h>
 
 namespace vbase { namespace test
 {
+    class Suite;
+
     class Class : public QObject
     {
         Q_OBJECT

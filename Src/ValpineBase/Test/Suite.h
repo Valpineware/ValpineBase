@@ -19,6 +19,7 @@
 
 #include <ValpineBase/System.h>
 #include <ValpineBase/Test/Result.h>
+#include <ValpineBase/Test/Class.h>
 
 namespace vbase { namespace test
 {
@@ -33,7 +34,7 @@ namespace vbase { namespace test
         {
             TestAdder()
             {
-                mRegistered.append(new TestClassPackage<T>);
+                registered().append(new TestClassPackage<T>);
             }
         };
 
@@ -43,11 +44,10 @@ namespace vbase { namespace test
          */
         std::map<QString, std::unique_ptr<Result>> mResults;
 
-    private:
         class TestClassPackageInterface
         {
         public:
-            virtual void runTests(Suite *suite) = 0;
+            virtual Class *makeTestClassInstance() = 0;
         };
 
 
@@ -55,58 +55,18 @@ namespace vbase { namespace test
         template<typename T>
         class TestClassPackage : public TestClassPackageInterface
         {
-        public:
-            virtual void runTests(Suite *suite) override
+        public:            
+            virtual Class *makeTestClassInstance()
             {
-                const QMetaObject *metaObject = T().metaObject();
-
-                for (int i=0; i<metaObject->methodCount(); i++)
-                {
-                    auto metaMethod = metaObject->method(i);
-
-                    if (QString(metaMethod.tag()) == "VTEST")
-                    {
-                        T testObject;
-                        testObject.pHostSuite = suite;
-
-                        try
-                        {
-                            metaMethod.invoke(&testObject, Qt::DirectConnection);
-
-                            auto result = std::make_unique<Result>();
-                            result->pTestMethod = metaMethod;
-                            suite->post(std::move(result));
-                        }
-                        catch (const TestFailureException &e)
-                        {
-                            // swallow the exception
-                            // the purpose of throwing the exception from an assert
-                            // is to cleanly break out of the test entirely
-                            // (even from sub-routines)
-                        }
-                    }
-                }
+                return new T;
             }
-
-        private:
-//            void printAssertException(const QMetaObject &metaObject,
-//                                      const QMetaMethod &metaMethod,
-//                                      const AssertException &e)
-//            {
-//                System::warn() << "FAILURE: " << metaObject.className() << "::" << metaMethod.name() << "() ";
-
-//                System::warn() << "{";
-
-//                for (const QString &line : e.pMessage())
-//                    System::warn() << "\t" << line;
-
-
-//                System::warn(true) << "} filepath=" << e.pFilepath() << " lineNumber=" << QString::number(e.pLineNumber);
-//            }
         };
 
-
-        static QList<TestClassPackageInterface*> mRegistered;
+        static QList<TestClassPackageInterface*>& registered()
+        {
+            static QList<TestClassPackageInterface*> reg;
+            return reg;
+        }
     };
 
 #ifndef Q_MOC_RUN
