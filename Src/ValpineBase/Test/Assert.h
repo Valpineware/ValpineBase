@@ -18,24 +18,29 @@ namespace vbase { namespace test
     class Assert
     {
     public:
+        Assert() = delete;
+
+        Assert(Class *testClass, const QString &filepath, int lineNumber) :
+            mTestClass(testClass),
+            mFilepath(filepath),
+            mLineNumber(lineNumber)
+        {
+        }
+
         template<typename T>
-        static void Eq(Class *testClass, const QString &filepath, int lineNumber,
-                       const QString &verbatimActual,
+        void Eq(const QString &verbatimActual,
                        const QString &verbatimExpected,
                        const T &actual, const T &expected)
         {
             if (actual != expected)
             {
-                auto result = std::make_unique<ResultFailure>();
-                testClass->pHostSuite()->post(std::move(result));
-//                AssertException e;
-//                e.pMessage().append(verbatimActual + " != " + verbatimExpected);
-//                e.pMessage().append(QString("Expected: ") + expected);
-//                e.pMessage().append(QString("Actual: ") + actual);
+                auto r = makeDefaultResultFailure();
+                r->pMessage().append(verbatimActual + " != " + verbatimExpected);
+                r->pMessage().append(QString("Expected: ") + expected);
+                r->pMessage().append(QString("Actual: ") + actual);
 
-//                e.pFilepath = filepath;
-//                e.pLineNumber = lineNumber;
-
+                //TODO find a way to remove the need for std::move (if possible)
+                postResult(std::move(r));
 
                throw TestFailureException();
             }
@@ -43,35 +48,46 @@ namespace vbase { namespace test
 
 
         template<typename T>
-        static void True(Class *testClass, const QString &filepath, int lineNumber,
-                         const QString &verbatim, const T &what)
+        void True(const QString &verbatim, const T &what)
         {
             if (!what)
             {
-                auto result = std::make_unique<ResultFailure>();
-                testClass->pHostSuite()->post(std::move(result));
+                auto r = makeDefaultResultFailure();
+                postResult(std::move(r));
 
                 throw TestFailureException();
-
-//                AssertException e;
-//                e.pMessage().append("");
-//                e.pFilepath = filepath;
-//                e.pLineNumber = lineNumber;
-
-
-//                throw e;
             }
+        }
+
+    private:
+        Class *mTestClass = nullptr;
+        QString mFilepath;
+        int mLineNumber = -1;
+
+        std::unique_ptr<ResultFailure> makeDefaultResultFailure()
+        {
+            auto r = std::make_unique<ResultFailure>();
+            r->pFilepath = mFilepath;
+            r->pLineNumber = mLineNumber;
+
+            return r;
+        }
+
+
+        void postResult(std::unique_ptr<ResultFailure> &&result)
+        {
+            mTestClass->pHostSuite()->post(std::move(result));
         }
     };
 }}
 
 #define Assert_Eq(actual, expected) \
-    ::vbase::test::Assert::Eq(this, QString(__FILE__), __LINE__, \
+    ::vbase::test::Assert(this, QString(__FILE__), __LINE__).Eq( \
                                 QString(#actual), QString(#expected), \
                                 actual, expected)
 
 #define Assert_True(what) \
-    ::vbase::test::Assert::True(this, QString(__FILE__), __LINE__, \
+    ::vbase::test::Assert(this, QString(__FILE__), __LINE__).True( \
                                     QString(#what), what)
 
 #endif
