@@ -17,7 +17,8 @@
 #include <QProcess>
 #include <QDebug>
 
-#include <ValpineBase/Test/Suite.h>
+#include <ValpineBase/Test/Class.h>
+#include <ValpineBase/Test/Assert.h>
 
 namespace _private_Test
 {

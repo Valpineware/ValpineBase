@@ -10,14 +10,15 @@
 #include <QtCore/QDebug>
 #include <QtCore/QString>
 #include <QtCore/QList>
+#include <QtCore/QPair>
 #include <QtCore/QMetaObject>
 #include <QtCore/QMetaMethod>
 
+#include <map>
 #include <memory>
 
 #include <ValpineBase/System.h>
-#include <ValpineBase/Test/Assert.h>
-#include <ValpineBase/Test/AssertException.h>
+#include <ValpineBase/Test/Result.h>
 
 namespace vbase { namespace test
 {
@@ -25,6 +26,7 @@ namespace vbase { namespace test
     {
     public:
         void run();
+        void post(std::unique_ptr<Result> result);
 
         template<typename T>
         struct TestAdder
@@ -36,10 +38,16 @@ namespace vbase { namespace test
         };
 
     private:
+        /**
+         * @brief mResults
+         */
+        std::map<QString, std::unique_ptr<Result>> mResults;
+
+    private:
         class TestClassPackageInterface
         {
         public:
-            virtual void runTests() = 0;
+            virtual void runTests(Suite *suite) = 0;
         };
 
 
@@ -48,45 +56,53 @@ namespace vbase { namespace test
         class TestClassPackage : public TestClassPackageInterface
         {
         public:
-            virtual void runTests() override
+            virtual void runTests(Suite *suite) override
             {
                 const QMetaObject *metaObject = T().metaObject();
 
                 for (int i=0; i<metaObject->methodCount(); i++)
                 {
-                    auto method = metaObject->method(i);
+                    auto metaMethod = metaObject->method(i);
 
-                    if (QString(method.tag()) == "VTEST")
+                    if (QString(metaMethod.tag()) == "VTEST")
                     {
                         T testObject;
+                        testObject.pHostSuite = suite;
 
                         try
                         {
-                            method.invoke(&testObject, Qt::DirectConnection);
+                            metaMethod.invoke(&testObject, Qt::DirectConnection);
+
+                            auto result = std::make_unique<Result>();
+                            result->pTestMethod = metaMethod;
+                            suite->post(std::move(result));
                         }
-                        catch (const AssertException &e)
+                        catch (const TestFailureException &e)
                         {
-                            printAssertException(*metaObject, method, e);
+                            // swallow the exception
+                            // the purpose of throwing the exception from an assert
+                            // is to cleanly break out of the test entirely
+                            // (even from sub-routines)
                         }
                     }
                 }
             }
 
         private:
-            void printAssertException(const QMetaObject &metaObject,
-                                      const QMetaMethod &metaMethod,
-                                      const AssertException &e)
-            {
-                System::warn() << "FAILURE: " << metaObject.className() << "::" << metaMethod.name() << "() ";
+//            void printAssertException(const QMetaObject &metaObject,
+//                                      const QMetaMethod &metaMethod,
+//                                      const AssertException &e)
+//            {
+//                System::warn() << "FAILURE: " << metaObject.className() << "::" << metaMethod.name() << "() ";
 
-                System::warn() << "{";
+//                System::warn() << "{";
 
-                for (const QString &line : e.pMessage())
-                    System::warn() << "\t" << line;
+//                for (const QString &line : e.pMessage())
+//                    System::warn() << "\t" << line;
 
 
-                System::warn(true) << "} filepath=" << e.pFilepath() << " lineNumber=" << QString::number(e.pLineNumber);
-            }
+//                System::warn(true) << "} filepath=" << e.pFilepath() << " lineNumber=" << QString::number(e.pLineNumber);
+//            }
         };
 
 

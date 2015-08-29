@@ -3,26 +3,22 @@
 // This file is licensed under the MIT License.
 //=============================================================================|
 
-#ifndef vbase_test_AssertException_h
-#define vbase_test_AssertException_h
+#ifndef vbase_test_Class_h
+#define vbase_test_Class_h
 
-#include <exception>
-#include <QString>
-#include <QStringList>
+#include <QObject>
 
 #include <ValpineBase/Property.h>
+#include <ValpineBase/Test/Suite.h>
 
 namespace vbase { namespace test
 {
-    /**
-     * Indicates a test failure due to an assert being triggered.
-     */
-    class AssertException
+    class Class : public QObject
     {
+        Q_OBJECT
+
     public:
-        Property<QStringList> pMessage;
-        Property<QString> pFilepath;
-        int pLineNumber = -1;
+        Property<Suite*> pHostSuite;
     };
 }}
 
