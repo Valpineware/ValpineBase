@@ -27,36 +27,44 @@ namespace vbase { namespace test
         {
         }
 
+
         template<typename T>
-        void Eq(const QString &verbatimActual,
-                       const QString &verbatimExpected,
-                       const T &actual, const T &expected)
+        void areEq(const QString &verbatimActual, const QString &verbatimExpected,
+                const T &actual, const T &expected)
         {
             if (actual != expected)
             {
-                auto r = makeDefaultResultFailure();
-                r->pMessage().append(verbatimActual + " != " + verbatimExpected);
-                r->pMessage().append(QString("Expected: ") + expected);
-                r->pMessage().append(QString("Actual: ") + actual);
+                TestFailureException tfe;
+                tfe.pResultFailure = makeDefaultResultFailure();
+                tfe.pResultFailure->pMessage().append(verbatimActual + " != " + verbatimExpected);
+                tfe.pResultFailure->pMessage().append(QString("Expected: ") + expected);
+                tfe.pResultFailure->pMessage().append(QString("Actual: ") + actual);
 
-                //TODO find a way to remove the need for std::move (if possible)
-                postResult(std::move(r));
-
-               throw TestFailureException();
+               throw tfe;
             }
         }
 
 
         template<typename T>
-        void True(const QString &verbatim, const T &what)
+        void isTrue(const QString &verbatim, const T &what)
         {
             if (!what)
             {
-                auto r = makeDefaultResultFailure();
-                postResult(std::move(r));
+                TestFailureException tfe;
+                tfe.pResultFailure = makeDefaultResultFailure();
 
-                throw TestFailureException();
+                throw tfe;
             }
+        }
+
+
+        void failure(const QString &message)
+        {
+            TestFailureException tfe;
+            tfe.pResultFailure = makeDefaultResultFailure();
+            tfe.pResultFailure->pMessage() << message;
+
+            throw tfe;
         }
 
     private:
@@ -64,9 +72,9 @@ namespace vbase { namespace test
         QString mFilepath;
         int mLineNumber = -1;
 
-        std::unique_ptr<ResultFailure> makeDefaultResultFailure()
+        ResultFailure* makeDefaultResultFailure()
         {
-            auto r = std::make_unique<ResultFailure>();
+            auto r = new ResultFailure;
             r->pFilepath = mFilepath;
             r->pLineNumber = mLineNumber;
 
@@ -74,20 +82,23 @@ namespace vbase { namespace test
         }
 
 
-        void postResult(std::unique_ptr<ResultFailure> &&result)
+        void postResult(ResultFailure *result)
         {
-            mTestClass->pHostSuite()->post(std::move(result));
+            mTestClass->pHostSuite()->post(result);
         }
     };
 }}
 
 #define Assert_Eq(actual, expected) \
-    ::vbase::test::Assert(this, QString(__FILE__), __LINE__).Eq( \
+    ::vbase::test::Assert(this, QString(__FILE__), __LINE__).areEq( \
                                 QString(#actual), QString(#expected), \
                                 actual, expected)
 
 #define Assert_True(what) \
-    ::vbase::test::Assert(this, QString(__FILE__), __LINE__).True( \
+    ::vbase::test::Assert(this, QString(__FILE__), __LINE__).isTrue( \
                                     QString(#what), what)
+
+#define Assert_Failure(message) \
+    ::vbase::test::Assert(this, QString(__FILE__), __LINE__).failure(message)
 
 #endif

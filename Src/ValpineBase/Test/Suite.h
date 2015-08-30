@@ -27,7 +27,7 @@ namespace vbase { namespace test
     {
     public:
         void run();
-        void post(std::unique_ptr<Result> result);
+        void post(Result *result);
 
         template<typename T>
         struct TestAdder
@@ -42,7 +42,7 @@ namespace vbase { namespace test
         /**
          * @brief mResults
          */
-        std::map<QString, std::unique_ptr<Result>> mResults;
+        std::map<QString, Result*> mResults;
 
         class TestClassPackageInterface
         {

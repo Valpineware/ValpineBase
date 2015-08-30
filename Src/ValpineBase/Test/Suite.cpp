@@ -33,16 +33,19 @@ namespace vbase { namespace test
 
                         //at this point, the test must have passed since no
                         //exception was thrown
-                        auto result = std::make_unique<Result>();
+                        auto result = new Result;
                         result->pTestMethod = metaMethod;
-                        this->post(std::move(result));
+                        post(result);
                     }
-                    catch (const TestFailureException &e)
+                    catch (TestFailureException &tfe)
                     {
                         //swallow the exception
                         //the purpose of throwing the exception from an assert
                         //is to cleanly break out of the test entirely
                         //(even from sub-routines)
+
+                        tfe.pResultFailure->pTestMethod = metaMethod;
+                        post(tfe.pResultFailure);
                     }
                 }
             }
@@ -51,7 +54,7 @@ namespace vbase { namespace test
         //display the results        
         for (auto iter = mResults.begin(); iter != mResults.end(); iter++)
         {
-            Result *r = iter->second.get();
+            Result *r = iter->second;
 
             qDebug() << r->pTestMethod().name();
 
@@ -72,8 +75,9 @@ namespace vbase { namespace test
     }
 
 
-    void Suite::post(std::unique_ptr<Result> result)
+    void Suite::post(Result *result)
     {
-        mResults.emplace(result->pTestMethod().typeName(), std::move(result));
+        qDebug() << "Emplacing " << result->pTestMethod().name();
+        mResults.emplace(result->pTestMethod().name(), std::move(result));
     }
 }}

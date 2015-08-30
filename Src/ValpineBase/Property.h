@@ -166,7 +166,7 @@ namespace vbase
 		}
 
 
-                T& operator()() { return const_cast<T&>(mGetFunction()); }
+        T& operator()() { return const_cast<T&>(mGetFunction()); }
 		const T& operator()() const { return mValue; }
 		operator QVariant() const { return mValue; }
 
