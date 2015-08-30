@@ -30,7 +30,7 @@ namespace vbase { namespace test
 
         template<typename T>
         void areEq(const QString &verbatimActual, const QString &verbatimExpected,
-                const T &actual, const T &expected)
+                   const T &actual, const T &expected) const
         {
             if (actual != expected)
             {
@@ -45,20 +45,33 @@ namespace vbase { namespace test
         }
 
 
-        template<typename T>
-        void isTrue(const QString &verbatim, const T &what)
+        void isTrue(const QString &verbatim, bool what) const
         {
             if (!what)
             {
                 TestFailureException tfe;
                 tfe.pResultFailure = makeDefaultResultFailure();
+                tfe.pResultFailure->pMessage().append(QString("Expected ") + verbatim + " to be true. Got false.");
 
                 throw tfe;
             }
         }
 
 
-        void failure(const QString &message)
+        void isFalse(const QString &verbatim, bool what) const
+        {
+            if (what)
+            {
+                TestFailureException tfe;
+                tfe.pResultFailure = makeDefaultResultFailure();
+                tfe.pResultFailure->pMessage().append(QString("Expected ") + verbatim + " to be false. Got true.");
+
+                throw tfe;
+            }
+        }
+
+
+        void failure(const QString &message) const
         {
             TestFailureException tfe;
             tfe.pResultFailure = makeDefaultResultFailure();
@@ -72,19 +85,13 @@ namespace vbase { namespace test
         QString mFilepath;
         int mLineNumber = -1;
 
-        ResultFailure* makeDefaultResultFailure()
+        ResultFailure* makeDefaultResultFailure() const
         {
             auto r = new ResultFailure;
             r->pFilepath = mFilepath;
             r->pLineNumber = mLineNumber;
 
             return r;
-        }
-
-
-        void postResult(ResultFailure *result)
-        {
-            mTestClass->pHostSuite()->post(result);
         }
     };
 }}
@@ -96,6 +103,10 @@ namespace vbase { namespace test
 
 #define Assert_True(what) \
     ::vbase::test::Assert(this, QString(__FILE__), __LINE__).isTrue( \
+                                    QString(#what), what)
+
+#define Assert_False(what) \
+    ::vbase::test::Assert(this, QString(__FILE__), __LINE__).isFalse( \
                                     QString(#what), what)
 
 #define Assert_Failure(message) \

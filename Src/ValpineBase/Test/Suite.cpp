@@ -4,15 +4,11 @@
 //=============================================================================|
 
 #include "Suite.h"
-#include <iostream>
-#include <QThread>
 
 namespace vbase { namespace test
 {
     void Suite::run()
     {
-        qDebug() << "Running tests on thread id " << static_cast<void*>(QThread::currentThread());
-
         for (TestClassPackageInterface *test : registered())
         {
             std::unique_ptr<Class> defaultInstance(test->makeTestClassInstance());
@@ -77,7 +73,6 @@ namespace vbase { namespace test
 
     void Suite::post(Result *result)
     {
-        qDebug() << "Emplacing " << result->pTestMethod().name();
-        mResults.emplace(result->pTestMethod().name(), std::move(result));
+        mResults.emplace(result->pTestMethod().name(), result);
     }
 }}
