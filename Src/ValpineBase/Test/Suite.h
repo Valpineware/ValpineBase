@@ -10,12 +10,10 @@
 #include <QtCore/QDebug>
 #include <QtCore/QString>
 #include <QtCore/QList>
-#include <QtCore/QPair>
+#include <QtCore/QMap>
 #include <QtCore/QMetaObject>
 #include <QtCore/QMetaMethod>
-
-#include <map>
-#include <memory>
+#include <QtCore/QIODevice>
 
 #include <ValpineBase/System.h>
 #include <ValpineBase/Test/Result.h>
@@ -27,7 +25,8 @@ namespace vbase { namespace test
     {
     public:
         void run();
-        void post(Result *result);
+        void post(const QString &className, Result *result);
+        void exportResults(QIODevice &ioDevice);
 
         template<typename T>
         struct TestAdder
@@ -42,7 +41,7 @@ namespace vbase { namespace test
         /**
          * @brief mResults
          */
-        std::map<QString, Result*> mResults;
+        QMap<QString, QList<Result*>> mResults;
 
         class TestClassPackageInterface
         {

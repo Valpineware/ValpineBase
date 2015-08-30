@@ -20,11 +20,11 @@ namespace vbase { namespace test
     public:
         Assert() = delete;
 
-        Assert(Class *testClass, const QString &filepath, int lineNumber) :
-            mTestClass(testClass),
+        Assert(const QString &filepath, int lineNumber) :
             mFilepath(filepath),
             mLineNumber(lineNumber)
         {
+
         }
 
 
@@ -81,7 +81,6 @@ namespace vbase { namespace test
         }
 
     private:
-        Class *mTestClass = nullptr;
         QString mFilepath;
         int mLineNumber = -1;
 
@@ -97,19 +96,19 @@ namespace vbase { namespace test
 }}
 
 #define Assert_Eq(actual, expected) \
-    ::vbase::test::Assert(this, QString(__FILE__), __LINE__).areEq( \
-                                QString(#actual), QString(#expected), \
-                                actual, expected)
+    ::vbase::test::Assert(QString(__FILE__), __LINE__).areEq( \
+                          QString(#actual), QString(#expected), \
+                          actual, expected)
 
 #define Assert_True(what) \
-    ::vbase::test::Assert(this, QString(__FILE__), __LINE__).isTrue( \
-                                    QString(#what), what)
+    ::vbase::test::Assert(QString(__FILE__), __LINE__).isTrue( \
+                          QString(#what), what)
 
 #define Assert_False(what) \
-    ::vbase::test::Assert(this, QString(__FILE__), __LINE__).isFalse( \
-                                    QString(#what), what)
+    ::vbase::test::Assert(QString(__FILE__), __LINE__).isFalse( \
+                          QString(#what), what)
 
 #define Assert_Failure(message) \
-    ::vbase::test::Assert(this, QString(__FILE__), __LINE__).failure(message)
+    ::vbase::test::Assert(QString(__FILE__), __LINE__).failure(message)
 
 #endif
