@@ -16,6 +16,8 @@ namespace vbase { namespace test
 {
     void Suite::run()
     {
+        mDateTime_started = QDateTime::currentDateTime();
+
         for (TestClassPackageInterface *test : registered())
         {
             std::unique_ptr<Class> defaultInstance(test->makeTestClassInstance());
@@ -54,27 +56,9 @@ namespace vbase { namespace test
             }
         }
 
-        //display the results        
-//        for (auto iter = mResults.begin(); iter != mResults.end(); iter++)
-//        {
-//            Result *r = iter->;
+        mDateTime_finished = QDateTime::currentDateTime();
 
-//            qDebug() << r->pTestMethod().name();
-
-//            //failure?
-//            if (ResultFailure *rf = dynamic_cast<ResultFailure*>(r))
-//            {
-//                qDebug() << "\t" << "FAILED";
-//                qDebug() << "\t" << rf->pMessage();
-//                qDebug() << "\t" << rf->pFilepath();
-//                qDebug() << "\t" << rf->pLineNumber();
-//            }
-//            else
-//                qDebug() << "\t" << "PASSED";
-
-//        }
-
-        QFile ba("C:/dump_115124141324.txt");
+        QFile ba("dump_115124141324.txt");
         if (!ba.open(QIODevice::WriteOnly | QIODevice::Text))
             qDebug() << "Unable to open";
         else
@@ -115,7 +99,11 @@ namespace vbase { namespace test
 
     void Suite::exportResults(QIODevice &ioDevice)
     {
-        QJsonArray classes;
+        QJsonObject rootJson;
+        rootJson.insert("dateTime_started", mDateTime_started.toString(dateFormat));
+        rootJson.insert("dateTime_finished", mDateTime_finished.toString(dateFormat));
+
+        QJsonArray classesJsonArray;
 
         //build array of results
         QMapIterator<QString,QList<Result*>> iter = mResults;
@@ -137,19 +125,13 @@ namespace vbase { namespace test
             }
 
             co.insert("results", resultsArray);
-            classes.append(co);
+            classesJsonArray.append(co);
         }
 
-        QJsonDocument doc(classes);
+        rootJson.insert("results", classesJsonArray);
 
-        QFile data(QStandardPaths::DesktopLocation + "/file.txt");
-
-        if (data.open(QFile::WriteOnly))
-        {
-            QTextStream out(&data);
-            out << doc.toJson();
-        }
-        else
-            qDebug() << "Goodbye";
+        QJsonDocument doc(rootJson);
+        QTextStream out(&ioDevice);
+        out << doc.toJson();
     }
 }}

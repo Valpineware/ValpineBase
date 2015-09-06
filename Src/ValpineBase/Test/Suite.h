@@ -14,6 +14,7 @@
 #include <QtCore/QMetaObject>
 #include <QtCore/QMetaMethod>
 #include <QtCore/QIODevice>
+#include <QtCore/QDateTime>
 
 #include <ValpineBase/System.h>
 #include <ValpineBase/Test/Result.h>
@@ -23,6 +24,9 @@ namespace vbase { namespace test
 {
     class Suite
     {
+    public:
+        static const QString dateFormat = "yyyy-MM-dd HH:mm:ss:zzz t";
+
     public:
         void run();
         void post(const QString &className, Result *result);
@@ -42,6 +46,8 @@ namespace vbase { namespace test
          * @brief mResults
          */
         QMap<QString, QList<Result*>> mResults;
+
+        QDateTime mDateTime_started, mDateTime_finished;
 
         class TestClassPackageInterface
         {
