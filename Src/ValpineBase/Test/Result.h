@@ -21,6 +21,7 @@ namespace vbase { namespace test
     public:
         virtual ~Result() {}
         Property<QMetaMethod> pTestMethod;
+        Property<int> pExecutionTime = 0;   //in ms
     };
 
 

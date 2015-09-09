@@ -14,6 +14,8 @@
 
 namespace vbase { namespace test
 {
+    const QString Suite::dateFormat = "yyyy-MM-dd HH:mm:ss:zzz t";
+
     void Suite::run()
     {
         mDateTime_started = QDateTime::currentDateTime();
@@ -34,12 +36,15 @@ namespace vbase { namespace test
 
                     try
                     {
+                        testObject->pExecutionTimer().start();
                         metaMethod.invoke(testObject.get(), Qt::DirectConnection);
+                        int executionTime = testObject->pExecutionTimer().elapsed();
 
                         //at this point, the test must have passed since no
                         //exception was thrown
                         auto result = new Result;
                         result->pTestMethod = metaMethod;
+                        result->pExecutionTime = executionTime;
                         post(metaObject->className(), result);
                     }
                     catch (TestFailureException &tfe)
@@ -58,7 +63,7 @@ namespace vbase { namespace test
 
         mDateTime_finished = QDateTime::currentDateTime();
 
-        QFile ba("dump_115124141324.txt");
+        QFile ba("dump_115124141324.json");
         if (!ba.open(QIODevice::WriteOnly | QIODevice::Text))
             qDebug() << "Unable to open";
         else
@@ -81,12 +86,19 @@ namespace vbase { namespace test
     {
         QJsonObject o;
         o.insert("name", QString(result->pTestMethod().name()));
+        o.insert("executionTime", QString::number(result->pExecutionTime));
 
         if (auto *p = dynamic_cast<const ResultFailure*>(result))
         {
             o.insert("status", QString("failed"));
             o.insert("filePath", p->pFilepath()); //TODO fix filepath to filePath
             o.insert("lineNumber", p->pLineNumber());
+
+            QJsonArray messageArray;
+            for (const auto &message : p->pMessage())
+                messageArray.append(message);
+
+            o.insert("message", messageArray);
         }
         else
         {
@@ -112,7 +124,6 @@ namespace vbase { namespace test
         {
             auto a = iter.next();
 
-            qDebug() << a.key();
             QJsonObject co;
             co.insert("className", QJsonValue(a.key()));
 
@@ -120,7 +131,6 @@ namespace vbase { namespace test
 
             for (const Result *result : a.value())
             {
-                qDebug() << "\t" << result->pTestMethod().name();
                 resultsArray.append(jsonObjectFromResult(result));
             }
 

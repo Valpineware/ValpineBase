@@ -7,6 +7,7 @@
 #define vbase_test_Class_h
 
 #include <QObject>
+#include <QtCore/QElapsedTimer>
 
 #include <ValpineBase/Property.h>
 
@@ -20,6 +21,7 @@ namespace vbase { namespace test
 
     public:
         Property<Suite*> pHostSuite;
+        Property<QElapsedTimer> pExecutionTimer;
     };
 }}
 
