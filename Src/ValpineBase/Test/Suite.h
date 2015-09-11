@@ -25,7 +25,11 @@ namespace vbase { namespace test
     class Suite
     {
     public:
-        static const QString dateFormat;
+        static const QString& dateFormat()
+        {
+            static QString fmt = "yyyy-MM-dd HH:mm:ss:zzz";
+            return fmt;
+        }
 
     public:
         void run();

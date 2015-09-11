@@ -14,8 +14,6 @@
 
 namespace vbase { namespace test
 {
-    const QString Suite::dateFormat = "yyyy-MM-dd HH:mm:ss:zzz t";
-
     void Suite::run()
     {
         mDateTime_started = QDateTime::currentDateTime();
@@ -112,8 +110,8 @@ namespace vbase { namespace test
     void Suite::exportResults(QIODevice &ioDevice)
     {
         QJsonObject rootJson;
-        rootJson.insert("dateTime_started", mDateTime_started.toString(dateFormat));
-        rootJson.insert("dateTime_finished", mDateTime_finished.toString(dateFormat));
+        rootJson.insert("dateTime_started", mDateTime_started.toString(dateFormat()));
+        rootJson.insert("dateTime_finished", mDateTime_finished.toString(dateFormat()));
 
         QJsonArray classesJsonArray;
 
