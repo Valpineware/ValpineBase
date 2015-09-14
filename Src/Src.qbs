@@ -16,6 +16,13 @@ StaticLibrary {
         files: ["*.h", "*.cpp"]
     }
 
+    Group {
+        name: "Resources"
+        prefix: "**/"
+        files: ["*.qml", "*.js", "*.qrc"]
+    }
+
     Depends { name: "cpp" }
     Depends { name: "Qt.core" }
+    Depends { name: "Qt.quick" }
 }

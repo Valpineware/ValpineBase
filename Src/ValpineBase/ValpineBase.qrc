@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/import/ValpineBase">
+        <file>Triangle.qml</file>
+        <file>qmldir</file>
+    </qresource>
+</RCC>
