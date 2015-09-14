@@ -23,10 +23,53 @@ The project may build and run with different configurations, but only the follow
 
 ### Usage
 
-ValpineBase uses QBS for the build system. This means projects using ValpineBase also need to use QBS. There are 4 simple steps to connect ValpineBase to any QBS Product QML type.
+ValpineBase uses QBS for the build system. This means projects using ValpineBase also need to use QBS. The following steps are needed to connect ValpineBase to any QBS Product.
 
-1. Clone ValpineBase as a submodule into your project's directory somewhere (if using git).
-2. Set **cpp.cxxLanguageVersion** to "c++14" or greater on the QML Product.
-3. Set **cpp.includePaths** to include ""&lt;path_to_valpine_base&gt;/Src/" on the QML Product.
-4. Add **Depends { name: "ValpineBase" }** somewhere in the QML Product.
-5. Include ValpineBase header files with **#include &lt;ValpineBase/Property.h&gt;** for example.
+1. Clone ValpineBase as a submodule into your project's directory somewhere (reccomended, but not required).
+2. Set **cpp.cxxLanguageVersion** to "c++14" or greater.
+3. Set **cpp.includePaths** to include "&lt;path_to_valpine_base&gt;/Src/".
+4. Add **Depends { name: "ValpineBase" }**.
+5. To tell Qt Creator where to find ValpineBase QML files, add this property declaration: **property var qmlImportPaths: [ "&lt;path_to_valpine_base&gt;/Src/" ]**. To use a relative path, prepend the **path** property which contains an absolute path to the current QBS file's directory. For example, **property var qmlImportPaths: [ path + "/../Ext/ValpineBase/Src/" ]**. The relative path on it's own does not seem to be correctly interpreted by itself. Note this step is optional as it only allows for correct syntax highlighting and code-completion.
+
+Here is a complete example QBS file:
+
+```
+import qbs 1.0
+
+Application {
+	name: "QtTestReviewGUI"
+
+	cpp.cxxLanguageVersion: "c++14"
+	cpp.includePaths: [
+		"../Src/",
+		"../Ext/ValpineBase/Src"
+	]
+
+	property var qmlImportPaths: [
+		path + "/../Ext/ValpineBase/Src/",
+	]
+
+	Group {
+		name: "C++"
+		prefix: "**/"
+		files: ["*.cpp", "*.h"]
+	}
+
+	Group {
+		name: "Resources"
+
+		prefix: "**/"
+		files: ["*.qml*", "*.qrc"]
+	}
+
+	Depends { name: "cpp" }
+	Depends { name: "Qt.core" }
+	Depends { name: "Qt.quick" }
+	Depends { name: "Qt.widgets" }
+
+	Depends { name: "ValpineBase" }
+	Depends { name: "QtTestReviewGUI_Lib" }
+}
+
+
+```
