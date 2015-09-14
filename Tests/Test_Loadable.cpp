@@ -8,12 +8,12 @@
 
 using namespace vbase;
 
-class Test_Loadable : public QObject
+class Test_Loadable : public test::Class
 {
     Q_OBJECT
 
 private slots:
-    void simpleCheck()
+    VTEST void simpleCheck()
     {
         Loadable loadable;
 
@@ -29,11 +29,12 @@ private slots:
         };
 
 
-        QVERIFY(!loadable.pHasLoaded);
-        f();
-        QVERIFY(loadable.pHasLoaded);
-        QVERIFY(didIsLoading);
+	Assert_False(loadable.pHasLoaded);
+	f();
+	Assert_True(loadable.pHasLoaded);
+	Assert_True(didIsLoading);
     }
 };
 
-DECLARE_TEST(Test_Loadable)
+ADD_TESTCLASS(Test_Loadable)
+#include "Test_Loadable.moc"

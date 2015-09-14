@@ -6,7 +6,8 @@
 #ifndef vbase_test_Assert_h
 #define vbase_test_Assert_h
 
-#include <exception>
+#include <sstream>
+#include <type_traits>
 #include <QString>
 
 #include <ValpineBase/Test/Result.h>
@@ -38,8 +39,9 @@ namespace vbase { namespace test
                 TestFailureException tfe;
                 tfe.pResultFailure = makeDefaultResultFailure();
                 tfe.pResultFailure->pMessage().append(verbatimActual + " != " + verbatimExpected);
-                tfe.pResultFailure->pMessage().append(QString("Expected: ") + expected);
-                tfe.pResultFailure->pMessage().append(QString("Actual: ") + actual);
+
+		tfe.pResultFailure->pMessage().append(QString("Expected: ") + Assert::formatRaw(expected));
+		tfe.pResultFailure->pMessage().append(QString("Actual: ") + Assert::formatRaw(actual));
 
                throw tfe;
             }
@@ -95,6 +97,66 @@ namespace vbase { namespace test
 
             return r;
         }
+
+
+    private:
+	template<typename, typename T>
+	struct has_toString {
+	    static_assert(
+		std::integral_constant<T, false>::value,
+		"Second template parameter needs to be of function type.");
+	};
+
+	template<typename C, typename Ret, typename... Args>
+	struct has_toString<C, Ret(Args...)> {
+	private:
+	    template<typename T>
+	    static constexpr auto check(T*)
+	    -> typename
+		std::is_same<
+		    decltype( std::declval<T>().toString( std::declval<Args>()... ) ),
+		    Ret>::type;
+
+	    template<typename>
+	    static constexpr std::false_type check(...);
+
+	    typedef decltype(check<C>(0)) type;
+
+	public:
+	    static constexpr bool value = type::value;
+	};
+
+
+	template<typename T, typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
+	static QString formatRaw(const T &what)
+	{
+	    return QString::number(what);
+	}
+
+
+	template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+	static QString formatRaw(const T &what)
+	{
+	    return QString::number(static_cast<long double>(what), 'g', 10);
+	}
+
+
+	static QString formatRaw(const QString &what)
+	{
+	    return static_cast<QString>(what);
+	}
+
+
+	static QString formatRaw(const std::string &what)
+	{
+	    return QString::fromStdString(what);
+	}
+
+
+	static QString formatRaw(const std::wstring &what)
+	{
+	    return QString::fromStdWString(what);
+	}
     };
 }}
 
