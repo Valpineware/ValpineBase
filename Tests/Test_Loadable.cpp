@@ -6,6 +6,8 @@
 #include <ValpineBase/Test.h>
 #include <ValpineBase/Loadable.h>
 
+#include <QtCore/QDateTime>
+
 using namespace vbase;
 
 class Test_Loadable : public test::Class

@@ -14,7 +14,7 @@
 
 namespace vbase { namespace test
 {
-    void Suite::run()
+	void Suite::run(QIODevice &outputFileDevice)
     {
         mDateTime_started = QDateTime::currentDateTime();
 
@@ -61,11 +61,7 @@ namespace vbase { namespace test
 
         mDateTime_finished = QDateTime::currentDateTime();
 
-        QFile ba("dump_115124141324.json");
-        if (!ba.open(QIODevice::WriteOnly | QIODevice::Text))
-            qDebug() << "Unable to open";
-        else
-            exportResults(ba);
+		exportResults(outputFileDevice);
 
         qDebug() << "Finished running all tests";
     }

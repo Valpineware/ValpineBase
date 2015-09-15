@@ -141,6 +141,13 @@ namespace vbase { namespace test
 	}
 
 
+	template<typename T, typename std::enable_if<has_toString<T, QString(void)>::value>::type* = nullptr>
+	static QString formatRaw(const T &what)
+	{
+	    return what.toString();
+	}
+
+
 	static QString formatRaw(const QString &what)
 	{
 	    return static_cast<QString>(what);

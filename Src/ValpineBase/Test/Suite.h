@@ -32,7 +32,7 @@ namespace vbase { namespace test
         }
 
     public:
-        void run();
+		void run(QIODevice &outputFileDevice);
         void post(const QString &className, Result *result);
         void exportResults(QIODevice &ioDevice);
 
