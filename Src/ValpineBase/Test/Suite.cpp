@@ -5,6 +5,7 @@
 
 #include <QFile>
 #include <QtCore/QDir>
+#include <QtCore/QDirIterator>
 #include <QtCore/QProcess>
 #include <QStandardPaths>
 
@@ -100,6 +101,22 @@ namespace vbase { namespace test
 
         qDebug() << "Finished running all tests";
     }
+
+
+	void Suite::cleanOldResults(int maxAgeSeconds)
+	{
+		QDirIterator iter("./TestResults", QDirIterator::Subdirectories);
+		while (iter.hasNext())
+		{
+			QFileInfo fi(iter.next());
+
+			if (fi.lastModified().secsTo(QDateTime::currentDateTime())
+				> maxAgeSeconds)
+			{
+				QFile::remove(fi.absoluteFilePath());
+			}
+		}
+	}
 
 
     void Suite::post(const QString &className, Result *result)

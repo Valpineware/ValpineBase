@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
 
 	vbase::test::Suite suite;
 	suite.run(true);
+	suite.cleanOldResults(60*5);
 
 	app.processEvents();
 

@@ -52,6 +52,8 @@ namespace vbase { namespace test
 		 */
 		void run(QIODevice &outputFileDevice);
 
+		void cleanOldResults(int maxAgeSeconds);
+
         void post(const QString &className, Result *result);
 
         template<typename T>
