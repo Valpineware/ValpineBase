@@ -4,7 +4,10 @@
 //=============================================================================|
 
 #include <QFile>
+#include <QtCore/QDir>
+#include <QtCore/QProcess>
 #include <QStandardPaths>
+
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -14,6 +17,38 @@
 
 namespace vbase { namespace test
 {
+	void Suite::run(bool launchReviewGUI, const QString &testReviewGUIPath)
+	{
+		QString filepath = QDir::currentPath() + QString("/TestResults/");
+		QDir().mkpath(filepath);
+
+		QFile ba(filepath
+				 + "Result_"
+				 + QDateTime::currentDateTime().toString("yyyyMMddHHmmsszzz")
+				 + ".json");
+
+		if (!ba.open(QFile::WriteOnly | QFile::Text))
+		{
+			qDebug() << "Unable to write test output";
+			qDebug() << filepath;
+			qDebug() << ba.errorString();
+		}
+		else
+		{
+			run(ba);
+
+			if (launchReviewGUI)
+			{
+				QString appPath = (testReviewGUIPath == "") ?
+									  "TestReviewGUI" : testReviewGUIPath;
+
+				QString path = QFileInfo(ba).absoluteFilePath();
+				qDebug() << QProcess::startDetached(appPath, QStringList() << path);
+			}
+		}
+	}
+
+
 	void Suite::run(QIODevice &outputFileDevice)
     {
         mDateTime_started = QDateTime::currentDateTime();

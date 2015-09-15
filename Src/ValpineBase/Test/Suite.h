@@ -32,9 +32,27 @@ namespace vbase { namespace test
         }
 
     public:
+		/**
+		 * Runs all the tests registered with the Suite. The test results are
+		 * written to ./TestResults/ and are uniquely identified with a timestamp.
+		 *
+		 * If \p launchReviewGUI is true, then the TestReviewGUI application will
+		 * be launched with an argument of the path to the test results JSON file.
+		 *
+		 * \p testReviewGUIPath points to the TestReviewGUI executable which
+		 * should be launched. If \testReveiwGUIPath is blank, then it is
+		 * assumed that "TestReviewGUI" is a recognized command in the system
+		 * PATH and will be invoked as such.
+		 */
+		void run(bool launchReviewGUI, const QString &testReviewGUIPath="");
+
+		/**
+		 * Runs all the tests registered with the Suite. Test results are
+		 * written to the \outputFileDevice as JSON text.
+		 */
 		void run(QIODevice &outputFileDevice);
+
         void post(const QString &className, Result *result);
-        void exportResults(QIODevice &ioDevice);
 
         template<typename T>
         struct TestAdder
@@ -46,6 +64,8 @@ namespace vbase { namespace test
         };
 
     private:
+		void exportResults(QIODevice &ioDevice);
+
         /**
          * @brief mResults
          */
