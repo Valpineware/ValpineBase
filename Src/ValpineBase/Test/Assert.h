@@ -127,6 +127,13 @@ namespace vbase { namespace test
 	};
 
 
+    template<typename T, typename std::enable_if<std::is_enum<T>::value>::type* = nullptr>
+    static QString formatRaw(const T &what)
+    {
+        return QString::number(static_cast<int>(what));
+    }
+
+
 	template<typename T, typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
 	static QString formatRaw(const T &what)
 	{
