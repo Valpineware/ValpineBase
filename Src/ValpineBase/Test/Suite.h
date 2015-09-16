@@ -44,13 +44,15 @@ namespace vbase { namespace test
 		 * assumed that "TestReviewGUI" is a recognized command in the system
 		 * PATH and will be invoked as such.
 		 */
-		void run(bool launchReviewGUI, const QString &testReviewGUIPath="");
+        void run(bool launchReviewGUI, const QString &testReviewGUIPath="");
 
 		/**
 		 * Runs all the tests registered with the Suite. Test results are
 		 * written to the \outputFileDevice as JSON text.
 		 */
 		void run(QIODevice &outputFileDevice);
+
+        void printResults();
 
 		void cleanOldResults(int maxAgeSeconds);
 

@@ -36,6 +36,8 @@ namespace vbase { namespace test
 		}
 		else
 		{
+            qDebug() << "Full path is " << QFileInfo(ba).absoluteFilePath();
+
 			run(ba);
 
 			if (launchReviewGUI)
@@ -100,6 +102,36 @@ namespace vbase { namespace test
 		exportResults(outputFileDevice);
 
         qDebug() << "Finished running all tests";
+    }
+
+
+    void Suite::printResults()
+    {
+        //QString, QList<Result*>
+
+        QMapIterator<QString, QList<Result*>> iter(mResults);
+        while (iter.hasNext())
+        {
+            auto item = iter.next();
+
+            for (Result *result : item.value())
+            {
+                if (auto failure = dynamic_cast<ResultFailure*>(result))
+                {
+                    qDebug() << "FAILED: [" << failure->pTestMethod().name() << "] - - - - - - - -";
+
+                    for (auto line : failure->pMessage())
+                    {
+                        qDebug() << "      -" << line;
+                    }
+
+                    qDebug() << "  At " << failure->pFilepath();
+                    qDebug() << "  Line " << failure->pLineNumber();
+
+                    qDebug() << "";
+                }
+            }
+        }
     }
 
 
@@ -191,3 +223,4 @@ namespace vbase { namespace test
         out << doc.toJson();
     }
 }}
+
