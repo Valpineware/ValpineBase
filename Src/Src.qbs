@@ -25,4 +25,5 @@ StaticLibrary {
     Depends { name: "cpp" }
     Depends { name: "Qt.core" }
     Depends { name: "Qt.quick" }
+	Depends { name: "Qt.network" }
 }
