@@ -13,29 +13,29 @@
 
 namespace vbase
 {
-    class SingleInstance : public QObject
-    {
-	Q_OBJECT
+	class SingleInstance : public QObject
+	{
+		Q_OBJECT
 
-    public:
+	public:
 		explicit SingleInstance(QObject *parent=nullptr);
 		~SingleInstance();
 
 		void listen(const QString &name);
 		bool hasPrevious(const QString &name, const QStringList &args);
 
-    signals:
+	signals:
 		void newInstance();
-		void receivedArguments(const QStringList &arguments);
+		void receivedArguments(const QVariantList &arguments);
 
-    public slots:
+	public slots:
 		void newConnection();
 		void readyRead();
 
-    private:
+	private:
 		QLocalSocket *mSocket = nullptr;
 		QLocalServer mServer;
-    };
+	};
 }
 
 #endif
