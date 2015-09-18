@@ -111,8 +111,7 @@ namespace vbase { namespace test
 	struct has_toString<C, Ret(Args...)> {
 	private:
 	    template<typename T>
-	    static constexpr auto check(T*)
-	    -> typename
+        static constexpr auto check(T*) -> typename
 		std::is_same<
 		    decltype( std::declval<T>().toString( std::declval<Args>()... ) ),
 		    Ret>::type;

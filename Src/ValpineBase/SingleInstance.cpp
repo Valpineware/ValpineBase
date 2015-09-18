@@ -22,7 +22,8 @@ namespace vbase
     void SingleInstance::listen(const QString &name)
     {
 		mServer.removeServer(name);
-		mServer.listen(name);
+		if (!mServer.listen(name))
+			qDebug() << "Unable to listen";
 
 		qDebug() << "Listening for " << name;
 		qDebug() << mServer.errorString();
@@ -69,8 +70,14 @@ namespace vbase
 
     void SingleInstance::readyRead()
     {
-		qDebug() << "args=" << mSocket->readAll();
+		QString argsString = mSocket->readAll();
+
+		qDebug() << "ARGS = " << argsString;
+
+		QStringList argsList = argsString.split(" ");
+
+		emit receivedArguments(argsList);
 
 		mSocket->deleteLater();
     }
-};
+}
