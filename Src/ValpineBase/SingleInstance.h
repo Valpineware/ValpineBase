@@ -26,6 +26,7 @@ namespace vbase
 
     signals:
 		void newInstance();
+		void receivedArguments(const QStringList &arguments);
 
     public slots:
 		void newConnection();
