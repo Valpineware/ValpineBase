@@ -48,6 +48,10 @@ namespace vbase { namespace test
 				QString path = QFileInfo(ba).absoluteFilePath();
 				qDebug() << QProcess::startDetached(appPath, QStringList() << path);
 			}
+			else
+			{
+				qDebug() << "Not running GUI review tool";
+			}
 		}
 	}
 

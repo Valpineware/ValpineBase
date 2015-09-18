@@ -2,18 +2,12 @@
 #include <qqml.h>
 #include <QtQml/QQmlEngine>
 
-class ValpineBase
+namespace vbase
 {
-public:
-    static QString version();
-    static void registerQmlModule(QQmlEngine *engine)
-    {
-        Q_INIT_RESOURCE(ValpineBase);
-
-        if (engine)
-        {
-            engine->addImportPath("qrc:/import");
-        }
-    }
-
-};
+	class ValpineBase
+	{
+	public:
+		static QString version();
+		static void registerQmlModule(QQmlEngine *engine);
+	};
+}

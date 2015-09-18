@@ -12,30 +12,30 @@ using namespace vbase;
 
 class Test_Loadable : public test::Class
 {
-    Q_OBJECT
+	Q_OBJECT
 
 private slots:
-    VTEST void simpleCheck()
-    {
-        Loadable loadable;
+	VTEST void simpleCheck()
+	{
+		Loadable loadable;
 
-        bool didIsLoading = false;
-        loadable.pIsLoading.addOnChangedListener([&didIsLoading]
-        {
-            didIsLoading = true;
-        });
+		bool didIsLoading = false;
+		loadable.pIsLoading.addOnChangedListener([&didIsLoading]
+		{
+			didIsLoading = true;
+		});
 
-        auto f = [&]
-        {
-            Loadable::Begin b(&loadable);
-        };
+		auto f = [&]
+		{
+			Loadable::Begin b(&loadable);
+		};
 
 
-	Assert_False(loadable.pHasLoaded);
-	f();
-	Assert_True(loadable.pHasLoaded);
-	Assert_True(didIsLoading);
-    }
+		Assert_False(loadable.pHasLoaded);
+		f();
+		Assert_True(loadable.pHasLoaded);
+		Assert_True(didIsLoading);
+	}
 };
 
 ADD_TESTCLASS(Test_Loadable)
