@@ -100,6 +100,13 @@ private:
 
 
 private:
+	template<typename T>
+	static QString formatRaw(const T &what)
+	{
+		return QString("\"") + _formatRaw(what) + "\"";
+	}
+
+
 	template<typename, typename T>
 	struct has_toString
 	{
@@ -129,7 +136,7 @@ private:
 
 
 	template<typename T, typename std::enable_if<std::is_enum<T>::value>::type* = nullptr>
-	static QString formatRaw(const T &what)
+	static QString _formatRaw(const T &what)
 	{
 		return QString::number(static_cast<int>(what));
 	}
@@ -137,7 +144,7 @@ private:
 
 	template<typename T,
 			 typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
-	static QString formatRaw(T what)
+	static QString _formatRaw(T what)
 	{
 		return QString::number(what);
 	}
@@ -145,13 +152,13 @@ private:
 
 	template<typename T,
 			 typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
-	static QString formatRaw(T what)
+	static QString _formatRaw(T what)
 	{
 		return QString::number(static_cast<long double>(what), 'g', 10);
 	}
 
 
-	static QString formatRaw(bool what)
+	static QString _formatRaw(bool what)
 	{
 		return what ? "true" : "false";
 	}
@@ -159,25 +166,31 @@ private:
 
 	template<typename T,
 			 typename std::enable_if<has_toString<T, QString(void)>::value>::type* = nullptr>
-	static QString formatRaw(const T &what)
+	static QString _formatRaw(const T &what)
 	{
 		return what.toString();
 	}
 
 
-	static QString formatRaw(const QString &what)
+	static QString _formatRaw(const QString &what)
 	{
 		return static_cast<QString>(what);
 	}
 
 
-	static QString formatRaw(const std::string &what)
+	static QString _formatRaw(const char* what)
+	{
+		return QString(what);
+	}
+
+
+	static QString _formatRaw(const std::string &what)
 	{
 		return QString::fromStdString(what);
 	}
 
 
-	static QString formatRaw(const std::wstring &what)
+	static QString _formatRaw(const std::wstring &what)
 	{
 		return QString::fromStdWString(what);
 	}

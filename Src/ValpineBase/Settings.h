@@ -13,9 +13,14 @@
 
 namespace vbase {
 
-class Settings
+class Settings : public QObject
 {
+	Q_OBJECT
+
 public:
+	//TODO consider allowing people to inject their own QSettings
+	//then this class could be used inline with existing applications
+	//using QSettings
 	bool load(const QString &filepath)
 	{
 		mSettings = new QSettings(filepath, QSettings::IniFormat);
@@ -28,6 +33,8 @@ public:
 	{
 		mSettings->setValue(key, value);
 		mSettings->sync();
+
+		emit valueChanged(key, value);
 	}
 
 
@@ -35,6 +42,9 @@ public:
 	{
 		return mSettings->value(key);
 	}
+
+signals:
+	void valueChanged(const QString &key, const QVariant &value);
 
 
 private:
