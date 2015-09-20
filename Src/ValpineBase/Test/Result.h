@@ -42,7 +42,7 @@ namespace vbase { namespace test
     public:
         TestFailureException() {}
 
-        /*virtual*/ const char* what() const /* TODO VS2015 change this when available noexcept*/ /*override*/
+		/*virtual*/ const char* what() const noexcept
         {
             static const std::string message = "Test failure occured. See related Suite instance for details.";
 

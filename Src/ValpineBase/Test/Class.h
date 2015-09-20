@@ -8,6 +8,7 @@
 
 #include <QObject>
 #include <QtCore/QElapsedTimer>
+#include <QtCore/QString>
 
 #include <ValpineBase/Property.h>
 
