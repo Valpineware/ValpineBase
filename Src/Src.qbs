@@ -26,4 +26,10 @@ StaticLibrary {
     Depends { name: "Qt.core" }
     Depends { name: "Qt.quick" }
 	Depends { name: "Qt.network" }
+
+	property string version: "0.3.0"
+
+	cpp.defines: [
+		"ValpineBase_Version=" + version
+	]
 }

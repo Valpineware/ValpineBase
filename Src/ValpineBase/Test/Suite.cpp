@@ -83,18 +83,18 @@ namespace vbase { namespace test
                         //at this point, the test must have passed since no
                         //exception was thrown
                         auto result = new Result;
-                        result->pTestMethod = metaMethod;
-                        result->pExecutionTime = executionTime;
+                        result->testMethod = metaMethod;
+                        result->executionTime = executionTime;
                         post(metaObject->className(), result);
                     }
-                    catch (TestFailureException &tfe)
+                    catch (TestAssertException &tfe)
                     {
                         //swallow the exception
                         //the purpose of throwing the exception from an assert
                         //is to cleanly break out of the test entirely
                         //(even from sub-routines)
 
-                        tfe.pResultFailure->pTestMethod = metaMethod;
+                        tfe.pResultFailure->testMethod = metaMethod;
                         post(metaObject->className(), tfe.pResultFailure);
                     }
                 }
@@ -122,15 +122,15 @@ namespace vbase { namespace test
             {
                 if (auto failure = dynamic_cast<ResultFailure*>(result))
                 {
-                    qDebug() << "FAILED: [" << failure->pTestMethod().name() << "] - - - - - - - -";
+                    qDebug() << "FAILED: [" << failure->testMethod().name() << "] - - - - - - - -";
 
-                    for (auto line : failure->pMessage())
+                    for (auto line : failure->message())
                     {
                         qDebug() << "      -" << line;
                     }
 
-                    qDebug() << "  At " << failure->pFilepath();
-                    qDebug() << "  Line " << failure->pLineNumber();
+                    qDebug() << "  At " << failure->filepath();
+                    qDebug() << "  Line " << failure->lineNumber();
 
                     qDebug() << "";
                 }
@@ -167,17 +167,17 @@ namespace vbase { namespace test
     QJsonObject jsonObjectFromResult(const Result *result)
     {
         QJsonObject o;
-        o.insert("name", QString(result->pTestMethod().name()));
-        o.insert("executionTime", QString::number(result->pExecutionTime));
+        o.insert("name", QString(result->testMethod().name()));
+        o.insert("executionTime", QString::number(result->executionTime));
 
         if (auto *p = dynamic_cast<const ResultFailure*>(result))
         {
             o.insert("status", QString("failed"));
-            o.insert("filePath", p->pFilepath()); //TODO fix filepath to filePath
-            o.insert("lineNumber", p->pLineNumber());
+            o.insert("filePath", p->filepath()); //TODO fix filepath to filePath
+            o.insert("lineNumber", p->lineNumber());
 
             QJsonArray messageArray;
-            for (const auto &message : p->pMessage())
+            for (const auto &message : p->message())
                 messageArray.append(message);
 
             o.insert("message", messageArray);

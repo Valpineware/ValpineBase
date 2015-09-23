@@ -12,35 +12,33 @@
 #include <QStringList>
 #include <QMetaMethod>
 
-#include <ValpineBase/Property.h>
-
 namespace vbase { namespace test
 {
-    class Result
+	struct Result
     {
     public:
         virtual ~Result() {}
-        Property<QMetaMethod> pTestMethod;
-        Property<int> pExecutionTime = 0;   //in ms
+		QMetaMethod testMethod;
+		int executionTime = 0;   //in ms
     };
 
 
-    class ResultFailure : public Result
+	struct ResultFailure : public Result
     {
     public:
-        Property<QStringList> pMessage;
-        Property<QString> pFilepath;
-        Property<int> pLineNumber = -1;
+		QStringList message;
+		QString filepath;
+		int lineNumber = -1;
     };
 
 
     /**
      * Indicates a test failure due to an assert being triggered.
      */
-    class TestFailureException/* : public std::exception*/
+	class TestAssertException/* : public std::exception*/
     {
     public:
-        TestFailureException() {}
+		TestAssertException() {}
 
 		/*virtual*/ const char* what() const noexcept
         {
@@ -49,7 +47,6 @@ namespace vbase { namespace test
             return message.c_str();
         }
 
-        //TODO figure out how to have a pointer inside of property
         //TODO revert back to unique_ptr as well eventually
         ResultFailure* pResultFailure;
     };
