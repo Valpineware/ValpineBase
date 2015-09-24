@@ -72,13 +72,13 @@ namespace vbase { namespace test
                 if (QString(metaMethod.tag()) == "VTEST")
                 {
                     std::unique_ptr<Class> testObject(test->makeTestClassInstance());
-                    testObject->pHostSuite = this;
+					testObject->hostSuite = this;
 
                     try
                     {
-                        testObject->pExecutionTimer().start();
+						testObject->executionTimer.start();
                         metaMethod.invoke(testObject.get(), Qt::DirectConnection);
-                        int executionTime = testObject->pExecutionTimer().elapsed();
+						int executionTime = testObject->executionTimer.elapsed();
 
                         //at this point, the test must have passed since no
                         //exception was thrown
@@ -122,15 +122,15 @@ namespace vbase { namespace test
             {
                 if (auto failure = dynamic_cast<ResultFailure*>(result))
                 {
-                    qDebug() << "FAILED: [" << failure->testMethod().name() << "] - - - - - - - -";
+					qDebug() << "FAILED: [" << failure->testMethod.name() << "] - - - - - - - -";
 
-                    for (auto line : failure->message())
+					for (auto line : failure->message)
                     {
                         qDebug() << "      -" << line;
                     }
 
-                    qDebug() << "  At " << failure->filepath();
-                    qDebug() << "  Line " << failure->lineNumber();
+					qDebug() << "  At " << failure->filepath;
+					qDebug() << "  Line " << failure->lineNumber;
 
                     qDebug() << "";
                 }
@@ -167,17 +167,17 @@ namespace vbase { namespace test
     QJsonObject jsonObjectFromResult(const Result *result)
     {
         QJsonObject o;
-        o.insert("name", QString(result->testMethod().name()));
+		o.insert("name", QString(result->testMethod.name()));
         o.insert("executionTime", QString::number(result->executionTime));
 
         if (auto *p = dynamic_cast<const ResultFailure*>(result))
         {
             o.insert("status", QString("failed"));
-            o.insert("filePath", p->filepath()); //TODO fix filepath to filePath
-            o.insert("lineNumber", p->lineNumber());
+			o.insert("filePath", p->filepath); //TODO fix filepath to filePath
+			o.insert("lineNumber", p->lineNumber);
 
             QJsonArray messageArray;
-            for (const auto &message : p->message())
+			for (const auto &message : p->message)
                 messageArray.append(message);
 
             o.insert("message", messageArray);

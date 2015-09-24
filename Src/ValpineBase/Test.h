@@ -19,6 +19,7 @@
 
 #include <ValpineBase/Test/Class.h>
 #include <ValpineBase/Test/Assert.h>
+#include <ValpineBase/Test/Verify.h>
 
 namespace _private_Test
 {

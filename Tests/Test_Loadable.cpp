@@ -36,6 +36,15 @@ private slots:
 		Assert_True(loadable.pHasLoaded);
 		Assert_True(didIsLoading);
 	}
+
+
+	VTEST void hey()
+	{
+		Verify_Eq(40, 50);
+		Verify_Failure("Hello");
+		Verify_False(true);
+		Verify_True(false);
+	}
 };
 
 ADD_TESTCLASS(Test_Loadable)

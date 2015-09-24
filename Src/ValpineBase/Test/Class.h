@@ -10,7 +10,6 @@
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QString>
 
-#include <ValpineBase/Property.h>
 
 namespace vbase { namespace test
 {
@@ -21,8 +20,8 @@ namespace vbase { namespace test
         Q_OBJECT
 
     public:
-        Property<Suite*> pHostSuite;
-        Property<QElapsedTimer> pExecutionTimer;
+		Suite* hostSuite;
+		QElapsedTimer executionTimer;
     };
 }}
 

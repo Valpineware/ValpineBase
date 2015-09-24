@@ -39,10 +39,10 @@ public:
 		{
 			TestAssertException tfe;
 			tfe.pResultFailure = makeDefaultResultFailure();
-			tfe.pResultFailure->message().append(verbatimActual + " != " + verbatimExpected);
+			tfe.pResultFailure->message.append(verbatimActual + " != " + verbatimExpected);
 
-			tfe.pResultFailure->message().append(QString("Expected: ") + UniversalToString::toString(expected));
-			tfe.pResultFailure->message().append(QString("Actual: ") + UniversalToString::toString(actual));
+			tfe.pResultFailure->message.append(QString("Expected: ") + UniversalToString::toString(expected));
+			tfe.pResultFailure->message.append(QString("Actual: ") + UniversalToString::toString(actual));
 
 			throw tfe;
 		}
@@ -55,7 +55,7 @@ public:
 		{
 			TestAssertException tfe;
 			tfe.pResultFailure = makeDefaultResultFailure();
-			tfe.pResultFailure->message().append(QString("Expected ") + verbatim + " to be true. Got false.");
+			tfe.pResultFailure->message.append(QString("Expected ") + verbatim + " to be true. Got false.");
 
 			throw tfe;
 		}
@@ -68,7 +68,7 @@ public:
 		{
 			TestAssertException tfe;
 			tfe.pResultFailure = makeDefaultResultFailure();
-			tfe.pResultFailure->message().append(QString("Expected ") + verbatim + " to be false. Got true.");
+			tfe.pResultFailure->message.append(QString("Expected ") + verbatim + " to be false. Got true.");
 
 			throw tfe;
 		}
@@ -79,7 +79,7 @@ public:
 	{
 		TestAssertException tfe;
 		tfe.pResultFailure = makeDefaultResultFailure();
-		tfe.pResultFailure->message() << message;
+		tfe.pResultFailure->message << message;
 
 		throw tfe;
 	}
@@ -94,7 +94,7 @@ private:
 		auto r = new ResultFailure;
 		r->filepath = mFilepath;
 		r->lineNumber = mLineNumber;
-		r->executionTime = mHostClass->pExecutionTimer().elapsed();
+		r->executionTime = mHostClass->executionTimer.elapsed();
 
 		return r;
 	}
