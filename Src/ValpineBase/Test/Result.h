@@ -26,21 +26,7 @@ namespace vbase { namespace test
     /**
      * Indicates a test failure due to an assert being triggered.
      */
-	class TestAssertException/* : public std::exception*/
-    {
-    public:
-		TestAssertException() {}
-
-		/*virtual*/ const char* what() const noexcept
-        {
-            static const std::string message = "Test failure occured. See related Suite instance for details.";
-
-            return message.c_str();
-        }
-
-        //TODO revert back to unique_ptr as well eventually
-		Failure* failure;
-    };
+	class TestAssertException {};
 }}
 
 #endif

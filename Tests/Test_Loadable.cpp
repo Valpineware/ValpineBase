@@ -7,6 +7,7 @@
 #include <ValpineBase/Loadable.h>
 
 #include <QtCore/QDateTime>
+#include <QtCore/QThread>
 
 using namespace vbase;
 
@@ -35,6 +36,9 @@ private slots:
 		f();
 		Assert_True(loadable.pHasLoaded);
 		Assert_True(didIsLoading);
+
+		QThread::msleep(60);
+		Assert_Failure("Hey");
 	}
 
 

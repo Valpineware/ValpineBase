@@ -76,16 +76,13 @@ void Suite::run(QIODevice &outputFileDevice)
 
 				try
 				{
+					testObject->currentlyExecutingMethodName = metaMethod.name();
 					testObject->executionTimer.start();
 					metaMethod.invoke(testObject.get(), Qt::DirectConnection);
-					int executionTime = testObject->executionTimer.elapsed();
+
 
 					//at this point, the test must have passed since no
 					//exception was thrown
-
-					auto &tr = findTestResult(metaObject->className(), metaMethod.name());
-					tr.executionTime = executionTime;
-
 				}
 				catch (TestAssertException &tfe)
 				{
@@ -93,12 +90,12 @@ void Suite::run(QIODevice &outputFileDevice)
 					//the purpose of throwing the exception from an assert
 					//is to cleanly break out of the test entirely
 					//(even from sub-routines)
-
-					//WARNING ensure the ResultFailure* is posted from the assert statement
-					//testResult.results.append(tfe.failure);
-
-					//TODO also record the executionTime up until the fatal assert
 				}
+
+				int executionTime = testObject->executionTimer.elapsed();
+				auto &tr = findTestResult(metaObject->className(),
+										  metaMethod.name());
+				tr.executionTime = executionTime;
 			}
 		}
 	}
@@ -157,6 +154,7 @@ void Suite::cleanOldResults(int maxAgeSeconds)
 
 void Suite::post(const QString &className, const QString &testName, Failure *failure)
 {
+	qDebug() << "Posting " << className << " " << testName;
 	findTestResult(className, testName).failures.append(failure);
 }
 

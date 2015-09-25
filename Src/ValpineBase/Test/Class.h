@@ -10,7 +10,6 @@
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QString>
 
-
 namespace vbase { namespace test
 {
     class Suite;
@@ -22,6 +21,7 @@ namespace vbase { namespace test
     public:
 		Suite* hostSuite;
 		QElapsedTimer executionTimer;
+		QString currentlyExecutingMethodName;
     };
 }}
 

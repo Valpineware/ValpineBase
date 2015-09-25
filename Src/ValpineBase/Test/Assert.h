@@ -33,55 +33,55 @@ public:
 
 	template<typename T, typename U>
 	void areEq(const QString &verbatimActual, const QString &verbatimExpected,
-			   const T &actual, const U &expected) const
+			   const T &actual, const U &expected)
 	{
 		if (actual != expected)
 		{
-			TestAssertException tfe;
-			tfe.failure = makeDefaultFailure();
-			tfe.failure->message.append(verbatimActual + " != " + verbatimExpected);
+			Failure *failure = makeDefaultFailure();
+			failure->message.append(verbatimActual + " != " + verbatimExpected);
 
-			tfe.failure->message.append(QString("Expected: ") + UniversalToString::toString(expected));
-			tfe.failure->message.append(QString("Actual: ") + UniversalToString::toString(actual));
+			failure->message.append(QString("Expected: ") + UniversalToString::toString(expected));
+			failure->message.append(QString("Actual: ") + UniversalToString::toString(actual));
 
-			throw tfe;
+			logFailure(failure);
+			throw TestAssertException();
 		}
 	}
 
 
-	void isTrue(const QString &verbatim, bool what) const
+	void isTrue(const QString &verbatim, bool what)
 	{
 		if (!what)
 		{
-			TestAssertException tfe;
-			tfe.failure = makeDefaultFailure();
-			tfe.failure->message.append(QString("Expected ") + verbatim + " to be true. Got false.");
+			auto *failure = makeDefaultFailure();
+			failure->message.append(QString("Expected ") + verbatim + " to be true. Got false.");
 
-			throw tfe;
+			logFailure(failure);
+			throw TestAssertException();
 		}
 	}
 
 
-	void isFalse(const QString &verbatim, bool what) const
+	void isFalse(const QString &verbatim, bool what)
 	{
 		if (what)
 		{
-			TestAssertException tfe;
-			tfe.failure = makeDefaultFailure();
-			tfe.failure->message.append(QString("Expected ") + verbatim + " to be false. Got true.");
+			auto *failure = makeDefaultFailure();
+			failure->message.append(QString("Expected ") + verbatim + " to be false. Got true.");
 
-			throw tfe;
+			logFailure(failure);
+			throw TestAssertException();
 		}
 	}
 
 
-	void failure(const QString &message) const
+	void failure(const QString &message)
 	{
-		TestAssertException tfe;
-		tfe.failure = makeDefaultFailure();
-		tfe.failure->message << message;
+		auto *failure = makeDefaultFailure();
+		failure->message << message;
 
-		throw tfe;
+		logFailure(failure);
+		throw TestAssertException();
 	}
 
 private:
@@ -96,6 +96,14 @@ private:
 		r->lineNumber = mLineNumber;
 
 		return r;
+	}
+
+
+	void logFailure(Failure *failure)
+	{
+		mHostClass->hostSuite->post(mHostClass->metaObject()->className(),
+									mHostClass->currentlyExecutingMethodName,
+									failure);
 	}
 };
 
