@@ -38,7 +38,8 @@ private slots:
 		Assert_True(didIsLoading);
 
 		QThread::msleep(60);
-		Assert_Failure("Hey");
+		Verify_Failure("Hey");
+		Verify_Failure("There");
 	}
 
 

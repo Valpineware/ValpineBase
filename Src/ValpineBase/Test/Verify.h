@@ -25,25 +25,26 @@ public:
 	void areEq(const QString &verbatimActual, const QString &verbatimExpected,
 			   const T &actual, const U &expected)
 	{
-
+		FailureBase::areEq(verbatimActual, verbatimExpected,
+						   actual, expected);
 	}
 
 
 	void isTrue(const QString &verbatim, bool what)
 	{
-
+		FailureBase::isTrue(verbatim, what);
 	}
 
 
 	void isFalse(const QString &verbatim, bool what)
 	{
-
+		FailureBase::isFalse(verbatim, what);
 	}
 
 
 	void failure(const QString &message)
 	{
-
+		FailureBase::failure(message);
 	}
 };
 
