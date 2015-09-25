@@ -23,55 +23,27 @@ public:
 
 	template<typename T, typename U>
 	void areEq(const QString &verbatimActual, const QString &verbatimExpected,
-			   const T &actual, const U &expected) const
+			   const T &actual, const U &expected)
 	{
-		if (actual != expected)
-		{
-			auto resultFailure = makeDefaultFailure();
-			resultFailure->message.append(verbatimActual + " != " + verbatimExpected);
 
-			resultFailure->message.append(QString("Expected: ") + UniversalToString::toString(expected));
-			resultFailure->message.append(QString("Actual: ") + UniversalToString::toString(actual));
-
-			qWarning() << "areEq logged";
-			//FIXME log the failure
-		}
 	}
 
 
-	void isTrue(const QString &verbatim, bool what) const
+	void isTrue(const QString &verbatim, bool what)
 	{
-		if (!what)
-		{
-			auto resultFailure = makeDefaultFailure();
-			resultFailure->message.append(QString("Expected ") + verbatim + " to be true. Got false.");
 
-			qWarning() << "isTrue logged";
-			//FIXME log the failure
-		}
 	}
 
 
-	void isFalse(const QString &verbatim, bool what) const
+	void isFalse(const QString &verbatim, bool what)
 	{
-		if (what)
-		{
-			auto resultFailure = makeDefaultFailure();
-			resultFailure->message.append(QString("Expected ") + verbatim + " to be false. Got true.");
 
-			qWarning() << "isFalse logged";
-			//FIXME log the failure
-		}
 	}
 
 
-	void failure(const QString &message) const
+	void failure(const QString &message)
 	{
-		auto resultFailure = makeDefaultFailure();
-		resultFailure->message << message;
 
-		qWarning() << "failure logged";
-		//FIXME log the failure
 	}
 };
 

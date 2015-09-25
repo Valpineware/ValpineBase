@@ -14,18 +14,17 @@
 #include <ValpineBase/Test/Result.h>
 #include <ValpineBase/Test/Class.h>
 #include <ValpineBase/Test/Suite.h>
+#include <ValpineBase/Test/FailureBase.h>
 
 namespace vbase { namespace test {
 
-class Assert
+class Assert : public FailureBase
 {
 public:
 	Assert() = delete;
 
 	Assert(Class *hostClass, const QString &filepath, int lineNumber) :
-		mHostClass(hostClass),
-		mFilepath(filepath),
-		mLineNumber(lineNumber)
+		FailureBase(hostClass, filepath, lineNumber)
 	{
 
 	}
@@ -35,75 +34,30 @@ public:
 	void areEq(const QString &verbatimActual, const QString &verbatimExpected,
 			   const T &actual, const U &expected)
 	{
-		if (actual != expected)
-		{
-			Failure *failure = makeDefaultFailure();
-			failure->message.append(verbatimActual + " != " + verbatimExpected);
-
-			failure->message.append(QString("Expected: ") + UniversalToString::toString(expected));
-			failure->message.append(QString("Actual: ") + UniversalToString::toString(actual));
-
-			logFailure(failure);
+		if (!FailureBase::areEq(verbatimActual, verbatimExpected,
+								actual, expected))
 			throw TestAssertException();
-		}
 	}
 
 
 	void isTrue(const QString &verbatim, bool what)
 	{
-		if (!what)
-		{
-			auto *failure = makeDefaultFailure();
-			failure->message.append(QString("Expected ") + verbatim + " to be true. Got false.");
-
-			logFailure(failure);
+		if (!FailureBase::isTrue(verbatim, what))
 			throw TestAssertException();
-		}
 	}
 
 
 	void isFalse(const QString &verbatim, bool what)
 	{
-		if (what)
-		{
-			auto *failure = makeDefaultFailure();
-			failure->message.append(QString("Expected ") + verbatim + " to be false. Got true.");
-
-			logFailure(failure);
+		if (!FailureBase::isFalse(verbatim, what))
 			throw TestAssertException();
-		}
 	}
 
 
 	void failure(const QString &message)
 	{
-		auto *failure = makeDefaultFailure();
-		failure->message << message;
-
-		logFailure(failure);
-		throw TestAssertException();
-	}
-
-private:
-	Class *mHostClass = nullptr;
-	QString mFilepath;
-	int mLineNumber = -1;
-
-	Failure* makeDefaultFailure() const
-	{
-		auto r = new Failure;
-		r->filepath = mFilepath;
-		r->lineNumber = mLineNumber;
-
-		return r;
-	}
-
-
-	void logFailure(Failure *failure)
-	{
-		mHostClass->hostSuite->post(mHostClass->metaObject()->className(),
-									mHostClass->currentlyExecutingMethodName,
-									failure);
+		if (!FailureBase::failure(message))
+			throw TestAssertException();
 	}
 };
 
