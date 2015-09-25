@@ -20,87 +20,94 @@
 #include <ValpineBase/Test/Result.h>
 #include <ValpineBase/Test/Class.h>
 
-namespace vbase { namespace test
+namespace vbase { namespace test {
+
+class Suite
 {
-    class Suite
-    {
-    public:
-        static const QString& dateFormat()
-        {
-            static QString fmt = "yyyy-MM-dd HH:mm:ss:zzz";
-            return fmt;
-        }
+public:
+	static const QString& dateFormat()
+	{
+		static QString fmt = "yyyy-MM-dd HH:mm:ss:zzz";
+		return fmt;
+	}
 
-    public:
-		/**
-		 * Runs all the tests registered with the Suite. The test results are
-		 * written to ./TestResults/ and are uniquely identified with a timestamp.
-		 *
-		 * If \p launchReviewGUI is true, then the TestReviewGUI application will
-		 * be launched with an argument of the path to the test results JSON file.
-		 *
-		 * \p testReviewGUIPath points to the TestReviewGUI executable which
-		 * should be launched. If \testReveiwGUIPath is blank, then it is
-		 * assumed that "TestReviewGUI" is a recognized command in the system
-		 * PATH and will be invoked as such.
-		 */
-        void run(bool launchReviewGUI, const QString &testReviewGUIPath="");
+public:
+	/**
+	 * Runs all the tests registered with the Suite. The test results are
+	 * written to ./TestResults/ and are uniquely identified with a timestamp.
+	 *
+	 * If \p launchReviewGUI is true, then the TestReviewGUI application will
+	 * be launched with an argument of the path to the test results JSON file.
+	 *
+	 * \p testReviewGUIPath points to the TestReviewGUI executable which
+	 * should be launched. If \testReveiwGUIPath is blank, then it is
+	 * assumed that "TestReviewGUI" is a recognized command in the system
+	 * PATH and will be invoked as such.
+	 */
+	void run(bool launchReviewGUI, const QString &testReviewGUIPath="");
 
-		/**
-		 * Runs all the tests registered with the Suite. Test results are
-		 * written to the \outputFileDevice as JSON text.
-		 */
-		void run(QIODevice &outputFileDevice);
+	/**
+	 * Runs all the tests registered with the Suite. Test results are
+	 * written to the \outputFileDevice as JSON text.
+	 */
+	void run(QIODevice &outputFileDevice);
 
-        void printResults();
+	void printResults();
 
-		void cleanOldResults(int maxAgeSeconds);
+	void cleanOldResults(int maxAgeSeconds);
 
-        void post(const QString &className, Result *result);
+	void post(const QString &className, const QString &testName, Result *result);
 
-        template<typename T>
-        struct TestAdder
-        {
-            TestAdder()
-            {
-                registered().append(new TestClassPackage<T>);
-            }
-        };
+	template<typename T>
+	struct TestAdder
+	{
+		TestAdder()
+		{
+			registered().append(new TestClassPackage<T>);
+		}
+	};
 
-    private:
-		void exportResults(QIODevice &ioDevice);
+private:
+	struct TestResult
+	{
+		QString name;
+		QList<Result*> results;
+	};
 
-        /**
-         * @brief mResults
-         */
-        QMap<QString, QList<Result*>> mResults;
+	void exportResults(QIODevice &ioDevice);
+	TestResult& findTestResult(const QString &className, const QString &testName);
 
-        QDateTime mDateTime_started, mDateTime_finished;
+	/**
+	 * @brief mResults
+	 */
+	QMap<QString, QList<TestResult>> mResults;
 
-        class TestClassPackageInterface
-        {
-        public:
-            virtual Class *makeTestClassInstance() = 0;
-        };
+	QDateTime mDateTime_started, mDateTime_finished;
+
+	class TestClassPackageInterface
+	{
+	public:
+		virtual Class *makeTestClassInstance() = 0;
+	};
 
 
-        // TODO convert to private implementation
-        template<typename T>
-        class TestClassPackage : public TestClassPackageInterface
-        {
-        public:            
-            virtual Class *makeTestClassInstance()
-            {
-                return new T;
-            }
-        };
+	// TODO convert to private implementation
+	template<typename T>
+	class TestClassPackage : public TestClassPackageInterface
+	{
+	public:
+		virtual Class *makeTestClassInstance()
+		{
+			return new T;
+		}
+	};
 
-        static QList<TestClassPackageInterface*>& registered()
-        {
-            static QList<TestClassPackageInterface*> reg;
-            return reg;
-        }
-    };
+	static QList<TestClassPackageInterface*>& registered()
+	{
+		static QList<TestClassPackageInterface*> reg;
+		return reg;
+	}
+};
 
 #ifndef Q_MOC_RUN
 // define the tag text
@@ -108,7 +115,7 @@ namespace vbase { namespace test
 #endif
 
 #define ADD_TESTCLASS(name) \
-    static vbase::test::Suite::TestAdder<name> t_##name;
+	static vbase::test::Suite::TestAdder<name> t_##name;
 }}
 
 #endif

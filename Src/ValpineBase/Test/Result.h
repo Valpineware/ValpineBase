@@ -14,11 +14,11 @@
 
 namespace vbase { namespace test
 {
+	//TODO get a better name for this. feedback? idk
 	struct Result
     {
     public:
         virtual ~Result() {}
-		QMetaMethod testMethod;
 		int executionTime = 0;   //in ms
     };
 
