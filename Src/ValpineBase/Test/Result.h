@@ -14,16 +14,7 @@
 
 namespace vbase { namespace test
 {
-	//TODO get a better name for this. feedback? idk
-	struct Result
-    {
-    public:
-        virtual ~Result() {}
-		int executionTime = 0;   //in ms
-    };
-
-
-	struct ResultFailure : public Result
+	struct Failure
     {
     public:
 		QStringList message;
@@ -48,7 +39,7 @@ namespace vbase { namespace test
         }
 
         //TODO revert back to unique_ptr as well eventually
-        ResultFailure* pResultFailure;
+		Failure* failure;
     };
 }}
 

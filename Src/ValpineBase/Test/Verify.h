@@ -27,7 +27,7 @@ public:
 	{
 		if (actual != expected)
 		{
-			auto resultFailure = makeDefaultResultFailure();
+			auto resultFailure = makeDefaultFailure();
 			resultFailure->message.append(verbatimActual + " != " + verbatimExpected);
 
 			resultFailure->message.append(QString("Expected: ") + UniversalToString::toString(expected));
@@ -43,7 +43,7 @@ public:
 	{
 		if (!what)
 		{
-			auto resultFailure = makeDefaultResultFailure();
+			auto resultFailure = makeDefaultFailure();
 			resultFailure->message.append(QString("Expected ") + verbatim + " to be true. Got false.");
 
 			qWarning() << "isTrue logged";
@@ -56,7 +56,7 @@ public:
 	{
 		if (what)
 		{
-			auto resultFailure = makeDefaultResultFailure();
+			auto resultFailure = makeDefaultFailure();
 			resultFailure->message.append(QString("Expected ") + verbatim + " to be false. Got true.");
 
 			qWarning() << "isFalse logged";
@@ -67,7 +67,7 @@ public:
 
 	void failure(const QString &message) const
 	{
-		auto resultFailure = makeDefaultResultFailure();
+		auto resultFailure = makeDefaultFailure();
 		resultFailure->message << message;
 
 		qWarning() << "failure logged";

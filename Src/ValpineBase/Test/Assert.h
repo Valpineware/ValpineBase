@@ -38,11 +38,11 @@ public:
 		if (actual != expected)
 		{
 			TestAssertException tfe;
-			tfe.pResultFailure = makeDefaultResultFailure();
-			tfe.pResultFailure->message.append(verbatimActual + " != " + verbatimExpected);
+			tfe.failure = makeDefaultFailure();
+			tfe.failure->message.append(verbatimActual + " != " + verbatimExpected);
 
-			tfe.pResultFailure->message.append(QString("Expected: ") + UniversalToString::toString(expected));
-			tfe.pResultFailure->message.append(QString("Actual: ") + UniversalToString::toString(actual));
+			tfe.failure->message.append(QString("Expected: ") + UniversalToString::toString(expected));
+			tfe.failure->message.append(QString("Actual: ") + UniversalToString::toString(actual));
 
 			throw tfe;
 		}
@@ -54,8 +54,8 @@ public:
 		if (!what)
 		{
 			TestAssertException tfe;
-			tfe.pResultFailure = makeDefaultResultFailure();
-			tfe.pResultFailure->message.append(QString("Expected ") + verbatim + " to be true. Got false.");
+			tfe.failure = makeDefaultFailure();
+			tfe.failure->message.append(QString("Expected ") + verbatim + " to be true. Got false.");
 
 			throw tfe;
 		}
@@ -67,8 +67,8 @@ public:
 		if (what)
 		{
 			TestAssertException tfe;
-			tfe.pResultFailure = makeDefaultResultFailure();
-			tfe.pResultFailure->message.append(QString("Expected ") + verbatim + " to be false. Got true.");
+			tfe.failure = makeDefaultFailure();
+			tfe.failure->message.append(QString("Expected ") + verbatim + " to be false. Got true.");
 
 			throw tfe;
 		}
@@ -78,8 +78,8 @@ public:
 	void failure(const QString &message) const
 	{
 		TestAssertException tfe;
-		tfe.pResultFailure = makeDefaultResultFailure();
-		tfe.pResultFailure->message << message;
+		tfe.failure = makeDefaultFailure();
+		tfe.failure->message << message;
 
 		throw tfe;
 	}
@@ -89,12 +89,11 @@ private:
 	QString mFilepath;
 	int mLineNumber = -1;
 
-	ResultFailure* makeDefaultResultFailure() const
+	Failure* makeDefaultFailure() const
 	{
-		auto r = new ResultFailure;
+		auto r = new Failure;
 		r->filepath = mFilepath;
 		r->lineNumber = mLineNumber;
-		r->executionTime = mHostClass->executionTimer.elapsed();
 
 		return r;
 	}

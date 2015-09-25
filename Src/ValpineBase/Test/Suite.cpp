@@ -84,10 +84,8 @@ void Suite::run(QIODevice &outputFileDevice)
 					//exception was thrown
 
 					auto &tr = findTestResult(metaObject->className(), metaMethod.name());
+					tr.executionTime = executionTime;
 
-					auto result = new Result;
-					result->executionTime = executionTime;
-					tr.results.append(result);
 				}
 				catch (TestAssertException &tfe)
 				{
@@ -97,7 +95,9 @@ void Suite::run(QIODevice &outputFileDevice)
 					//(even from sub-routines)
 
 					//WARNING ensure the ResultFailure* is posted from the assert statement
-					//testResult.results.append(tfe.pResultFailure);
+					//testResult.results.append(tfe.failure);
+
+					//TODO also record the executionTime up until the fatal assert
 				}
 			}
 		}
@@ -120,22 +120,19 @@ void Suite::printResults()
 
 		for (const TestResult &testResult : item.value())
 		{
-			for (Result *result : testResult.results)
+			for (Failure *failure : testResult.failures)
 			{
-				if (auto failure = dynamic_cast<ResultFailure*>(result))
+				qDebug() << "FAILED: [" << testResult.name << "] - - - - - - - -";
+
+				for (auto line : failure->message)
 				{
-					qDebug() << "FAILED: [" << testResult.name << "] - - - - - - - -";
-
-					for (auto line : failure->message)
-					{
-						qDebug() << "      -" << line;
-					}
-
-					qDebug() << "  At " << failure->filepath;
-					qDebug() << "  Line " << failure->lineNumber;
-
-					qDebug() << "";
+					qDebug() << "      -" << line;
 				}
+
+				qDebug() << "  At " << failure->filepath;
+				qDebug() << "  Line " << failure->lineNumber;
+
+				qDebug() << "";
 			}
 		}
 	}
@@ -158,33 +155,23 @@ void Suite::cleanOldResults(int maxAgeSeconds)
 }
 
 
-void Suite::post(const QString &className, const QString &testName, Result *result)
+void Suite::post(const QString &className, const QString &testName, Failure *failure)
 {
-	findTestResult(className, testName).results.append(result);
+	findTestResult(className, testName).failures.append(failure);
 }
 
 
-QJsonObject jsonObjectFromResult(const Result *result)
+QJsonObject jsonObjectFromResult(const Failure *failure)
 {
 	QJsonObject o;
-	o.insert("executionTime", QString::number(result->executionTime));
+	o.insert("filePath", failure->filepath); //TODO fix filepath to filePath
+	o.insert("lineNumber", failure->lineNumber);
 
-	if (auto *p = dynamic_cast<const ResultFailure*>(result))
-	{
-		o.insert("status", QString("failed"));
-		o.insert("filePath", p->filepath); //TODO fix filepath to filePath
-		o.insert("lineNumber", p->lineNumber);
+	QJsonArray messageArray;
+	for (const auto &message : failure->message)
+		messageArray.append(message);
 
-		QJsonArray messageArray;
-		for (const auto &message : p->message)
-			messageArray.append(message);
-
-		o.insert("message", messageArray);
-	}
-	else
-	{
-		o.insert("status", QJsonValue("passed"));
-	}
+	o.insert("message", messageArray);
 
 	return o;
 }
@@ -214,15 +201,17 @@ void Suite::exportResults(QIODevice &ioDevice)
 		{
 			QJsonObject to;
 			to.insert("name", testResult.name);
+			to.insert("status", testResult.status());
+			to.insert("executionTime", testResult.executionTime);
 
 			QJsonArray resultsArray;
 
-			for (const Result *result : testResult.results)
+			for (const Failure *failure : testResult.failures)
 			{
-				resultsArray.append(jsonObjectFromResult(result));
+				resultsArray.append(jsonObjectFromResult(failure));
 			}
 
-			to.insert("results", resultsArray);
+			to.insert("failures", resultsArray);
 			testsArray.append(to);
 		}
 
@@ -258,6 +247,7 @@ Suite::TestResult& Suite::findTestResult(const QString &className, const QString
 	auto &testResultList = mResults[className];
 	testResultList = QList<TestResult>();
 	testResultList.append(TestResult());
+	testResultList.last().name  = testName;
 
 	return testResultList.first();
 }

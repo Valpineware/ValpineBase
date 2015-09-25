@@ -30,12 +30,11 @@ public:
 
 
 protected:
-	ResultFailure* makeDefaultResultFailure() const
+	Failure* makeDefaultFailure() const
 	{
-		auto r = new ResultFailure;
+		auto r = new Failure;
 		r->filepath = mFilepath;
 		r->lineNumber = mLineNumber;
-		r->executionTime = mHostClass->executionTimer.elapsed();
 
 		return r;
 	}

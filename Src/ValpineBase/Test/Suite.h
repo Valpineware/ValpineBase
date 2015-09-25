@@ -56,7 +56,7 @@ public:
 
 	void cleanOldResults(int maxAgeSeconds);
 
-	void post(const QString &className, const QString &testName, Result *result);
+	void post(const QString &className, const QString &testName, Failure *result);
 
 	template<typename T>
 	struct TestAdder
@@ -71,7 +71,13 @@ private:
 	struct TestResult
 	{
 		QString name;
-		QList<Result*> results;
+		int executionTime = 0;
+		QList<Failure*> failures;
+
+		QString status() const
+		{
+			return failures.isEmpty() ? "passed" : "failed";
+		}
 	};
 
 	void exportResults(QIODevice &ioDevice);
