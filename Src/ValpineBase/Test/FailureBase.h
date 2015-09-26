@@ -35,11 +35,11 @@ protected:
 	{
 		if (actual != expected)
 		{
-			Failure *failure = makeDefaultFailure();
-			failure->message.append(verbatimActual + " != " + verbatimExpected);
+			Message *failure = makeDefaultFailure();
+			failure->details.append(verbatimActual + " != " + verbatimExpected);
 
-			failure->message.append(QString("Expected: ") + UniversalToString::toString(expected));
-			failure->message.append(QString("Actual: ") + UniversalToString::toString(actual));
+			failure->details.append(QString("Expected: ") + UniversalToString::toString(expected));
+			failure->details.append(QString("Actual: ") + UniversalToString::toString(actual));
 
 			logFailure(failure);
 			return false;
@@ -54,7 +54,7 @@ protected:
 		if (!what)
 		{
 			auto *failure = makeDefaultFailure();
-			failure->message.append(QString("Expected ") + verbatim + " to be true. Got false.");
+			failure->details.append(QString("Expected ") + verbatim + " to be true. Got false.");
 
 			logFailure(failure);
 			return false;
@@ -69,7 +69,7 @@ protected:
 		if (what)
 		{
 			auto *failure = makeDefaultFailure();
-			failure->message.append(QString("Expected ") + verbatim + " to be false. Got true.");
+			failure->details.append(QString("Expected ") + verbatim + " to be false. Got true.");
 
 			logFailure(failure);
 			return false;
@@ -82,18 +82,19 @@ protected:
 	bool failure(const QString &message)
 	{
 		auto *failure = makeDefaultFailure();
-		failure->message << message;
+		failure->details << message;
 
 		logFailure(failure);
 		return false;
 	}
 
 
-	Failure* makeDefaultFailure() const
+	Message* makeDefaultFailure() const
 	{
-		auto r = new Failure;
+		auto r = new Message;
 		r->filepath = mFilepath;
 		r->lineNumber = mLineNumber;
+		r->type = Message::Type::Error;
 
 		return r;
 	}
@@ -103,7 +104,7 @@ private:
 	QString mFilepath;
 	int mLineNumber = -1;
 
-	void logFailure(Failure *failure)
+	void logFailure(Message *failure)
 	{
 		mHostClass->hostSuite->post(mHostClass->metaObject()->className(),
 									mHostClass->currentlyExecutingMethodName,

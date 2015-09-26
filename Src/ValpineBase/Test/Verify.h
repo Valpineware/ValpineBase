@@ -66,4 +66,5 @@ public:
 #define Verify_Failure(message) \
 	::vbase::test::Verify(this, QString(__FILE__), __LINE__).failure(message)
 
+
 #endif

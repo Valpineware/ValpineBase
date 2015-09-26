@@ -14,12 +14,19 @@
 
 namespace vbase { namespace test
 {
-	struct Failure
+	struct Message
     {
     public:
-		QStringList message;
+		QStringList details;
 		QString filepath;
 		int lineNumber = -1;
+
+		enum class Type
+		{
+			Debug = 0,
+			Warn = 1,
+			Error = 2
+		} type = Type::Error;
     };
 
 

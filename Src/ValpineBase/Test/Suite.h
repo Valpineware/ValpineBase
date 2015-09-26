@@ -56,7 +56,7 @@ public:
 
 	void cleanOldResults(int maxAgeSeconds);
 
-	void post(const QString &className, const QString &testName, Failure *result);
+	void post(const QString &className, const QString &testName, Message *result);
 
 	template<typename T>
 	struct TestAdder
@@ -72,7 +72,7 @@ private:
 	{
 		QString name;
 		int executionTime = 0;
-		QList<Failure*> failures;
+		QList<Message*> failures;
 
 		QString status() const
 		{
