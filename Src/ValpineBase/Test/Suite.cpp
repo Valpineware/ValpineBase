@@ -117,7 +117,7 @@ void Suite::printResults()
 
 		for (const TestResult &testResult : item.value())
 		{
-			for (Message *failure : testResult.failures)
+			for (Message *failure : testResult.messages)
 			{
 				qDebug() << "FAILED: [" << testResult.name << "] - - - - - - - -";
 
@@ -155,7 +155,7 @@ void Suite::cleanOldResults(int maxAgeSeconds)
 void Suite::post(const QString &className, const QString &testName, Message *failure)
 {
 	qDebug() << "Posting " << className << " " << testName;
-	findTestResult(className, testName).failures.append(failure);
+	findTestResult(className, testName).messages.append(failure);
 }
 
 
@@ -205,7 +205,7 @@ void Suite::exportResults(QIODevice &ioDevice)
 
 			QJsonArray resultsArray;
 
-			for (const Message *failure : testResult.failures)
+			for (const Message *failure : testResult.messages)
 			{
 				resultsArray.append(jsonObjectFromResult(failure));
 			}

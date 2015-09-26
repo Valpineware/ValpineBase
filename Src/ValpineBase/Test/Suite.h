@@ -72,11 +72,30 @@ private:
 	{
 		QString name;
 		int executionTime = 0;
-		QList<Message*> failures;
+		QList<Message*> messages;
 
+		/**
+		 * @return the status string which is based on the types of messages. If
+		 * at least one message is type Error, "errored" is returned. Otherwise
+		 * if at least one message is type Warn, "warned" is returned.
+		 * Otherwise "passed" is returned.
+		 */
 		QString status() const
 		{
-			return failures.isEmpty() ? "passed" : "failed";
+			bool foundWarning = false;
+
+			for (Message *message : messages)
+			{
+				if (message->type == Message::Type::Error)
+					return "errored";
+				else if (message->type == Message::Type::Warn)
+					foundWarning = true;
+			}
+
+			if (foundWarning)
+				return "warned";
+
+			return "passed";
 		}
 	};
 
