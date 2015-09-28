@@ -11,7 +11,7 @@
 #include <QString>
 
 #include <ValpineBase/UniversalToString.h>
-#include <ValpineBase/Test/Result.h>
+#include <ValpineBase/Test/Message.h>
 #include <ValpineBase/Test/Class.h>
 #include <ValpineBase/Test/Suite.h>
 #include <ValpineBase/Test/FailureBase.h>

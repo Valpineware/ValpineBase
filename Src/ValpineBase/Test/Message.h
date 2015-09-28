@@ -3,8 +3,8 @@
 // This file is licensed under the MIT License.
 //=============================================================================|
 
-#ifndef vbase_test_AssertException_h
-#define vbase_test_AssertException_h
+#ifndef vbase_test_Message_h
+#define vbase_test_Message_h
 
 #include <exception>
 #include <memory>

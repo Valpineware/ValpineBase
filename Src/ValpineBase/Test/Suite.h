@@ -17,7 +17,7 @@
 #include <QtCore/QDateTime>
 
 #include <ValpineBase/System.h>
-#include <ValpineBase/Test/Result.h>
+#include <ValpineBase/Test/Message.h>
 #include <ValpineBase/Test/Class.h>
 
 namespace vbase { namespace test {
