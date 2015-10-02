@@ -27,6 +27,21 @@ namespace vbase { namespace test
 			Warn = 1,
 			Error = 2
 		} type = Type::Error;
+
+		QString typeName() const
+		{
+			switch (type)
+			{
+			case Type::Debug:
+				return "debug";
+			case Type::Warn:
+				return "warning";
+			case Type::Error:
+				return "error";
+			}
+
+			return "";
+		}
     };
 
 

@@ -19,7 +19,6 @@
 
 #include <ValpineBase/Test/Class.h>
 #include <ValpineBase/Test/Assert.h>
-#include <ValpineBase/Test/Verify.h>
 
 namespace _private_Test
 {
@@ -101,9 +100,9 @@ namespace _private_Test
 
         qDebug() << resultFilepath;
 
-        if (launchGUI && !QProcess::startDetached("QtTestReviewGUI", QStringList() << resultFilepath))
+        if (launchGUI && !QProcess::startDetached("TestReviewGUI", QStringList() << resultFilepath))
         {
-            qDebug() << "QtTestReviewGUI is not installed in the system path!";
+            qDebug() << "TestReviewGUI is not installed in the system path!";
         }
 
         for (const QString &line : result.split("\r\n"))

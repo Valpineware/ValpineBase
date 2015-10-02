@@ -18,30 +18,30 @@
 
 namespace vbase { namespace test {
 
-class FailureBase
+class MessageLogger
 {
 public:
-	FailureBase(Class *hostClass, const QString &filepath, int lineNumber) :
+	MessageLogger(Class *hostClass, const QString &filepath, int lineNumber) :
 		mHostClass(hostClass),
 		mFilepath(filepath),
 		mLineNumber(lineNumber)
 	{
 	}
 
-protected:
+public:
 	template<typename T, typename U>
 	bool areEq(const QString &verbatimActual, const QString &verbatimExpected,
 			   const T &actual, const U &expected)
 	{
 		if (actual != expected)
 		{
-			Message *failure = makeDefaultFailure();
+			Message *failure = makeDefaultMessage();
 			failure->details.append(verbatimActual + " != " + verbatimExpected);
 
 			failure->details.append(QString("Expected: ") + UniversalToString::toString(expected));
 			failure->details.append(QString("Actual: ") + UniversalToString::toString(actual));
 
-			logFailure(failure);
+			logMessage(failure);
 			return false;
 		}
 
@@ -53,10 +53,10 @@ protected:
 	{
 		if (!what)
 		{
-			auto *failure = makeDefaultFailure();
+			auto *failure = makeDefaultMessage();
 			failure->details.append(QString("Expected ") + verbatim + " to be true. Got false.");
 
-			logFailure(failure);
+			logMessage(failure);
 			return false;
 		}
 
@@ -68,10 +68,10 @@ protected:
 	{
 		if (what)
 		{
-			auto *failure = makeDefaultFailure();
+			auto *failure = makeDefaultMessage();
 			failure->details.append(QString("Expected ") + verbatim + " to be false. Got true.");
 
-			logFailure(failure);
+			logMessage(failure);
 			return false;
 		}
 
@@ -81,15 +81,26 @@ protected:
 
 	bool failure(const QString &message)
 	{
-		auto *failure = makeDefaultFailure();
+		auto *failure = makeDefaultMessage();
 		failure->details << message;
 
-		logFailure(failure);
+		logMessage(failure);
 		return false;
 	}
 
 
-	Message* makeDefaultFailure() const
+	bool warning(const QString &message)
+	{
+		auto *failure = makeDefaultMessage();
+		failure->details << message;
+		failure->type = Message::Type::Warn;
+
+		logMessage(failure);
+		return false;
+	}
+
+
+	Message* makeDefaultMessage() const
 	{
 		auto r = new Message;
 		r->filepath = mFilepath;
@@ -104,7 +115,7 @@ private:
 	QString mFilepath;
 	int mLineNumber = -1;
 
-	void logFailure(Message *failure)
+	void logMessage(Message *failure)
 	{
 		mHostClass->hostSuite->post(mHostClass->metaObject()->className(),
 									mHostClass->currentlyExecutingMethodName,
@@ -113,5 +124,25 @@ private:
 };
 
 }}
+
+#define Verify_Eq(actual, expected) \
+	::vbase::test::MessageLogger(this, QString(__FILE__), __LINE__).areEq( \
+	QString(#actual), QString(#expected), \
+	actual, expected)
+
+#define Verify_True(what) \
+	::vbase::test::MessageLogger(this, QString(__FILE__), __LINE__).isTrue( \
+	QString(#what), what)
+
+#define Verify_False(what) \
+	::vbase::test::MessageLogger(this, QString(__FILE__), __LINE__).isFalse( \
+	QString(#what), what)
+
+#define Post_Failure(message) \
+	::vbase::test::MessageLogger(this, QString(__FILE__), __LINE__).failure(message)
+
+#define Post_Warning(message) \
+	::vbase::test::MessageLogger(this, QString(__FILE__), __LINE__).warning(message)
+
 
 #endif

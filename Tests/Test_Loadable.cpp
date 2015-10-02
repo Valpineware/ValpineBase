@@ -38,15 +38,14 @@ private slots:
 		Assert_True(didIsLoading);
 
 		QThread::msleep(60);
-		Verify_Failure("Hey");
-		Verify_Failure("There");
+		Post_Warning("There");
 	}
 
 
 	VTEST void hey()
 	{
 		Verify_Eq(40, 50);
-		Verify_Failure("Hello");
+		Post_Warning("Hello");
 		Verify_False(true);
 		Verify_True(false);
 	}
