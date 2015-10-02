@@ -17,7 +17,7 @@
 #include <QtCore/QDateTime>
 
 #include <ValpineBase/System.h>
-#include <ValpineBase/Test/Message.h>
+#include <ValpineBase/Test/Failure.h>
 #include <ValpineBase/Test/Class.h>
 
 namespace vbase { namespace test {
@@ -56,7 +56,7 @@ public:
 
 	void cleanOldResults(int maxAgeSeconds);
 
-	void post(const QString &className, const QString &testName, Message *result);
+	void postFailure(const QString &className, const QString &testName, Failure *result);
 
 	template<typename T>
 	struct TestAdder
@@ -72,28 +72,28 @@ private:
 	{
 		QString name;
 		int executionTime = 0;
-		QList<Message*> messages;
+		QList<Failure*> messages;
 
 		/**
 		 * @return the status string which is based on the types of messages. If
-		 * at least one message is type Error, "errored" is returned. Otherwise
-		 * if at least one message is type Warn, "warned" is returned.
+		 * at least one message is type Error, "error" is returned. Otherwise
+		 * if at least one message is type Warn, "warning" is returned.
 		 * Otherwise "passed" is returned.
 		 */
 		QString status() const
 		{
 			bool foundWarning = false;
 
-			for (Message *message : messages)
+			for (Failure *message : messages)
 			{
-				if (message->type == Message::Type::Error)
-					return "errored";
-				else if (message->type == Message::Type::Warn)
+				if (message->type == Failure::Type::Error)
+					return "error";
+				else if (message->type == Failure::Type::Warn)
 					foundWarning = true;
 			}
 
 			if (foundWarning)
-				return "warned";
+				return "warning";
 
 			return "passed";
 		}

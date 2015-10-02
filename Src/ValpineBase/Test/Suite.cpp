@@ -117,7 +117,7 @@ void Suite::printResults()
 
 		for (const TestResult &testResult : item.value())
 		{
-			for (Message *failure : testResult.messages)
+			for (Failure *failure : testResult.messages)
 			{
 				qDebug() << "FAILED: [" << testResult.name << "] - - - - - - - -";
 
@@ -152,14 +152,14 @@ void Suite::cleanOldResults(int maxAgeSeconds)
 }
 
 
-void Suite::post(const QString &className, const QString &testName, Message *failure)
+void Suite::postFailure(const QString &className, const QString &testName, Failure *failure)
 {
 	qDebug() << "Posting " << className << " " << testName;
 	findTestResult(className, testName).messages.append(failure);
 }
 
 
-QJsonObject jsonObjectFromResult(const Message *failure)
+QJsonObject jsonObjectFromResult(const Failure *failure)
 {
 	QJsonObject o;
 	o.insert("filePath", failure->filepath); //TODO fix filepath to filePath
@@ -205,7 +205,7 @@ void Suite::exportResults(QIODevice &ioDevice)
 
 			QJsonArray resultsArray;
 
-			for (const Message *failure : testResult.messages)
+			for (const Failure *failure : testResult.messages)
 			{
 				resultsArray.append(jsonObjectFromResult(failure));
 			}

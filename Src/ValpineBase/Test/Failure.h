@@ -14,7 +14,7 @@
 
 namespace vbase { namespace test
 {
-	struct Message
+	struct Failure
     {
     public:
 		QStringList details;
@@ -23,24 +23,21 @@ namespace vbase { namespace test
 
 		enum class Type
 		{
-			Debug = 0,
-			Warn = 1,
-			Error = 2
+			Warn = 0,
+			Error = 1
 		} type = Type::Error;
 
 		QString typeName() const
 		{
 			switch (type)
 			{
-			case Type::Debug:
-				return "debug";
 			case Type::Warn:
 				return "warning";
 			case Type::Error:
 				return "error";
 			}
 
-			return "";
+			return "error";
 		}
     };
 

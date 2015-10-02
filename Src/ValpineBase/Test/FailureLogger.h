@@ -12,16 +12,16 @@
 #include <QtCore/QString>
 
 #include <ValpineBase/UniversalToString.h>
-#include <ValpineBase/Test/Message.h>
+#include <ValpineBase/Test/Failure.h>
 #include <ValpineBase/Test/Class.h>
 #include <ValpineBase/Test/Suite.h>
 
 namespace vbase { namespace test {
 
-class MessageLogger
+class FailureLogger
 {
 public:
-	MessageLogger(Class *hostClass, const QString &filepath, int lineNumber) :
+	FailureLogger(Class *hostClass, const QString &filepath, int lineNumber) :
 		mHostClass(hostClass),
 		mFilepath(filepath),
 		mLineNumber(lineNumber)
@@ -35,13 +35,13 @@ public:
 	{
 		if (actual != expected)
 		{
-			Message *failure = makeDefaultMessage();
+			Failure *failure = makeDefaultFailure();
 			failure->details.append(verbatimActual + " != " + verbatimExpected);
 
 			failure->details.append(QString("Expected: ") + UniversalToString::toString(expected));
 			failure->details.append(QString("Actual: ") + UniversalToString::toString(actual));
 
-			logMessage(failure);
+			postFailure(failure);
 			return false;
 		}
 
@@ -53,10 +53,10 @@ public:
 	{
 		if (!what)
 		{
-			auto *failure = makeDefaultMessage();
+			auto *failure = makeDefaultFailure();
 			failure->details.append(QString("Expected ") + verbatim + " to be true. Got false.");
 
-			logMessage(failure);
+			postFailure(failure);
 			return false;
 		}
 
@@ -68,10 +68,10 @@ public:
 	{
 		if (what)
 		{
-			auto *failure = makeDefaultMessage();
+			auto *failure = makeDefaultFailure();
 			failure->details.append(QString("Expected ") + verbatim + " to be false. Got true.");
 
-			logMessage(failure);
+			postFailure(failure);
 			return false;
 		}
 
@@ -81,31 +81,31 @@ public:
 
 	bool failure(const QString &message)
 	{
-		auto *failure = makeDefaultMessage();
+		auto *failure = makeDefaultFailure();
 		failure->details << message;
 
-		logMessage(failure);
+		postFailure(failure);
 		return false;
 	}
 
 
 	bool warning(const QString &message)
 	{
-		auto *failure = makeDefaultMessage();
+		auto *failure = makeDefaultFailure();
 		failure->details << message;
-		failure->type = Message::Type::Warn;
+		failure->type = Failure::Type::Warn;
 
-		logMessage(failure);
+		postFailure(failure);
 		return false;
 	}
 
 
-	Message* makeDefaultMessage() const
+	Failure* makeDefaultFailure() const
 	{
-		auto r = new Message;
+		auto r = new Failure;
 		r->filepath = mFilepath;
 		r->lineNumber = mLineNumber;
-		r->type = Message::Type::Error;
+		r->type = Failure::Type::Error;
 
 		return r;
 	}
@@ -115,9 +115,9 @@ private:
 	QString mFilepath;
 	int mLineNumber = -1;
 
-	void logMessage(Message *failure)
+	void postFailure(Failure *failure)
 	{
-		mHostClass->hostSuite->post(mHostClass->metaObject()->className(),
+		mHostClass->hostSuite->postFailure(mHostClass->metaObject()->className(),
 									mHostClass->currentlyExecutingMethodName,
 									failure);
 	}
@@ -126,23 +126,23 @@ private:
 }}
 
 #define Verify_Eq(actual, expected) \
-	::vbase::test::MessageLogger(this, QString(__FILE__), __LINE__).areEq( \
+	::vbase::test::FailureLogger(this, QString(__FILE__), __LINE__).areEq( \
 	QString(#actual), QString(#expected), \
 	actual, expected)
 
 #define Verify_True(what) \
-	::vbase::test::MessageLogger(this, QString(__FILE__), __LINE__).isTrue( \
+	::vbase::test::FailureLogger(this, QString(__FILE__), __LINE__).isTrue( \
 	QString(#what), what)
 
 #define Verify_False(what) \
-	::vbase::test::MessageLogger(this, QString(__FILE__), __LINE__).isFalse( \
+	::vbase::test::FailureLogger(this, QString(__FILE__), __LINE__).isFalse( \
 	QString(#what), what)
 
 #define Post_Failure(message) \
-	::vbase::test::MessageLogger(this, QString(__FILE__), __LINE__).failure(message)
+	::vbase::test::FailureLogger(this, QString(__FILE__), __LINE__).failure(message)
 
 #define Post_Warning(message) \
-	::vbase::test::MessageLogger(this, QString(__FILE__), __LINE__).warning(message)
+	::vbase::test::FailureLogger(this, QString(__FILE__), __LINE__).warning(message)
 
 
 #endif

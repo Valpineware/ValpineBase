@@ -11,20 +11,20 @@
 #include <QString>
 
 #include <ValpineBase/UniversalToString.h>
-#include <ValpineBase/Test/Message.h>
+#include <ValpineBase/Test/Failure.h>
 #include <ValpineBase/Test/Class.h>
 #include <ValpineBase/Test/Suite.h>
-#include <ValpineBase/Test/MessageLogger.h>
+#include <ValpineBase/Test/FailureLogger.h>
 
 namespace vbase { namespace test {
 
-class Assert : public MessageLogger
+class Assert : public FailureLogger
 {
 public:
 	Assert() = delete;
 
 	Assert(Class *hostClass, const QString &filepath, int lineNumber) :
-		MessageLogger(hostClass, filepath, lineNumber)
+		FailureLogger(hostClass, filepath, lineNumber)
 	{
 	}
 
@@ -33,7 +33,7 @@ public:
 	void areEq(const QString &verbatimActual, const QString &verbatimExpected,
 			   const T &actual, const U &expected)
 	{
-		if (!MessageLogger::areEq(verbatimActual, verbatimExpected,
+		if (!FailureLogger::areEq(verbatimActual, verbatimExpected,
 								  actual, expected))
 			throw TestAssertException();
 	}
@@ -41,28 +41,28 @@ public:
 
 	void isTrue(const QString &verbatim, bool what)
 	{
-		if (!MessageLogger::isTrue(verbatim, what))
+		if (!FailureLogger::isTrue(verbatim, what))
 			throw TestAssertException();
 	}
 
 
 	void isFalse(const QString &verbatim, bool what)
 	{
-		if (!MessageLogger::isFalse(verbatim, what))
+		if (!FailureLogger::isFalse(verbatim, what))
 			throw TestAssertException();
 	}
 
 
 	void failure(const QString &message)
 	{
-		if (!MessageLogger::failure(message))
+		if (!FailureLogger::failure(message))
 			throw TestAssertException();
 	}
 
 
 	void warning(const QString &message)
 	{
-		if (!MessageLogger::warning(message))
+		if (!FailureLogger::warning(message))
 			throw TestAssertException();
 	}
 };
