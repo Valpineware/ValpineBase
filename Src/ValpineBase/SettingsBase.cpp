@@ -3,9 +3,8 @@
 // This file is licensed under the MIT License.
 //=============================================================================|
 
-#include "Settings.h"
+#include "SettingsBase.h"
 
-namespace vbase
-{
+namespace vbase {
 
 }

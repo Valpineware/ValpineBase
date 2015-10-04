@@ -1,3 +1,4 @@
 module ValpineBase
 
 Triangle                1.0     Triangle.qml
+SettingsCheckBox		1.0		SettingsCheckBox.qml

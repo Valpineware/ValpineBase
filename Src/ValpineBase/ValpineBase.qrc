@@ -2,5 +2,7 @@
     <qresource prefix="/import/ValpineBase">
         <file>Triangle.qml</file>
         <file>qmldir</file>
+        <file>SettingsCheckBox.qml</file>
+        <file>SettingsBaseControl.qml</file>
     </qresource>
 </RCC>

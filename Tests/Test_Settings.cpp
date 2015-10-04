@@ -10,6 +10,8 @@
 #include <QtCore/QTemporaryFile>
 #include <QtTest/QSignalSpy>
 
+#include "private/Test_Settings/SampleKeyEnum.h"
+
 using namespace vbase;
 
 class Test_Settings : public test::Class
@@ -21,53 +23,48 @@ class Test_Settings : public test::Class
 private slots:
 	VTEST void simpleCheck()
 	{
-		const Key kWindowWidth = "Window/Width";
-		const Key kWindowHeight = "Window/Height";
-		const Key kWindowIsFullscreen = "Window/IsFullScreen";
-
-		Settings settings;
+		Settings<SampleKeyClass> settings;
 		//TODO get a better way to generate an isolated directory for files
 		Assert_True(settings.load("MyHackFileFixLater.ini"));
 
-		settings.setValue(kWindowWidth, 800);
-		settings.setValue(kWindowHeight, 600);
-		settings.setValue(kWindowIsFullscreen, false);
+		settings.setValue(SampleKeyClass::GraphicsWindowWidth, 800);
+		settings.setValue(SampleKeyClass::GraphicsWindowHeight, 600);
+		settings.setValue(SampleKeyClass::GraphicsWindowIsFullscreen, false);
 
-		Assert_Eq(settings.value(kWindowWidth), 800);
-		Assert_Eq(settings.value(kWindowHeight), 600);
-		Assert_Eq(settings.value(kWindowIsFullscreen), false);
+		Verify_Eq(settings.value(SampleKeyClass::GraphicsWindowWidth), 800);
+		Verify_Eq(settings.value(SampleKeyClass::GraphicsWindowHeight), 600);
+		Verify_Eq(settings.value(SampleKeyClass::GraphicsWindowIsFullscreen), false);
 	}
 
 
 	VTEST void changeSignal()
 	{
-		const Key kBackgroundColor = "BackgroundColor";
-
-		Settings settings;
+		Settings<SampleKeyClass> settings;
 		//TODO
 		Assert_True(settings.load("MyHack2.ini"));
 
 		struct {
 			bool happened = false;
-			QString key;
+			SampleKeyClass::KeyEnum key;
 			QVariant newValue;
 		} signalResults;
 
-		QObject::connect(&settings, &Settings::valueChanged,
-						 [&signalResults](const QString &key, const QVariant &newValue)
+		QObject::connect(&settings, &SettingsBase::valueChanged,
+						 [&signalResults](int key,
+											const QVariant &newValue)
 		{
 			signalResults.happened = true;
-			signalResults.key = key;
+			signalResults.key = static_cast<SampleKeyClass::KeyEnum>(key);
 			signalResults.newValue = newValue;
 		});
 
 		const QString testColor = "0x40a030";
-		settings.setValue(kBackgroundColor, testColor);
+		settings.setValue(SampleKeyClass::GraphicsWindowBackgroundColor, testColor);
 
-		Assert_True(signalResults.happened);
-		Assert_Eq(signalResults.key, kBackgroundColor);
-		Assert_Eq(signalResults.newValue, testColor);
-		Assert_Eq(settings.value(kBackgroundColor).toString(), testColor);
+		Verify_True(signalResults.happened);
+		Verify_Eq(signalResults.key, SampleKeyClass::GraphicsWindowBackgroundColor);
+		Verify_Eq(signalResults.newValue, testColor);
+		Verify_Eq(settings.value(SampleKeyClass::GraphicsWindowBackgroundColor).toString(), testColor);
 	}
 };
 

@@ -154,7 +154,6 @@ void Suite::cleanOldResults(int maxAgeSeconds)
 
 void Suite::postFailure(const QString &className, const QString &testName, Failure *failure)
 {
-	qDebug() << "Posting " << className << " " << testName;
 	findTestResult(className, testName).messages.append(failure);
 }
 

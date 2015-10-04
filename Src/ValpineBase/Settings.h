@@ -6,51 +6,72 @@
 #ifndef _ValpineBase_Settings_h
 #define _ValpineBase_Settings_h
 
+#include <type_traits>
+
 #include <QtCore/QDebug>
 #include <QtCore/QIODevice>
 #include <QtCore/QSettings>
 #include <QtCore/QVariant>
 
+#include <ValpineBase/SettingsBase.h>
+
 namespace vbase {
 
-class Settings : public QObject
+template<class KeyClass, typename KeyType = typename KeyClass::KeyEnum>
+class Settings : public SettingsBase
 {
-	Q_OBJECT
-
 public:
-	//TODO consider allowing people to inject their own QSettings
-	//then this class could be used inline with existing applications
-	//using QSettings
-	bool load(const QString &filepath)
+	bool load(const QString &fileName)
 	{
-		mSettings = new QSettings(filepath, QSettings::IniFormat);
+		mSettings = new QSettings(fileName, QSettings::IniFormat);
 
 		return true;
 	}
 
 
-	void setValue(const QString &key, const QVariant &value)
+	void setValue(KeyType key, const QVariant &newValue)
 	{
-		mSettings->setValue(key, value);
-		mSettings->sync();
 
-		emit valueChanged(key, value);
+
+		if (value(key) != newValue)
+		{
+			QString name = stringNameForKey(key);
+			qDebug() << "Settings value changed for key=" << name
+					 << " value=" << newValue.toString();
+
+			mSettings->setValue(name, newValue);
+			mSettings->sync();
+			SettingsBase::emitValueChanged(static_cast<int>(key), newValue);
+		}
 	}
 
 
-	QVariant value(const QString &key) const
+	QVariant value(KeyType key)
 	{
-		return mSettings->value(key);
+		const auto &name = stringNameForKey(key);
+
+		QVariant value = mSettings->value(name);
+
+		if (QString(value.typeName()) == "QString" &&
+			(value.toString() == "false" || value.toString() == "true"))
+			return QVariant(value.toBool());
+
+		return value;
 	}
-
-signals:
-	void valueChanged(const QString &key, const QVariant &value);
-
 
 private:
-	QSettings *mSettings = nullptr;
+	QString stringNameForKey(KeyType key)
+	{
+		const QMetaObject &mo = KeyClass().staticMetaObject;
+		QMetaEnum me = mo.enumerator(mo.indexOfEnumerator("Key"));
+		return me.valueToKey(key);
+	}
 
+private:
+	QSettings *mSettings;
+	QList<QPair<KeyType, QVariant>> mSettingsQueue;
 };
+
 }
 
 #endif

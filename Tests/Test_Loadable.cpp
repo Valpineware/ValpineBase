@@ -37,17 +37,6 @@ private slots:
 		Assert_True(loadable.pHasLoaded);
 		Assert_True(didIsLoading);
 
-		QThread::msleep(60);
-		Post_Warning("There");
-	}
-
-
-	VTEST void hey()
-	{
-		Verify_Eq(40, 50);
-		Post_Warning("Hello");
-		Verify_False(true);
-		Verify_True(false);
 	}
 };
 
