@@ -9,10 +9,10 @@ Item {
 
 	width: parent.width
 
-	property string settingsKey: 0
+    property int settingsKey: 0
 	property string title: ""
 	property var titleText: text
-	property var appSettings: null
+    property var appSettingsProvider: null
 
 	QtObject {
 		id: internal
@@ -29,7 +29,7 @@ Item {
 	 * specialized control.
 	 */
 	function load() {
-		assignFromSettingsValue(appSettings.value(settingsKey));
+        assignFromSettingsValue(appSettingsProvider.value(settingsKey));
 		titleText.color = "black"
 		internal.loaded = true;
 	}
@@ -42,19 +42,19 @@ Item {
 	function userChangedValue() {
 		if (internal.loaded) {
 			//if the value is the same as what is actually stored, we are clean
-			if (appSettings.value(settingsKey) === provideSettingsValue()) {
+            if (appSettingsProvider.value(settingsKey) === provideSettingsValue()) {
 				animateOutFlagText();
 				return;
 			}
 
-			if (appSettings.updateTypeForKey(settingsKey) === Settings.Instant) {
+            if (appSettingsProvider.updateTypeForKey(settingsKey) === Settings.Instant) {
 				internal.flagText();
-				appSettings.setValue(settingsKey, provideSettingsValue());
+                appSettingsProvider.setValue(settingsKey, provideSettingsValue());
 				animateOutFlagText();
 			}
 			else {
 				internal.flagText();
-				appSettings.enqueueValue(settingsKey, provideSettingsValue());
+                appSettingsProvider.enqueueValue(settingsKey, provideSettingsValue());
 			}
 		}
 	}

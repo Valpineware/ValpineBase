@@ -29,6 +29,12 @@ public:
 	}
 
 
+	virtual void setValue(int key, const QVariant &value) override
+	{
+		setValue(static_cast<KeyType>(key), value);
+	}
+
+
 	void setValue(KeyType key, const QVariant &newValue)
 	{
 
@@ -43,6 +49,12 @@ public:
 			mSettings->sync();
 			SettingsBase::emitValueChanged(static_cast<int>(key), newValue);
 		}
+	}
+
+
+	virtual QVariant value(int key) override
+	{
+		return value(static_cast<KeyType>(key));
 	}
 
 
