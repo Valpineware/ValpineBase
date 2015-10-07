@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include <QtCore/QDebug>
+#include <QtCore/QDir>
 #include <QtCore/QIODevice>
 #include <QtCore/QSettings>
 #include <QtCore/QVariant>
@@ -21,9 +22,14 @@ template<class KeyClass, typename KeyType = typename KeyClass::KeyEnum>
 class Settings : public SettingsBase
 {
 public:
-	bool load(const QString &fileName)
+	bool load(const QString &filePath)
 	{
-		mSettings = new QSettings(fileName, QSettings::IniFormat);
+		mSettings = new QSettings(filePath, QSettings::IniFormat);
+		mSettings->setValue("Sample", "100");
+		mSettings->sync();
+
+		qDebug() << mSettings->status();
+		qDebug() << mSettings->fileName();
 
 		return true;
 	}
@@ -37,9 +43,8 @@ public:
 
 	void setValue(KeyType key, const QVariant &newValue)
 	{
-
-
-		if (value(key) != newValue)
+		auto v = value(key);
+		if (v != newValue)
 		{
 			QString name = stringNameForKey(key);
 			qDebug() << "Settings value changed for key=" << name
@@ -68,6 +73,9 @@ public:
 			(value.toString() == "false" || value.toString() == "true"))
 			return QVariant(value.toBool());
 
+		if (name == "GraphicsWindowWidth")
+			return QVariant(800);
+
 		return value;
 	}
 
@@ -75,7 +83,10 @@ private:
 	QString stringNameForKey(KeyType key)
 	{
 		const QMetaObject &mo = KeyClass().staticMetaObject;
-		QMetaEnum me = mo.enumerator(mo.indexOfEnumerator("Key"));
+
+		//FIXME need an error conditon check here
+		QMetaEnum me = mo.enumerator(mo.indexOfEnumerator("KeyEnum"));
+
 		return me.valueToKey(key);
 	}
 

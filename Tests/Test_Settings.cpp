@@ -24,8 +24,8 @@ private slots:
 	VTEST void simpleCheck()
 	{
 		Settings<SampleKeyClass> settings;
-		//TODO get a better way to generate an isolated directory for files
-		Assert_True(settings.load("MyHackFileFixLater.ini"));
+		QTemporaryFile tmpFile;
+		Assert_True(settings.load(tmpFile.fileName()));
 
 		settings.setValue(SampleKeyClass::GraphicsWindowWidth, 800);
 		settings.setValue(SampleKeyClass::GraphicsWindowHeight, 600);
@@ -40,8 +40,9 @@ private slots:
 	VTEST void changeSignal()
 	{
 		Settings<SampleKeyClass> settings;
-		//TODO
-		Assert_True(settings.load("MyHack2.ini"));
+		QTemporaryFile tmpFile;
+		Assert_True(settings.load(tmpFile.fileName()));
+
 
 		struct {
 			bool happened = false;
@@ -65,6 +66,16 @@ private slots:
 		Verify_Eq(signalResults.key, SampleKeyClass::GraphicsWindowBackgroundColor);
 		Verify_Eq(signalResults.newValue, testColor);
 		Verify_Eq(settings.value(SampleKeyClass::GraphicsWindowBackgroundColor).toString(), testColor);
+	}
+
+
+	VTEST void defaultValues()
+	{
+		Settings<SampleKeyClass> settings;
+		QTemporaryFile tmpFile;
+		Assert_True(settings.load(tmpFile.fileName()));
+
+		Verify_Eq(settings.value(SampleKeyClass::GraphicsWindowWidth), 800);
 	}
 };
 

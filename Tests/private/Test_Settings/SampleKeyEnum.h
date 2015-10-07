@@ -16,7 +16,7 @@ public:
 		GraphicsWindowBackgroundColor	= 1003
 	};
 
-	Q_ENUMS(SampleKeyEnum)
+	Q_ENUMS(KeyEnum)
 };
 
 #endif
