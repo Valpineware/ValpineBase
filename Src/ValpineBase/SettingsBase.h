@@ -9,6 +9,8 @@
 #include <QtCore/QObject>
 #include <QtCore/QVariant>
 
+#include <ValpineBase/ValpineBase.h>
+
 namespace vbase {
 
 class SettingsBase : public QObject
@@ -23,6 +25,9 @@ public:
 	Q_INVOKABLE virtual void setValue(int key,
 									  const QVariant &value)
 	{
+		Q_UNUSED(key)
+		Q_UNUSED(value);
+
 		qFatal("This method must be overriden and not called in a subclass");
 	}
 
@@ -32,6 +37,8 @@ public:
 	  */
 	Q_INVOKABLE virtual QVariant value(int key)
 	{
+		Q_UNUSED(key);
+
 		qFatal("This method must be overriden and not called in a subclass");
 
 		return QVariant();
@@ -53,6 +60,6 @@ signals:
 	void valueChanged(int key, const QVariant &newValue);
 };
 
-}
+END_NAMESPACE
 
 #endif

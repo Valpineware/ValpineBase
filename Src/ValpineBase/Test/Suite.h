@@ -16,6 +16,7 @@
 #include <QtCore/QIODevice>
 #include <QtCore/QDateTime>
 
+#include <ValpineBase/ValpineBase.h>
 #include <ValpineBase/System.h>
 #include <ValpineBase/Test/Failure.h>
 #include <ValpineBase/Test/Class.h>
@@ -141,6 +142,8 @@ private:
 
 #define ADD_TESTCLASS(name) \
 	static vbase::test::Suite::TestAdder<name> t_##name;
-}}
+
+END_NAMESPACE
+END_NAMESPACE
 
 #endif

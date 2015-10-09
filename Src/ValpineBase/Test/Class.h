@@ -6,9 +6,11 @@
 #ifndef vbase_test_Class_h
 #define vbase_test_Class_h
 
-#include <QObject>
+#include <QtCore/QObject>
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QString>
+
+#include <ValpineBase/ValpineBase.h>
 
 namespace vbase { namespace test {
 
@@ -23,6 +25,8 @@ public:
 	QElapsedTimer executionTimer;
 	QString currentlyExecutingMethodName;
 };
-}}
+
+END_NAMESPACE
+END_NAMESPACE
 
 #endif

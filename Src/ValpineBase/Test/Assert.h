@@ -67,7 +67,8 @@ public:
 	}
 };
 
-}}
+END_NAMESPACE
+END_NAMESPACE
 
 #define Assert_Eq(actual, expected) \
 	::vbase::test::Assert(this, QString(__FILE__), __LINE__).areEq( \

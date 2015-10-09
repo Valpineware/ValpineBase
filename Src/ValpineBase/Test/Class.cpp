@@ -5,6 +5,7 @@
 
 #include "Class.h"
 
-namespace vbase { namespace test
-{
-}}
+namespace vbase { namespace test {
+
+END_NAMESPACE
+END_NAMESPACE

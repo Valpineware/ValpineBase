@@ -6,7 +6,7 @@
 #ifndef _ValpineBase_Loadable_H
 #define _ValpineBase_Loadable_H
 
-#include "Property.h"
+#include <ValpineBase/Property.h>
 
 namespace vbase {
 
@@ -66,6 +66,7 @@ public:
 		Loadable *mParent = nullptr;
 	};
 };
-}
+
+END_NAMESPACE
 
 #endif

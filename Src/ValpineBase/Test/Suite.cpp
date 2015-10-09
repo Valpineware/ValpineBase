@@ -126,7 +126,7 @@ void Suite::printResults()
 					qDebug() << "      -" << line;
 				}
 
-				qDebug() << "  At " << failure->filepath;
+				qDebug() << "  At " << failure->filePath;
 				qDebug() << "  Line " << failure->lineNumber;
 
 				qDebug() << "";
@@ -142,9 +142,9 @@ void Suite::cleanOldResults(int maxAgeSeconds)
 	while (iter.hasNext())
 	{
 		QFileInfo fi(iter.next());
+		int testAgeSec = fi.lastModified().secsTo(QDateTime::currentDateTime());
 
-		if (fi.lastModified().secsTo(QDateTime::currentDateTime())
-				> maxAgeSeconds)
+		if (testAgeSec > maxAgeSeconds)
 		{
 			QFile::remove(fi.absoluteFilePath());
 		}
@@ -161,7 +161,7 @@ void Suite::postFailure(const QString &className, const QString &testName, Failu
 QJsonObject jsonObjectFromResult(const Failure *failure)
 {
 	QJsonObject o;
-	o.insert("filePath", failure->filepath); //TODO fix filepath to filePath
+	o.insert("filePath", failure->filePath);
 	o.insert("lineNumber", failure->lineNumber);
 	o.insert("type", static_cast<int>(failure->type));
 
@@ -251,7 +251,5 @@ Suite::TestResult& Suite::findTestResult(const QString &className, const QString
 	return testResultList.first();
 }
 
-
-
-
-}}
+END_NAMESPACE
+END_NAMESPACE

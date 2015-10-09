@@ -8,23 +8,26 @@
 
 #include <QObject>
 
-namespace vbase
-{
-	class MutexTryLocker
-	{
-	public:
-		MutexTryLocker() = delete;
-		MutexTryLocker(QMutex *mutex) : mMutex(mutex), mIsLocked(mMutex->tryLock()) {}
-		~MutexTryLocker() { if (mIsLocked) mMutex->unlock(); }
+#include <ValpineBase/ValpineBase.h>
 
-		bool isLocked() const { return mIsLocked; }
+namespace vbase {
+
+class MutexTryLocker
+{
+	public:
+	MutexTryLocker() = delete;
+	MutexTryLocker(QMutex *mutex) : mMutex(mutex), mIsLocked(mMutex->tryLock()) {}
+	~MutexTryLocker() { if (mIsLocked) mMutex->unlock(); }
+
+	bool isLocked() const { return mIsLocked; }
 
 	private:
-		Q_DISABLE_COPY(MutexTryLocker)
+	Q_DISABLE_COPY(MutexTryLocker)
 
-		QMutex *mMutex;
-		bool mIsLocked = false;
-	};
-}
+	QMutex *mMutex;
+	bool mIsLocked = false;
+};
+
+END_NAMESPACE
 
 #endif

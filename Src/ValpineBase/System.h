@@ -8,14 +8,17 @@
 
 #include <QtCore/QDebug>
 
-namespace vbase
+#include <ValpineBase/ValpineBase.h>
+
+namespace vbase {
+
+class System
 {
-    class System
-    {
-    public:
-        static QDebug warn(bool quote=false, bool space=false);
-        static void fatal(const QString &message);
-    };
-}
+public:
+	static QDebug warn(bool quote=false, bool space=false);
+	static void fatal(const QString &message);
+};
+
+END_NAMESPACE
 
 #endif

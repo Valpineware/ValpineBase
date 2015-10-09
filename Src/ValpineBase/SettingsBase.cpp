@@ -7,4 +7,4 @@
 
 namespace vbase {
 
-}
+END_NAMESPACE

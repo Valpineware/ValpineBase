@@ -103,7 +103,7 @@ public:
 	Failure* makeDefaultFailure() const
 	{
 		auto r = new Failure;
-		r->filepath = mFilepath;
+		r->filePath = mFilepath;
 		r->lineNumber = mLineNumber;
 		r->type = Failure::Type::Error;
 
@@ -123,7 +123,8 @@ private:
 	}
 };
 
-}}
+END_NAMESPACE
+END_NAMESPACE
 
 #define Verify_Eq(actual, expected) \
 	::vbase::test::FailureLogger(this, QString(__FILE__), __LINE__).areEq( \

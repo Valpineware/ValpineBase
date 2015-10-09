@@ -6,23 +6,24 @@ static void initResources()
 }
 
 
-namespace vbase
+namespace vbase {
+
+QString ValpineBase::version()
 {
-	QString ValpineBase::version()
+	static const QString versionStr = "5.6.2";
+
+	return versionStr;
+}
+
+
+void ValpineBase::registerQmlModule(QQmlEngine*engine)
+{
+	initResources();
+
+	if (engine)
 	{
-		static const QString versionStr = "5.6.2";
-
-		return versionStr;
-	}
-
-
-	void ValpineBase::registerQmlModule(QQmlEngine*engine)
-	{
-		initResources();
-
-		if (engine)
-		{
-			engine->addImportPath("qrc:/import");
-		}
+		engine->addImportPath("qrc:/import");
 	}
 }
+
+END_NAMESPACE

@@ -26,7 +26,7 @@ public:
 private:
 	using DefaultValuesHash = QHash<KeyEnum, vbase::SettingsBase::MetaKeyInfo>;
 	static DefaultValuesHash mDefaultValuesHash;
-	static SampleKeyClass::DefaultValuesHash buildDefaultValuesHash();
+	static DefaultValuesHash buildDefaultValuesHash();
 };
 
 #endif

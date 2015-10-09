@@ -8,17 +8,20 @@
 
 #include <exception>
 #include <memory>
+
 #include <QString>
 #include <QStringList>
 #include <QMetaMethod>
 
+#include <ValpineBase/ValpineBase.h>
+
 namespace vbase { namespace test {
 
-struct Failure
+class Failure
 {
 public:
 	QStringList details;
-	QString filepath;
+	QString filePath;
 	int lineNumber = -1;
 
 	enum class Type
@@ -47,6 +50,7 @@ public:
  */
 class TestAssertException {};
 
-}}
+END_NAMESPACE
+END_NAMESPACE
 
 #endif

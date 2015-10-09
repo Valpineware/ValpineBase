@@ -5,23 +5,25 @@
 
 #include "System.h"
 
-namespace vbase
+namespace vbase {
+
+QDebug System::warn(bool quote, bool space)
 {
-    QDebug System::warn(bool quote, bool space)
-    {
-        QDebug d = qDebug();
+	QDebug d = qDebug();
 
-        if (!quote)
-            d.noquote();
+	if (!quote)
+		d.noquote();
 
-        if (!space)
-            d.nospace();
+	if (!space)
+		d.nospace();
 
-        return d;
-    }
-
-    void System::fatal(const QString &message)
-    {
-        qFatal("%s", message.toStdString().c_str());
-    }
+	return d;
 }
+
+
+void System::fatal(const QString &message)
+{
+	qFatal("%s", message.toStdString().c_str());
+}
+
+END_NAMESPACE

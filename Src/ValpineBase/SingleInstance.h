@@ -11,32 +11,35 @@
 #include <QtNetwork/QLocalSocket>
 #include <QtNetwork/QLocalServer>
 
-namespace vbase
+#include <ValpineBase/ValpineBase.h>
+
+namespace vbase {
+
+class SingleInstance : public QObject
 {
-	class SingleInstance : public QObject
-	{
-		Q_OBJECT
+	Q_OBJECT
 
-	public:
-		explicit SingleInstance(QObject *parent=nullptr);
-		~SingleInstance();
+public:
+	SingleInstance(QObject *parent=nullptr);
+	~SingleInstance();
 
-		void listen(const QString &name);
-		bool hasPrevious(const QString &name, const QStringList &args);
+	void listen(const QString &name);
+	bool hasPrevious(const QString &name, const QStringList &args);
 
-	signals:
-		void newInstance();
-		void receivedArguments(const QVariantList &arguments);
+signals:
+	void newInstance();
+	void receivedArguments(const QVariantList &arguments);
 
-	public slots:
-		void newConnection();
-		void readyRead();
+public slots:
+	void newConnection();
+	void readyRead();
 
-	private:
-		QLocalSocket *mSocket = nullptr;
-		QLocalServer mServer;
-	};
-}
+private:
+	QLocalSocket *mSocket = nullptr;
+	QLocalServer mServer;
+};
+
+END_NAMESPACE
 
 #endif
 

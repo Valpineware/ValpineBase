@@ -1,13 +1,23 @@
+#ifndef ValpineBase_h
+#define ValpineBase_h
+
 #include <QtCore/QString>
-#include <qqml.h>
 #include <QtQml/QQmlEngine>
 
-namespace vbase
+#include <ValpineBase/ValpineBase.h>
+
+#define BEGIN_NAMESPACE(ns) namespace ns {
+#define END_NAMESPACE }
+
+namespace vbase {
+
+class ValpineBase
 {
-	class ValpineBase
-	{
 	public:
-		static QString version();
-		static void registerQmlModule(QQmlEngine *engine);
-	};
-}
+	static QString version();
+	static void registerQmlModule(QQmlEngine *engine);
+};
+
+END_NAMESPACE
+
+#endif

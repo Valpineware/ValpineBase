@@ -85,11 +85,12 @@ private:
 	QString stringNameForKey(KeyType key)
 	{
 		const QMetaObject &mo = KeyClass().staticMetaObject;
+		int index = mo.indexOfEnumerator("KeyEnum");
 
-		//FIXME need an error conditon check here
-		QMetaEnum me = mo.enumerator(mo.indexOfEnumerator("KeyEnum"));
+		if (index >= 0)
+			return mo.enumerator(index).valueToKey(key);
 
-		return me.valueToKey(key);
+		return "";
 	}
 
 private:
@@ -97,6 +98,6 @@ private:
 	QList<QPair<KeyType, QVariant>> mSettingsQueue;
 };
 
-}
+END_NAMESPACE
 
 #endif

@@ -5,91 +5,92 @@
 
 #include "SingleInstance.h"
 
-namespace vbase
+namespace vbase {
+
+SingleInstance::SingleInstance(QObject *parent) : QObject(parent)
 {
-	SingleInstance::SingleInstance(QObject *parent) : QObject(parent)
-	{
-		connect(&mServer, SIGNAL(newConnection()),
-				this, SLOT(newConnection()));
-	}
-
-
-	SingleInstance::~SingleInstance()
-	{
-	}
-
-
-	void SingleInstance::listen(const QString &name)
-	{
-		mServer.removeServer(name);
-		if (!mServer.listen(name))
-			qDebug() << "Unable to listen";
-
-		qDebug() << "Listening for " << name;
-		qDebug() << mServer.errorString();
-	}
-
-
-	bool SingleInstance::hasPrevious(const QString &name, const QStringList &args)
-	{
-		qDebug() << "Checking for previous instance...";
-
-		QLocalSocket socket;
-		socket.connectToServer(name, QLocalSocket::ReadWrite);
-
-		if (socket.waitForConnected())
-		{
-			qDebug() << "Connection found!";
-			qDebug() << "Forwarding argument to existing instance...";
-
-			QByteArray buffer;
-			for (auto item : args)
-			{
-				buffer.append(item+"\n");
-			}
-
-			qDebug() << "Forwading buffer=" << buffer;
-
-			socket.write(buffer);
-
-			return true;
-		}
-
-		qDebug() << socket.errorString();
-		qDebug() << "No connection found";
-
-		return false;
-	}
-
-
-	void SingleInstance::newConnection()
-	{
-		emit newInstance();
-
-		mSocket = mServer.nextPendingConnection();
-		connect(mSocket, SIGNAL(readyRead()),
-				this, SLOT(readyRead()));
-	}
-
-
-	void SingleInstance::readyRead()
-	{
-		QString argsString = mSocket->readAll();
-
-		QVariantList argsList;
-		for (auto line : argsString.split("\n"))
-		{
-			if (line != "")
-				argsList.append(line);
-		}
-
-		qDebug() << "Received args:";
-
-		for (auto line : argsList)
-			qDebug() << "  " << line;
-
-		emit receivedArguments(argsList);
-
-		mSocket->deleteLater();
-	}
+	connect(&mServer, SIGNAL(newConnection()),
+			this, SLOT(newConnection()));
 }
+
+
+SingleInstance::~SingleInstance()
+{
+}
+
+
+void SingleInstance::listen(const QString &name)
+{
+	mServer.removeServer(name);
+	if (!mServer.listen(name))
+		qDebug() << "Unable to listen";
+
+	qDebug() << "Listening for " << name;
+	qDebug() << mServer.errorString();
+}
+
+
+bool SingleInstance::hasPrevious(const QString &name, const QStringList &args)
+{
+	qDebug() << "Checking for previous instance...";
+
+	QLocalSocket socket;
+	socket.connectToServer(name, QLocalSocket::ReadWrite);
+
+	if (socket.waitForConnected())
+	{
+		qDebug() << "Connection found!";
+		qDebug() << "Forwarding argument to existing instance...";
+
+		QByteArray buffer;
+		for (auto item : args)
+		{
+			buffer.append(item+"\n");
+		}
+
+		qDebug() << "Forwading buffer=" << buffer;
+
+		socket.write(buffer);
+
+		return true;
+	}
+
+	qDebug() << socket.errorString();
+	qDebug() << "No connection found";
+
+	return false;
+}
+
+
+void SingleInstance::newConnection()
+{
+	emit newInstance();
+
+	mSocket = mServer.nextPendingConnection();
+	connect(mSocket, SIGNAL(readyRead()),
+			this, SLOT(readyRead()));
+}
+
+
+void SingleInstance::readyRead()
+{
+	QString argsString = mSocket->readAll();
+
+	QVariantList argsList;
+	for (auto line : argsString.split("\n"))
+	{
+		if (line != "")
+			argsList.append(line);
+	}
+
+	qDebug() << "Received args:";
+
+	for (auto line : argsList)
+		qDebug() << "  " << line;
+
+	emit receivedArguments(argsList);
+
+	mSocket->deleteLater();
+}
+
+END_NAMESPACE
