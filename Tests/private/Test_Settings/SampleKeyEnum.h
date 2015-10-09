@@ -2,6 +2,9 @@
 #define _private_Test_Settings_SampleKeyEnum_h
 
 #include <QtCore/QObject>
+#include <QtCore/QHash>
+
+#include <ValpineBase/SettingsBase.h>
 
 class SampleKeyClass : public QObject
 {
@@ -17,6 +20,13 @@ public:
 	};
 
 	Q_ENUMS(KeyEnum)
+
+	static vbase::SettingsBase::MetaKeyInfo metaKeyInfoForKey(KeyEnum key);
+
+private:
+	using DefaultValuesHash = QHash<KeyEnum, vbase::SettingsBase::MetaKeyInfo>;
+	static DefaultValuesHash mDefaultValuesHash;
+	static SampleKeyClass::DefaultValuesHash buildDefaultValuesHash();
 };
 
 #endif

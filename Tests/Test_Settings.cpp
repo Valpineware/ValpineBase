@@ -43,8 +43,8 @@ private slots:
 		QTemporaryFile tmpFile;
 		Assert_True(settings.load(tmpFile.fileName()));
 
-
-		struct {
+		struct
+		{
 			bool happened = false;
 			SampleKeyClass::KeyEnum key;
 			QVariant newValue;
@@ -75,7 +75,10 @@ private slots:
 		QTemporaryFile tmpFile;
 		Assert_True(settings.load(tmpFile.fileName()));
 
+		qDebug() << "Using temp file " << tmpFile.fileName();
+
 		Verify_Eq(settings.value(SampleKeyClass::GraphicsWindowWidth), 800);
+		Verify_Eq(settings.value(SampleKeyClass::GraphicsWindowHeight), 700);
 	}
 };
 

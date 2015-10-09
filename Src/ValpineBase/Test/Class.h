@@ -10,19 +10,19 @@
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QString>
 
-namespace vbase { namespace test
+namespace vbase { namespace test {
+
+class Suite;
+
+class Class : public QObject
 {
-    class Suite;
+	Q_OBJECT
 
-    class Class : public QObject
-    {
-        Q_OBJECT
-
-    public:
-		Suite* hostSuite;
-		QElapsedTimer executionTimer;
-		QString currentlyExecutingMethodName;
-    };
+public:
+	Suite* hostSuite;
+	QElapsedTimer executionTimer;
+	QString currentlyExecutingMethodName;
+};
 }}
 
 #endif

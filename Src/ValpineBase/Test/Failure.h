@@ -12,40 +12,41 @@
 #include <QStringList>
 #include <QMetaMethod>
 
-namespace vbase { namespace test
+namespace vbase { namespace test {
+
+struct Failure
 {
-	struct Failure
-    {
-    public:
-		QStringList details;
-		QString filepath;
-		int lineNumber = -1;
+public:
+	QStringList details;
+	QString filepath;
+	int lineNumber = -1;
 
-		enum class Type
+	enum class Type
+	{
+		Warn = 0,
+		Error = 1
+	} type = Type::Error;
+
+	QString typeName() const
+	{
+		switch (type)
 		{
-			Warn = 0,
-			Error = 1
-		} type = Type::Error;
-
-		QString typeName() const
-		{
-			switch (type)
-			{
-			case Type::Warn:
-				return "warning";
-			case Type::Error:
-				return "error";
-			}
-
+		case Type::Warn:
+			return "warning";
+		case Type::Error:
 			return "error";
 		}
-    };
+
+		return "error";
+	}
+};
 
 
-    /**
-     * Indicates a test failure due to an assert being triggered.
-     */
-	class TestAssertException {};
+/**
+ * Indicates a test failure due to an assert being triggered.
+ */
+class TestAssertException {};
+
 }}
 
 #endif

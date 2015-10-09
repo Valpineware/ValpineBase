@@ -28,8 +28,8 @@ public:
 		mSettings->setValue("Sample", "100");
 		mSettings->sync();
 
-		qDebug() << mSettings->status();
-		qDebug() << mSettings->fileName();
+		qDebug() << "Loaded settings filePath of " << filePath;
+		qDebug() << "Settings instance is " << mSettings->fileName();
 
 		return true;
 	}

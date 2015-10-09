@@ -195,6 +195,7 @@ void Suite::exportResults(QIODevice &ioDevice)
 
 		QJsonArray testsArray;
 
+		//TODO fix all of these magic strings
 		for (const TestResult &testResult : a.value())
 		{
 			QJsonObject to;

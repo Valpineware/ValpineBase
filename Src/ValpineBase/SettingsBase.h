@@ -3,6 +3,9 @@
 // This file is licensed under the MIT License.
 //=============================================================================|
 
+#ifndef _ValpineBase_SettingsBase_h
+#define _ValpineBase_SettingsBase_h
+
 #include <QtCore/QObject>
 #include <QtCore/QVariant>
 
@@ -34,6 +37,12 @@ public:
 		return QVariant();
 	}
 
+
+	struct MetaKeyInfo
+	{
+		QVariant defaultValue;
+	};
+
 protected:
 	void emitValueChanged(int key, const QVariant &newValue)
 	{
@@ -45,3 +54,5 @@ signals:
 };
 
 }
+
+#endif
