@@ -13,6 +13,7 @@
 #include <QtCore/QIODevice>
 #include <QtCore/QSettings>
 #include <QtCore/QVariant>
+#include <QtCore/QMetaEnum>
 
 #include <ValpineBase/SettingsBase.h>
 
@@ -69,12 +70,13 @@ public:
 
 		QVariant value = mSettings->value(name);
 
-		if (QString(value.typeName()) == "QString" &&
+		if (!value.isValid())
+		{
+			return KeyClass::metaKeyInfoForKey(key).defaultValue;
+		}
+		else if (QString(value.typeName()) == "QString" &&
 			(value.toString() == "false" || value.toString() == "true"))
 			return QVariant(value.toBool());
-
-		if (name == "GraphicsWindowWidth")
-			return QVariant(800);
 
 		return value;
 	}

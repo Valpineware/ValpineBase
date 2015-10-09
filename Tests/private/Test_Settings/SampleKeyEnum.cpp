@@ -16,8 +16,8 @@ SampleKeyClass::DefaultValuesHash SampleKeyClass::buildDefaultValuesHash()
 {
 	DefaultValuesHash dvh;
 
-	dvh[GraphicsWindowWidth] = { QVariant(800) };
-	dvh[GraphicsWindowHeight] = { QVariant(700) };
+	dvh[GraphicsWindowWidth] = { QVariant(1600) };
+	dvh[GraphicsWindowHeight] = { QVariant(900) };
 	dvh[GraphicsWindowIsFullscreen] = { QVariant(false) };
 	dvh[GraphicsWindowBackgroundColor] = { QVariant("0x000000") };
 

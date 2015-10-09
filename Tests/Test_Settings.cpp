@@ -25,6 +25,7 @@ private slots:
 	{
 		Settings<SampleKeyClass> settings;
 		QTemporaryFile tmpFile;
+		tmpFile.open();
 		Assert_True(settings.load(tmpFile.fileName()));
 
 		settings.setValue(SampleKeyClass::GraphicsWindowWidth, 800);
@@ -41,6 +42,7 @@ private slots:
 	{
 		Settings<SampleKeyClass> settings;
 		QTemporaryFile tmpFile;
+		tmpFile.open();
 		Assert_True(settings.load(tmpFile.fileName()));
 
 		struct
@@ -73,12 +75,13 @@ private slots:
 	{
 		Settings<SampleKeyClass> settings;
 		QTemporaryFile tmpFile;
+		tmpFile.open();
 		Assert_True(settings.load(tmpFile.fileName()));
 
 		qDebug() << "Using temp file " << tmpFile.fileName();
 
-		Verify_Eq(settings.value(SampleKeyClass::GraphicsWindowWidth), 800);
-		Verify_Eq(settings.value(SampleKeyClass::GraphicsWindowHeight), 700);
+		Verify_Eq(settings.value(SampleKeyClass::GraphicsWindowWidth), 1600);
+		Verify_Eq(settings.value(SampleKeyClass::GraphicsWindowHeight), 900);
 	}
 };
 
