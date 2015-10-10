@@ -85,11 +85,24 @@ public:
 
 	void enqueueValue(KeyType key, const QVariant &newValue)
 	{
-		settingsQueue.append(QPair<KeyType,QVariant>(key, newValue));
+		QueuePair pair(key, newValue);
+		bool reusedExistingEntry = false;
+
+		for (QueuePair &queuePair : settingsQueue)
+		{
+			if (queuePair.first == key)
+			{
+				queuePair.second = newValue;
+				reusedExistingEntry = true;
+			}
+		}
+
+		if (!reusedExistingEntry)
+			settingsQueue.append(pair);
 	}
 
 
-	void applyQueuedValues()
+	void setQueuedValues()
 	{
 		for (const QPair<KeyType,QVariant> &pair : settingsQueue)
 			setValue(pair.first, pair.second);
@@ -111,7 +124,9 @@ private:
 
 private:
 	QSettings *settings;
-	QList<QPair<KeyType, QVariant>> settingsQueue;
+
+	using QueuePair = QPair<KeyType, QVariant>;
+	QList<QueuePair> settingsQueue;
 };
 
 END_NAMESPACE

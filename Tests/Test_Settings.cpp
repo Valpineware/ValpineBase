@@ -20,6 +20,36 @@ class Test_Settings : public test::Class
 
 	using Key = SampleKeyClass::KeyEnum;
 
+
+private:
+	struct SignalResult
+	{
+		SampleKeyClass::KeyEnum key;
+		QVariant newValue;
+
+		bool operator ==(const SignalResult &signalResult) const
+		{
+			return (key == signalResult.key) &&
+					(newValue == signalResult.newValue);
+		}
+	};
+
+
+	void checkValueChangedSignal(Settings<SampleKeyClass> &settings,
+								 QList<SignalResult> &signalResultList)
+	{
+		QObject::connect(&settings, &SettingsBase::valueChanged,
+						 [&signalResultList](int key,
+											const QVariant &newValue)
+		{
+			SignalResult sr;
+			sr.key = static_cast<SampleKeyClass::KeyEnum>(key);
+			sr.newValue = newValue;
+			signalResultList.append(sr);
+		});
+	}
+
+
 private slots:
 	VTEST void simpleCheck()
 	{
@@ -47,28 +77,15 @@ private slots:
 		Assert_True(tmpFile.open());
 		Assert_True(settings.load(tmpFile.fileName()));
 
-		struct
-		{
-			bool happened = false;
-			SampleKeyClass::KeyEnum key;
-			QVariant newValue;
-		} signalResults;
-
-		QObject::connect(&settings, &SettingsBase::valueChanged,
-						 [&signalResults](int key,
-											const QVariant &newValue)
-		{
-			signalResults.happened = true;
-			signalResults.key = static_cast<SampleKeyClass::KeyEnum>(key);
-			signalResults.newValue = newValue;
-		});
+		QList<SignalResult> signalResults;
+		checkValueChangedSignal(settings, signalResults);
 
 		const QString testColor = "0x40a030";
 		settings.setValue(Key::GraphicsWindowBackgroundColor, testColor);
 
-		Verify_True(signalResults.happened);
-		Verify_Eq(signalResults.key, Key::GraphicsWindowBackgroundColor);
-		Verify_Eq(signalResults.newValue, testColor);
+		Assert_Eq(signalResults.count(), 1);
+		Verify_Eq(signalResults.first().key, Key::GraphicsWindowBackgroundColor);
+		Verify_Eq(signalResults.first().newValue, testColor);
 		Verify_Eq(settings.value(Key::GraphicsWindowBackgroundColor).toString(), testColor);
 	}
 
@@ -84,6 +101,7 @@ private slots:
 		Verify_Eq(settings.value(Key::GraphicsWindowHeight), 900);
 	}
 
+
 	VTEST void enqueValue()
 	{
 		Settings<SampleKeyClass> settings;
@@ -95,25 +113,10 @@ private slots:
 		settings.enqueueValue(Key::GraphicsWindowBackgroundColor, "red");
 		Verify_Eq(settings.value(Key::GraphicsWindowBackgroundColor), "blue");
 
-		struct SignalResult
-		{
-			SampleKeyClass::KeyEnum key;
-			QVariant newValue;
-		};
-
 		QList<SignalResult> signalResults;
+		checkValueChangedSignal(settings, signalResults);
 
-		QObject::connect(&settings, &SettingsBase::valueChanged,
-						 [&signalResults](int key,
-											const QVariant &newValue)
-		{
-			SignalResult sr;
-			sr.key = static_cast<SampleKeyClass::KeyEnum>(key);
-			sr.newValue = newValue;
-			signalResults.append(sr);
-		});
-
-		settings.applyQueuedValues();
+		settings.setQueuedValues();
 		Assert_Eq(signalResults.count(), 1);
 		Verify_Eq(signalResults.front().key, Key::GraphicsWindowBackgroundColor);
 		Verify_Eq(signalResults.front().newValue, "red");
@@ -127,19 +130,43 @@ private slots:
 	}
 
 
-	VTEST void enqueValueTwice()
+	VTEST void enqueMultipleValuesMultipleTimes()
 	{
 		Settings<SampleKeyClass> settings;
 		QTemporaryFile tmpFile;
 		Assert_True(tmpFile.open());
 		Assert_True(settings.load(tmpFile.fileName()));
 
-		settings.setValue(Key::GraphicsWindowBackgroundColor, "blue");
-		settings.enqueueValue(Key::GraphicsWindowBackgroundColor, "red");
-		Verify_Eq(settings.value(Key::GraphicsWindowBackgroundColor), "blue");
+		QList<SignalResult> signalResults;
+		checkValueChangedSignal(settings, signalResults);
 
-		settings.applyQueuedValues();
-		Verify_Eq(settings.value(Key::GraphicsWindowBackgroundColor), "red");
+		//do stuff to settings
+		{
+			settings.enqueueValue(Key::GraphicsWindowHeight, 480);
+			settings.enqueueValue(Key::GraphicsWindowWidth, 640);
+			settings.setQueuedValues();
+
+			settings.enqueueValue(Key::GraphicsWindowBackgroundColor, "green");
+			settings.enqueueValue(Key::GraphicsWindowBackgroundColor, "orange");
+			settings.setQueuedValues();
+		}
+
+		Assert_Eq(signalResults.count(), 3);
+
+		//note we don't care about the order the settings were applied with
+		//applyQueuedValues
+		//TODO document this aspect
+		Verify_True(signalResults.contains({ Key::GraphicsWindowHeight,
+											 QVariant(480)
+										   }));
+
+		Verify_True(signalResults.contains({ Key::GraphicsWindowWidth,
+											 QVariant(640)
+										   }));
+
+		Verify_True(signalResults.contains({ Key::GraphicsWindowBackgroundColor,
+											 QVariant("orange")
+										   }));
 	}
 
 
