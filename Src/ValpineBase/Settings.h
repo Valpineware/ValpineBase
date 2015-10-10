@@ -14,23 +14,27 @@
 #include <QtCore/QSettings>
 #include <QtCore/QVariant>
 #include <QtCore/QMetaEnum>
+#include <QtCore/QList>
 
 #include <ValpineBase/SettingsBase.h>
 
 namespace vbase {
 
+//TODO the user should not be able to supply their own KeyEnum
 template<class KeyClass, typename KeyType = typename KeyClass::KeyEnum>
 class Settings : public SettingsBase
 {
+	//TODO add some static_assert checks
+
 public:
 	bool load(const QString &filePath)
 	{
-		mSettings = new QSettings(filePath, QSettings::IniFormat);
-		mSettings->setValue("Sample", "100");
-		mSettings->sync();
+		settings = new QSettings(filePath, QSettings::IniFormat);
+		settings->setValue("Sample", "100");
+		settings->sync();
 
 		qDebug() << "Loaded settings filePath of " << filePath;
-		qDebug() << "Settings instance is " << mSettings->fileName();
+		qDebug() << "Settings instance is " << settings->fileName();
 
 		return true;
 	}
@@ -51,8 +55,8 @@ public:
 			qDebug() << "Settings value changed for key=" << name
 					 << " value=" << newValue.toString();
 
-			mSettings->setValue(name, newValue);
-			mSettings->sync();
+			settings->setValue(name, newValue);
+			settings->sync();
 			SettingsBase::emitValueChanged(static_cast<int>(key), newValue);
 		}
 	}
@@ -68,7 +72,7 @@ public:
 	{
 		const auto &name = stringNameForKey(key);
 
-		QVariant value = mSettings->value(name);
+		QVariant value = settings->value(name);
 
 		if (!value.isValid())
 		{
@@ -79,6 +83,21 @@ public:
 			return QVariant(value.toBool());
 
 		return value;
+	}
+
+
+	void enqueueValue(KeyType key, const QVariant &newValue)
+	{
+		settingsQueue.append(QPair<KeyType,QVariant>(key, newValue));
+	}
+
+
+	void applyQueuedValues()
+	{
+		for (const QPair<KeyType,QVariant> &pair : settingsQueue)
+			setValue(pair.first, pair.second);
+
+		settingsQueue.clear();
 	}
 
 private:
@@ -94,8 +113,8 @@ private:
 	}
 
 private:
-	QSettings *mSettings;
-	QList<QPair<KeyType, QVariant>> mSettingsQueue;
+	QSettings *settings;
+	QList<QPair<KeyType, QVariant>> settingsQueue;
 };
 
 END_NAMESPACE

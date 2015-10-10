@@ -18,23 +18,25 @@ class Test_Settings : public test::Class
 {
 	Q_OBJECT
 
-	using Key = QString;
+	using Key = SampleKeyClass::KeyEnum;
 
 private slots:
 	VTEST void simpleCheck()
 	{
+		//FIXME add initTestCase and cleanupTestCase to test::Class so we can
+		//create thise settings instance for all methods
 		Settings<SampleKeyClass> settings;
 		QTemporaryFile tmpFile;
-		tmpFile.open();
+		Assert_True(tmpFile.open());
 		Assert_True(settings.load(tmpFile.fileName()));
 
-		settings.setValue(SampleKeyClass::GraphicsWindowWidth, 800);
-		settings.setValue(SampleKeyClass::GraphicsWindowHeight, 600);
-		settings.setValue(SampleKeyClass::GraphicsWindowIsFullscreen, false);
+		settings.setValue(Key::GraphicsWindowWidth, 800);
+		settings.setValue(Key::GraphicsWindowHeight, 600);
+		settings.setValue(Key::GraphicsWindowIsFullscreen, false);
 
-		Verify_Eq(settings.value(SampleKeyClass::GraphicsWindowWidth), 800);
-		Verify_Eq(settings.value(SampleKeyClass::GraphicsWindowHeight), 600);
-		Verify_Eq(settings.value(SampleKeyClass::GraphicsWindowIsFullscreen), false);
+		Verify_Eq(settings.value(Key::GraphicsWindowWidth), 800);
+		Verify_Eq(settings.value(Key::GraphicsWindowHeight), 600);
+		Verify_Eq(settings.value(Key::GraphicsWindowIsFullscreen), false);
 	}
 
 
@@ -42,7 +44,7 @@ private slots:
 	{
 		Settings<SampleKeyClass> settings;
 		QTemporaryFile tmpFile;
-		tmpFile.open();
+		Assert_True(tmpFile.open());
 		Assert_True(settings.load(tmpFile.fileName()));
 
 		struct
@@ -62,12 +64,12 @@ private slots:
 		});
 
 		const QString testColor = "0x40a030";
-		settings.setValue(SampleKeyClass::GraphicsWindowBackgroundColor, testColor);
+		settings.setValue(Key::GraphicsWindowBackgroundColor, testColor);
 
 		Verify_True(signalResults.happened);
-		Verify_Eq(signalResults.key, SampleKeyClass::GraphicsWindowBackgroundColor);
+		Verify_Eq(signalResults.key, Key::GraphicsWindowBackgroundColor);
 		Verify_Eq(signalResults.newValue, testColor);
-		Verify_Eq(settings.value(SampleKeyClass::GraphicsWindowBackgroundColor).toString(), testColor);
+		Verify_Eq(settings.value(Key::GraphicsWindowBackgroundColor).toString(), testColor);
 	}
 
 
@@ -75,13 +77,45 @@ private slots:
 	{
 		Settings<SampleKeyClass> settings;
 		QTemporaryFile tmpFile;
-		tmpFile.open();
+		Assert_True(tmpFile.open());
 		Assert_True(settings.load(tmpFile.fileName()));
 
-		qDebug() << "Using temp file " << tmpFile.fileName();
+		Verify_Eq(settings.value(Key::GraphicsWindowWidth), 1600);
+		Verify_Eq(settings.value(Key::GraphicsWindowHeight), 900);
+	}
 
-		Verify_Eq(settings.value(SampleKeyClass::GraphicsWindowWidth), 1600);
-		Verify_Eq(settings.value(SampleKeyClass::GraphicsWindowHeight), 900);
+
+	VTEST void enqueValue()
+	{
+		Settings<SampleKeyClass> settings;
+		QTemporaryFile tmpFile;
+		Assert_True(tmpFile.open());
+		Assert_True(settings.load(tmpFile.fileName()));
+
+		settings.setValue(Key::GraphicsWindowBackgroundColor, "blue");
+		settings.enqueueValue(Key::GraphicsWindowBackgroundColor, "red");
+		Verify_Eq(settings.value(Key::GraphicsWindowBackgroundColor), "blue");
+
+		settings.applyQueuedValues();
+		Verify_Eq(settings.value(Key::GraphicsWindowBackgroundColor), "red");
+	}
+
+
+	VTEST void enqueMultipleValues()
+	{
+
+	}
+
+
+	VTEST void enqueValueTwice()
+	{
+
+	}
+
+
+	VTEST void enqueValuesBeforeAndAfterApply()
+	{
+
 	}
 };
 

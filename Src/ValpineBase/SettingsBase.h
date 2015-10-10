@@ -27,8 +27,7 @@ public:
 	{
 		Q_UNUSED(key)
 		Q_UNUSED(value);
-
-		qFatal("This method must be overriden and not called in a subclass");
+		errorAboutCallingVirtualMethodDirectly();
 	}
 
 	/**
@@ -38,8 +37,7 @@ public:
 	Q_INVOKABLE virtual QVariant value(int key)
 	{
 		Q_UNUSED(key);
-
-		qFatal("This method must be overriden and not called in a subclass");
+		errorAboutCallingVirtualMethodDirectly();
 
 		return QVariant();
 	}
@@ -54,6 +52,12 @@ protected:
 	void emitValueChanged(int key, const QVariant &newValue)
 	{
 		emit valueChanged(key, newValue);
+	}
+
+private:
+	void errorAboutCallingVirtualMethodDirectly() const
+	{
+		qFatal("This method must be overriden and not called in a subclass");
 	}
 
 signals:
