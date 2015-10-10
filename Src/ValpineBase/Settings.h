@@ -33,9 +33,6 @@ public:
 		settings->setValue("Sample", "100");
 		settings->sync();
 
-		qDebug() << "Loaded settings filePath of " << filePath;
-		qDebug() << "Settings instance is " << settings->fileName();
-
 		return true;
 	}
 

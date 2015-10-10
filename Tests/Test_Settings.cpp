@@ -84,7 +84,6 @@ private slots:
 		Verify_Eq(settings.value(Key::GraphicsWindowHeight), 900);
 	}
 
-
 	VTEST void enqueValue()
 	{
 		Settings<SampleKeyClass> settings;
@@ -96,7 +95,28 @@ private slots:
 		settings.enqueueValue(Key::GraphicsWindowBackgroundColor, "red");
 		Verify_Eq(settings.value(Key::GraphicsWindowBackgroundColor), "blue");
 
+		struct SignalResult
+		{
+			SampleKeyClass::KeyEnum key;
+			QVariant newValue;
+		};
+
+		QList<SignalResult> signalResults;
+
+		QObject::connect(&settings, &SettingsBase::valueChanged,
+						 [&signalResults](int key,
+											const QVariant &newValue)
+		{
+			SignalResult sr;
+			sr.key = static_cast<SampleKeyClass::KeyEnum>(key);
+			sr.newValue = newValue;
+			signalResults.append(sr);
+		});
+
 		settings.applyQueuedValues();
+		Assert_Eq(signalResults.count(), 1);
+		Verify_Eq(signalResults.front().key, Key::GraphicsWindowBackgroundColor);
+		Verify_Eq(signalResults.front().newValue, "red");
 		Verify_Eq(settings.value(Key::GraphicsWindowBackgroundColor), "red");
 	}
 
@@ -109,7 +129,17 @@ private slots:
 
 	VTEST void enqueValueTwice()
 	{
+		Settings<SampleKeyClass> settings;
+		QTemporaryFile tmpFile;
+		Assert_True(tmpFile.open());
+		Assert_True(settings.load(tmpFile.fileName()));
 
+		settings.setValue(Key::GraphicsWindowBackgroundColor, "blue");
+		settings.enqueueValue(Key::GraphicsWindowBackgroundColor, "red");
+		Verify_Eq(settings.value(Key::GraphicsWindowBackgroundColor), "blue");
+
+		settings.applyQueuedValues();
+		Verify_Eq(settings.value(Key::GraphicsWindowBackgroundColor), "red");
 	}
 
 
