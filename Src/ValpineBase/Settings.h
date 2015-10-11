@@ -104,8 +104,8 @@ public:
 
 	void setQueuedValues()
 	{
-		for (const QPair<KeyType,QVariant> &pair : settingsQueue)
-			setValue(pair.first, pair.second);
+		for (const QueuePair &queuePair : settingsQueue)
+			setValue(queuePair.first, queuePair.second);
 
 		settingsQueue.clear();
 	}

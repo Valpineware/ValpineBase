@@ -60,48 +60,10 @@ void Suite::run(QIODevice &outputFileDevice)
 {
 	mDateTime_started = QDateTime::currentDateTime();
 
-	for (TestClassPackageInterface *test : registered())
-	{
-		std::unique_ptr<Class> defaultInstance(test->makeTestClassInstance());
-		const QMetaObject *metaObject = defaultInstance->metaObject();
-
-		for (int i=0; i<metaObject->methodCount(); i++)
-		{
-			auto metaMethod = metaObject->method(i);
-
-			if (QString(metaMethod.tag()) == "VTEST")
-			{
-				std::unique_ptr<Class> testObject(test->makeTestClassInstance());
-				testObject->hostSuite = this;
-
-				try
-				{
-					testObject->currentlyExecutingMethodName = metaMethod.name();
-					testObject->executionTimer.start();
-					metaMethod.invoke(testObject.get(), Qt::DirectConnection);
-
-
-					//at this point, the test must have passed since no
-					//exception was thrown
-				}
-				catch (TestAssertException &tfe)
-				{
-					//swallow the exception
-					//the purpose of throwing the exception from an assert
-					//is to cleanly break out of the test entirely
-					//(even from sub-routines)
-				}
-
-				int executionTime = testObject->executionTimer.elapsed();
-				auto &tr = findTestResult(metaObject->className(),
-										  metaMethod.name());
-				tr.executionTime = executionTime;
-			}
-		}
-	}
+	for (TestClassPackageInterface *testClass : registered())
+		runTestClass(testClass);
 
 	mDateTime_finished = QDateTime::currentDateTime();
-
 	exportResults(outputFileDevice);
 
 	qDebug() << "Finished running all tests";
@@ -249,6 +211,54 @@ Suite::TestResult& Suite::findTestResult(const QString &className, const QString
 	testResultList.last().name  = testName;
 
 	return testResultList.first();
+}
+
+
+void Suite::runTestClass(TestClassPackageInterface *testClass)
+{
+	std::unique_ptr<Class> defaultInstance(testClass->makeTestClassInstance());
+	const QMetaObject *metaObject = defaultInstance->metaObject();
+	int initMethodIndex = metaObject->indexOfMethod("initTestMethod()");
+
+	//run each test method for this class
+	for (int i=0; i<metaObject->methodCount(); i++)
+	{
+		auto metaMethod = metaObject->method(i);
+
+		if (QString(metaMethod.tag()) == "VTEST")
+		{
+			std::unique_ptr<Class> testObject(testClass->makeTestClassInstance());
+
+			testObject->hostSuite = this;
+			testObject->executionTimer.start();	//TODO why does the testObject manage its own timer?
+
+			//run the init method if one exists
+			if (initMethodIndex != -1)
+				metaObject->method(initMethodIndex).invoke(testObject.get(),
+														   Qt::DirectConnection);
+			try
+			{
+				testObject->currentlyExecutingMethodName = metaMethod.name();
+				metaMethod.invoke(testObject.get(), Qt::DirectConnection);
+
+
+				//at this point, the test must have passed since no
+				//exception was thrown
+			}
+			catch (TestAssertException &tfe)
+			{
+				//swallow the exception
+				//the purpose of throwing the exception from an assert
+				//is to cleanly break out of the test entirely
+				//(even from sub-routines)
+			}
+
+			int executionTime = testObject->executionTimer.elapsed();
+			auto &tr = findTestResult(metaObject->className(),
+									  metaMethod.name());
+			tr.executionTime = executionTime;
+		}
+	}
 }
 
 END_NAMESPACE

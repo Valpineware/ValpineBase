@@ -49,17 +49,20 @@ private:
 		});
 	}
 
+	Settings<SampleKeyClass> settings;
+	QTemporaryFile tmpFile;
 
 private slots:
-	VTEST void simpleCheck()
+	void initTestMethod()
 	{
-		//FIXME add initTestCase and cleanupTestCase to test::Class so we can
-		//create thise settings instance for all methods
-		Settings<SampleKeyClass> settings;
-		QTemporaryFile tmpFile;
+		qDebug() << "Running initTestMethod";
 		Assert_True(tmpFile.open());
 		Assert_True(settings.load(tmpFile.fileName()));
+	}
 
+
+	VTEST void simpleCheck()
+	{
 		settings.setValue(Key::GraphicsWindowWidth, 800);
 		settings.setValue(Key::GraphicsWindowHeight, 600);
 		settings.setValue(Key::GraphicsWindowIsFullscreen, false);
@@ -72,11 +75,6 @@ private slots:
 
 	VTEST void changeSignal()
 	{
-		Settings<SampleKeyClass> settings;
-		QTemporaryFile tmpFile;
-		Assert_True(tmpFile.open());
-		Assert_True(settings.load(tmpFile.fileName()));
-
 		QList<SignalResult> signalResults;
 		checkValueChangedSignal(settings, signalResults);
 
@@ -92,11 +90,6 @@ private slots:
 
 	VTEST void defaultValues()
 	{
-		Settings<SampleKeyClass> settings;
-		QTemporaryFile tmpFile;
-		Assert_True(tmpFile.open());
-		Assert_True(settings.load(tmpFile.fileName()));
-
 		Verify_Eq(settings.value(Key::GraphicsWindowWidth), 1600);
 		Verify_Eq(settings.value(Key::GraphicsWindowHeight), 900);
 	}
@@ -104,11 +97,6 @@ private slots:
 
 	VTEST void enqueValue()
 	{
-		Settings<SampleKeyClass> settings;
-		QTemporaryFile tmpFile;
-		Assert_True(tmpFile.open());
-		Assert_True(settings.load(tmpFile.fileName()));
-
 		settings.setValue(Key::GraphicsWindowBackgroundColor, "blue");
 		settings.enqueueValue(Key::GraphicsWindowBackgroundColor, "red");
 		Verify_Eq(settings.value(Key::GraphicsWindowBackgroundColor), "blue");
@@ -132,11 +120,6 @@ private slots:
 
 	VTEST void enqueMultipleValuesMultipleTimes()
 	{
-		Settings<SampleKeyClass> settings;
-		QTemporaryFile tmpFile;
-		Assert_True(tmpFile.open());
-		Assert_True(settings.load(tmpFile.fileName()));
-
 		QList<SignalResult> signalResults;
 		checkValueChangedSignal(settings, signalResults);
 

@@ -133,6 +133,8 @@ private:
 		static QList<TestClassPackageInterface*> reg;
 		return reg;
 	}
+
+	void runTestClass(TestClassPackageInterface *testClass);
 };
 
 #ifndef Q_MOC_RUN
