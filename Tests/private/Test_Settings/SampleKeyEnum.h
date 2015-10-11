@@ -17,9 +17,7 @@ public:
 		GraphicsWindowHeight			= 1001,
 		GraphicsWindowIsFullscreen		= 1002,
 		GraphicsWindowBackgroundColor	= 1003
-	};
-
-	Q_ENUMS(KeyEnum)
+	}; Q_ENUMS(KeyEnum)
 
 	static vbase::SettingsBase::MetaKeyInfo metaKeyInfoForKey(KeyEnum key);
 

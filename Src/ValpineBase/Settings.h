@@ -83,6 +83,18 @@ public:
 	}
 
 
+	Q_INVOKABLE virtual int keyUpdateType(int key) override
+	{
+		return keyUpdateType(static_cast<KeyType>(key));
+	}
+
+
+	KeyUpdateType keyUpdateType(KeyType key)
+	{
+		return KeyClass::metaKeyInfoForKey(key).updateType;
+	}
+
+
 	void enqueueValue(KeyType key, const QVariant &newValue)
 	{
 		QueuePair pair(key, newValue);

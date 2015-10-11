@@ -19,9 +19,8 @@ class Test_Settings : public test::Class
 	Q_OBJECT
 
 	using Key = SampleKeyClass::KeyEnum;
+	using KUT = Settings<SampleKeyClass>::KeyUpdateType;
 
-
-private:
 	struct SignalResult
 	{
 		SampleKeyClass::KeyEnum key;
@@ -51,6 +50,7 @@ private:
 
 	Settings<SampleKeyClass> settings;
 	QTemporaryFile tmpFile;
+
 
 private slots:
 	void initTestMethod()
@@ -112,12 +112,6 @@ private slots:
 	}
 
 
-	VTEST void enqueMultipleValues()
-	{
-
-	}
-
-
 	VTEST void enqueMultipleValuesMultipleTimes()
 	{
 		QList<SignalResult> signalResults;
@@ -153,9 +147,16 @@ private slots:
 	}
 
 
-	VTEST void enqueValuesBeforeAndAfterApply()
+	VTEST void updateTypes()
 	{
-
+		Verify_Eq(settings.keyUpdateType(Key::GraphicsWindowHeight),
+				  KUT::Pending);
+		Verify_Eq(settings.keyUpdateType(Key::GraphicsWindowWidth),
+				  KUT::Pending);
+		Verify_Eq(settings.keyUpdateType(Key::GraphicsWindowIsFullscreen),
+				  KUT::Pending);
+		Verify_Eq(settings.keyUpdateType(Key::GraphicsWindowBackgroundColor),
+				  KUT::Instant);
 	}
 };
 

@@ -43,9 +43,26 @@ public:
 	}
 
 
+	Q_INVOKABLE virtual int keyUpdateType(int key)
+	{
+		Q_UNUSED(key);
+		errorAboutCallingVirtualMethodDirectly();
+
+		return 0;
+	}
+
+	enum KeyUpdateType
+	{
+		Instant = 0,
+		Pending = 1
+	};
+
+	Q_ENUMS(KeyUpdateType)
+
 	struct MetaKeyInfo
 	{
 		QVariant defaultValue;
+		KeyUpdateType updateType;
 	};
 
 protected:

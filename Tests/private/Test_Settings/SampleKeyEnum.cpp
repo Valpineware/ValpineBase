@@ -16,10 +16,12 @@ SampleKeyClass::DefaultValuesHash SampleKeyClass::buildDefaultValuesHash()
 {
 	DefaultValuesHash dvh;
 
-	dvh[GraphicsWindowWidth] = { QVariant(1600) };
-	dvh[GraphicsWindowHeight] = { QVariant(900) };
-	dvh[GraphicsWindowIsFullscreen] = { QVariant(false) };
-	dvh[GraphicsWindowBackgroundColor] = { QVariant("0x000000") };
+	using KUT = vbase::SettingsBase::KeyUpdateType;
+
+	dvh[GraphicsWindowWidth] = { QVariant(1600), KUT::Pending };
+	dvh[GraphicsWindowHeight] = { QVariant(900), KUT::Pending };
+	dvh[GraphicsWindowIsFullscreen] = { QVariant(false), KUT::Pending };
+	dvh[GraphicsWindowBackgroundColor] = { QVariant("0x000000"), KUT::Instant };
 
 	return dvh;
 }

@@ -47,14 +47,14 @@ Item {
 				return;
 			}
 
-            if (appSettingsProvider.updateTypeForKey(settingsKey) === Settings.Instant) {
+			if (appSettingsProvider.keyUpdateType(settingsKey) === Settings.Instant) {
 				internal.flagText();
                 appSettingsProvider.setValue(settingsKey, provideSettingsValue());
 				animateOutFlagText();
 			}
 			else {
 				internal.flagText();
-                appSettingsProvider.enqueueValue(settingsKey, provideSettingsValue());
+				appSettingsProvider.setValue(settingsKey, provideSettingsValue());
 			}
 		}
 	}
