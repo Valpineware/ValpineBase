@@ -7,6 +7,7 @@
 #define t3d_core_MutexTryLocker_H
 
 #include <QObject>
+#include <QtCore/QMutex>
 
 #include <ValpineBase/ValpineBase.h>
 
@@ -14,14 +15,14 @@ namespace vbase {
 
 class MutexTryLocker
 {
-	public:
+public:
 	MutexTryLocker() = delete;
 	MutexTryLocker(QMutex *mutex) : mMutex(mutex), mIsLocked(mMutex->tryLock()) {}
 	~MutexTryLocker() { if (mIsLocked) mMutex->unlock(); }
 
 	bool isLocked() const { return mIsLocked; }
 
-	private:
+private:
 	Q_DISABLE_COPY(MutexTryLocker)
 
 	QMutex *mMutex;
