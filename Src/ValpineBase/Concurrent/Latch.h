@@ -21,7 +21,6 @@ public:
 	{
 	}
 
-
 	void wait() noexcept
 	{
 		std::unique_lock<std::mutex> lk(_mutex);
@@ -31,7 +30,6 @@ public:
 
 	void unlock() noexcept
 	{
-		delete _mutexLock;
 		_mutexLock = nullptr;
 		_conditionVariable.notify_all();
 	}
@@ -39,7 +37,7 @@ public:
 private:
 	std::condition_variable _conditionVariable;
 	std::mutex _mutex;
-	std::lock_guard<std::mutex> *_mutexLock = nullptr;
+	std::unique_ptr<std::lock_guard<std::mutex>> _mutexLock = nullptr;
 };
 
 END_NAMESPACE

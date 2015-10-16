@@ -6,6 +6,7 @@
 #include <thread>
 #include <chrono>
 #include <iostream>
+#include <memory>
 
 #include <ValpineBase/Concurrent/Latch.h>
 #include <ValpineBase/Test.h>
@@ -61,7 +62,31 @@ private slots:
 
 	VTEST void raiiBehavior()
 	{
+		bool didStart = false;
+		bool didExecute = false;
+		std::unique_ptr<std::thread> t1;
 
+		{
+			concurrent::Latch latch;
+
+			t1 = std::unique_ptr<std::thread>(new std::thread([&]
+			{
+				didStart = true;
+				latch.wait();
+				didExecute = true;
+			}));
+
+			tryVerifyTrue(didStart, 10);
+			Verify_False(didExecute);
+		}
+
+		tryVerifyTrue(didExecute, 10);
+
+		//TODO what else can I do here? there is no way to terminate the thread...
+		if (!didExecute)
+			t1->detach();
+		else
+			t1->join();
 	}
 };
 
