@@ -88,6 +88,12 @@ private slots:
 		else
 			t1->join();
 	}
+
+
+	VTEST void waitingAfterUnlockShouldNotHang()
+	{
+		Post_Failure("Implement test");
+	}
 };
 
 ADD_TESTCLASS(Test_Latch)
