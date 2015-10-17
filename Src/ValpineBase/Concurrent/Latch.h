@@ -14,19 +14,23 @@
 namespace vbase { namespace concurrent {
 
 /**
- * @brief The Latch class is a concurrency syncronization primitive that allows
+ * The Latch class is a concurrency syncronization primitive that allows
  * multiple threads to wait until the Latch is unlocked from another thread.
  * Upon destruction, the Latch will unlock all waiting threads. The latch is
  * implemented with std::condition_variable, so waiting does not exhaust the CPU
  * as long as the std::condition_variable implementation is correct.
  *
  * Latch is thread-safe.
+ *
+ * Once a Latch is destroyed, there should be no threads attempting to access it.
+ * Any threads currently blocking on wait() will have undefined behavior if the
+ * Latch is destroyed.
  */
 class Latch
 {
 public:
 	/**
-	 * @brief Constructs a Latch in a locked state.
+	 * Constructs a Latch in a locked state.
 	 */
 	Latch() :
 		_mutexLock(new std::lock_guard<std::mutex>(_mutex))
@@ -34,7 +38,7 @@ public:
 	}
 
 	/**
-	 * @brief Blocks execution until the Latch is unlocked from another thread
+	 * Blocks execution until the Latch is unlocked from another thread
 	 * or is destructed.
 	 */
 	void wait() noexcept
@@ -45,8 +49,8 @@ public:
 
 
 	/**
-	 * @brief Unlocks the Latch. All threads currently blocked on wait() are
-	 * unblocked. TODO what about threads that haven't gotten to wait() yet?
+	 * Unlocks the Latch. All threads currently blocked on wait() are unblocked.
+	 * TODO what about threads that haven't gotten to wait() yet?
 	 */
 	void unlock() noexcept
 	{

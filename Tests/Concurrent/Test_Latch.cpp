@@ -17,6 +17,7 @@ class Test_Latch : public test::Class
 {
 	Q_OBJECT
 
+private:
 	//TODO extract to a macro with Test.h
 	void tryVerifyTrue(bool &what, int timeLimitMs)
 	{
@@ -34,12 +35,24 @@ class Test_Latch : public test::Class
 		Verify_True(what);
 	}
 
+
+	void finalizeThread(std::thread &thread, bool didExecute)
+	{
+		//TODO what else can I do here?
+		//there is no way to terminate the thread...
+		if (!didExecute)
+			thread.detach();
+		else
+			thread.join();
+	}
+
 private slots:
 	VTEST void noExecutionBeforeRelease()
 	{
+		concurrent::Latch latch;
 		bool didStart = false;
 		bool didExecute = false;
-		concurrent::Latch latch;
+
 		std::thread t1([&]
 		{
 			didStart = true;
@@ -52,47 +65,27 @@ private slots:
 		latch.unlock();
 		tryVerifyTrue(didExecute, 10);
 
-		//TODO what else can I do here? there is no way to terminate the thread...
-		if (!didExecute)
-			t1.detach();
-		else
-			t1.join();
-	}
-
-
-	VTEST void raiiBehavior()
-	{
-		bool didStart = false;
-		bool didExecute = false;
-		std::unique_ptr<std::thread> t1;
-
-		{
-			concurrent::Latch latch;
-
-			t1 = std::unique_ptr<std::thread>(new std::thread([&]
-			{
-				didStart = true;
-				latch.wait();
-				didExecute = true;
-			}));
-
-			tryVerifyTrue(didStart, 10);
-			Verify_False(didExecute);
-		}
-
-		tryVerifyTrue(didExecute, 10);
-
-		//TODO what else can I do here? there is no way to terminate the thread...
-		if (!didExecute)
-			t1->detach();
-		else
-			t1->join();
+		finalizeThread(t1, didExecute);
 	}
 
 
 	VTEST void waitingAfterUnlockShouldNotHang()
 	{
-		Post_Failure("Implement test");
+		concurrent::Latch latch;
+		bool didStart = false;
+		bool didExecute = false;
+		latch.unlock();
+
+		std::thread t1([&]
+		{
+			didStart = true;
+			latch.wait();
+			didExecute = true;
+		});
+
+		tryVerifyTrue(didStart, 10);
+		tryVerifyTrue(didExecute, 10);
+		finalizeThread(t1, didExecute);
 	}
 };
 
