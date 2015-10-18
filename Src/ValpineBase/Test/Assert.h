@@ -70,23 +70,23 @@ public:
 END_NAMESPACE
 END_NAMESPACE
 
-#define Assert_Eq(actual, expected) \
+#define AssertEq(actual, expected) \
 	::vbase::test::Assert(this, QString(__FILE__), __LINE__).areEq( \
 	QString(#actual), QString(#expected), \
 	actual, expected)
 
-#define Assert_True(what) \
+#define AssertTrue(what) \
 	::vbase::test::Assert(this, QString(__FILE__), __LINE__).isTrue( \
 	QString(#what), what)
 
-#define Assert_False(what) \
+#define AssertFalse(what) \
 	::vbase::test::Assert(this, QString(__FILE__), __LINE__).isFalse( \
 	QString(#what), what)
 
-#define Assert_Failure(message) \
+#define AssertFailure(message) \
 	::vbase::test::Assert(this, QString(__FILE__), __LINE__).failure(message)
 
-#define Assert_Warning(message) \
+#define AssertWarning(message) \
 	::vbase::test::Assert(this, QString(__FILE__), __LINE__).warning(message)
 
 #endif

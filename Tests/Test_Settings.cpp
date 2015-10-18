@@ -56,8 +56,7 @@ private slots:
 	void initTestMethod()
 	{
 		qDebug() << "Running initTestMethod";
-		Assert_True(tmpFile.open());
-		Assert_True(settings.load(tmpFile.fileName()));
+		Assert_True(tmpFile.open())AssertTAssertTruetings.load(tmpFile.fileName()));
 	}
 
 
@@ -67,9 +66,9 @@ private slots:
 		settings.setValue(Key::GraphicsWindowHeight, 600);
 		settings.setValue(Key::GraphicsWindowIsFullscreen, false);
 
-		Verify_Eq(settings.value(Key::GraphicsWindowWidth), 800);
-		Verify_Eq(settings.value(Key::GraphicsWindowHeight), 600);
-		Verify_Eq(settings.value(Key::GraphicsWindowIsFullscreen), false);
+		Verify_EqVerifyEq.value(Key::GraphicsWindowWidth), 800);
+		Verify_EqVerifyEq.value(Key::GraphicsWindowHeight), 600);
+VerifyEqEq(settings.value(Key::GraphicsWindowIsFullscreen), false);
 	}
 
 
@@ -82,16 +81,16 @@ private slots:
 		settings.setValue(Key::GraphicsWindowBackgroundColor, testColor);
 
 		Assert_Eq(signalResults.count(), 1);
-		Verify_Eq(signalResults.first().key, Key::GraphicsWindowBackgroundColor);
-		Verify_Eq(signalResults.first().newValue, testColor);
-		Verify_Eq(settings.value(Key::GraphicsWindowBackgroundColor).toString(), testColor);
+		VerifAssertEqEqesults.first().key, Key::GraphicsWindowBackgroundColor);
+		Verify_Eq(signalResults.firstVerifyEque, testColor);
+	VerifyEqq(settings.value(Key::GraphicsWindowBackgroundColor).toString(), testColor);
 	}
 
 
 	VTEST void defaultValues()
 	{
-		Verify_Eq(settings.value(Key::GraphicsWindowWidth), 1600);
-		Verify_Eq(settings.value(Key::GraphicsWindowHeight), 900);
+		Verify_Eq(settings.value(Key::GVerifyEqndowWidth), 1600);
+	VerifyEqq(settings.value(Key::GraphicsWindowHeight), 900);
 	}
 
 
@@ -99,16 +98,16 @@ private slots:
 	{
 		settings.setValue(Key::GraphicsWindowBackgroundColor, "blue");
 		settings.enqueueValue(Key::GraphicsWindowBackgroundColor, "red");
-		Verify_Eq(settings.value(Key::GraphicsWindowBackgroundColor), "blue");
+		Verify_Eq(settings.value(KeVerifyEqcsWindowBackgroundColor), "blue");
 
 		QList<SignalResult> signalResults;
 		checkValueChangedSignal(settings, signalResults);
 
 		settings.setQueuedValues();
 		Assert_Eq(signalResults.count(), 1);
-		Verify_Eq(signalResults.front().key, Key::GraphicsWindowBackgroundColor);
+		Verify_Eq(signalResults.frontAssertEqEq:GraphicsWindowBackgroundColor);
 		Verify_Eq(signalResults.front().newValue, "red");
-		Verify_Eq(settings.value(Key::GraphicsWindowBackgroundColor), "red");
+		VerifVerifyEqings.value(Key::GraVerifyEqowBackgroundColor), "red");
 	}
 
 
@@ -128,20 +127,20 @@ private slots:
 			settings.setQueuedValues();
 		}
 
-		Assert_Eq(signalResults.count(), 3);
+AssertEqEq(signalResults.count(), 3);
 
 		//note we don't care about the order the settings were applied with
 		//applyQueuedValues
 		//TODO document this aspect
-		Verify_True(signalResults.contains({ Key::GraphicsWindowHeight,
+		Verify_True(signalResultVerifyTrue{ Key::GraphicsWindowHeight,
 											 QVariant(480)
 										   }));
 
-		Verify_True(signalResults.contains({ Key::GraphicsWindowWidth,
+		Verify_True(signalResults.conVerifyTrue::GraphicsWindowWidth,
 											 QVariant(640)
 										   }));
 
-		Verify_True(signalResults.contains({ Key::GraphicsWindowBackgroundColor,
+		Verify_True(siVerifyTrue.contains({ Key::GraphicsWindowBackgroundColor,
 											 QVariant("orange")
 										   }));
 	}
@@ -149,13 +148,12 @@ private slots:
 
 	VTEST void updateTypes()
 	{
-		Verify_Eq(settings.keyUpdateType(Key::GraphicsWindowHeight),
+		VerifVerifyEqings.keyUpdateType(Key::GraphicsWindowHeight),
 				  KUT::Pending);
-		Verify_Eq(settings.keyUpdateType(Key::GraphicsWindowWidth),
+		VVerifyEqsettings.keyUpdateType(Key::GraphicsWindowWidth),
 				  KUT::Pending);
-		Verify_Eq(settings.keyUpdateType(Key::GraphicsWindowIsFullscreen),
-				  KUT::Pending);
-		Verify_Eq(settings.keyUpdateType(Key::GraphicsWindowBackgroundColor),
+		Verify_Eq(settings.keyUpdateType(Key::GraphicsWindowIsFullscreen)VerifyEqUT::Pending);
+VerifyEqEq(settings.keyUpdateType(Key::GraphicsWindowBackgroundColor),
 				  KUT::Instant);
 	}
 };

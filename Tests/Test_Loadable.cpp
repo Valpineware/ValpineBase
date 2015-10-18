@@ -32,10 +32,10 @@ private slots:
 		};
 
 
-		Assert_False(loadable.pHasLoaded);
+AssertFalsese(loadable.pHasLoaded);
 		f();
-		Assert_True(loadable.pHasLoaded);
-		Assert_True(didIsLoading);
+		AssertTrue(loadable.pHasLoaded);
+		AssertTrue(didIsLoading);
 
 	}
 };

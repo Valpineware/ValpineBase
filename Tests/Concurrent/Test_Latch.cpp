@@ -18,24 +18,6 @@ class Test_Latch : public test::Class
 	Q_OBJECT
 
 private:
-	//TODO extract to a macro with Test.h
-	void tryVerifyTrue(bool &what, int timeLimitMs)
-	{
-		const int intervalMs = 5;
-		const int tries = timeLimitMs / intervalMs;
-
-		for (int i=0; i<tries; i++)
-		{
-			if (what)
-				break;
-
-			std::this_thread::sleep_for(std::chrono::milliseconds(intervalMs));
-		}
-
-		Verify_True(what);
-	}
-
-
 	void finalizeThread(std::thread &thread, bool didExecute)
 	{
 		//TODO what else can I do here?
@@ -60,10 +42,10 @@ private slots:
 			didExecute = true;
 		});
 
-		tryVerifyTrue(didStart, 10);
-		Verify_False(didExecute);
+		VerifyTryTrue(didStart, 10);
+		VerifyFalse(didExecute);
 		latch.unlock();
-		tryVerifyTrue(didExecute, 10);
+		VerifyTryTrue(didExecute, 10);
 
 		finalizeThread(t1, didExecute);
 	}
@@ -83,8 +65,8 @@ private slots:
 			didExecute = true;
 		});
 
-		tryVerifyTrue(didStart, 10);
-		tryVerifyTrue(didExecute, 10);
+		VerifyTryTrue(didStart, 10);
+		VerifyTryTrue(didExecute, 10);
 		finalizeThread(t1, didExecute);
 	}
 };
