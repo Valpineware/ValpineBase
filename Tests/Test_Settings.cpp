@@ -39,7 +39,7 @@ class Test_Settings : public test::Class
 	{
 		QObject::connect(&settings, &SettingsBase::valueChanged,
 						 [&signalResultList](int key,
-											const QVariant &newValue)
+						 const QVariant &newValue)
 		{
 			SignalResult sr;
 			sr.key = static_cast<SampleKeyClass::KeyEnum>(key);
@@ -56,7 +56,9 @@ private slots:
 	void initTestMethod()
 	{
 		qDebug() << "Running initTestMethod";
-		Assert_True(tmpFile.open())AssertTAssertTruetings.load(tmpFile.fileName()));
+
+		AssertTrue(tmpFile.open());
+		AssertTrue(settings.load(tmpFile.fileName()));
 	}
 
 
@@ -66,9 +68,9 @@ private slots:
 		settings.setValue(Key::GraphicsWindowHeight, 600);
 		settings.setValue(Key::GraphicsWindowIsFullscreen, false);
 
-		Verify_EqVerifyEq.value(Key::GraphicsWindowWidth), 800);
-		Verify_EqVerifyEq.value(Key::GraphicsWindowHeight), 600);
-VerifyEqEq(settings.value(Key::GraphicsWindowIsFullscreen), false);
+		VerifyEq(settings.value(Key::GraphicsWindowWidth), 800);
+		VerifyEq(settings.value(Key::GraphicsWindowHeight), 600);
+		VerifyEq(settings.value(Key::GraphicsWindowIsFullscreen), false);
 	}
 
 
@@ -80,17 +82,17 @@ VerifyEqEq(settings.value(Key::GraphicsWindowIsFullscreen), false);
 		const QString testColor = "0x40a030";
 		settings.setValue(Key::GraphicsWindowBackgroundColor, testColor);
 
-		Assert_Eq(signalResults.count(), 1);
-		VerifAssertEqEqesults.first().key, Key::GraphicsWindowBackgroundColor);
-		Verify_Eq(signalResults.firstVerifyEque, testColor);
-	VerifyEqq(settings.value(Key::GraphicsWindowBackgroundColor).toString(), testColor);
+		AssertEq(signalResults.count(), 1);
+		VerifyEq(signalResults.first().key, Key::GraphicsWindowBackgroundColor);
+		VerifyEq(signalResults.first().newValue, testColor);
+		VerifyEq(settings.value(Key::GraphicsWindowBackgroundColor).toString(), testColor);
 	}
 
 
 	VTEST void defaultValues()
 	{
-		Verify_Eq(settings.value(Key::GVerifyEqndowWidth), 1600);
-	VerifyEqq(settings.value(Key::GraphicsWindowHeight), 900);
+		VerifyEq(settings.value(Key::GraphicsWindowWidth), 1600);
+		VerifyEq(settings.value(Key::GraphicsWindowHeight), 900);
 	}
 
 
@@ -98,16 +100,16 @@ VerifyEqEq(settings.value(Key::GraphicsWindowIsFullscreen), false);
 	{
 		settings.setValue(Key::GraphicsWindowBackgroundColor, "blue");
 		settings.enqueueValue(Key::GraphicsWindowBackgroundColor, "red");
-		Verify_Eq(settings.value(KeVerifyEqcsWindowBackgroundColor), "blue");
+		VerifyEq(settings.value(Key::GraphicsWindowBackgroundColor), "blue");
 
 		QList<SignalResult> signalResults;
 		checkValueChangedSignal(settings, signalResults);
 
 		settings.setQueuedValues();
-		Assert_Eq(signalResults.count(), 1);
-		Verify_Eq(signalResults.frontAssertEqEq:GraphicsWindowBackgroundColor);
-		Verify_Eq(signalResults.front().newValue, "red");
-		VerifVerifyEqings.value(Key::GraVerifyEqowBackgroundColor), "red");
+		AssertEq(signalResults.count(), 1);
+		VerifyEq(signalResults.front().key, Key::GraphicsWindowBackgroundColor);
+		VerifyEq(signalResults.front().newValue, "red");
+		VerifyEq(settings.value(Key::GraphicsWindowBackgroundColor), "red");
 	}
 
 
@@ -127,35 +129,38 @@ VerifyEqEq(settings.value(Key::GraphicsWindowIsFullscreen), false);
 			settings.setQueuedValues();
 		}
 
-AssertEqEq(signalResults.count(), 3);
+		AssertEq(signalResults.count(), 3);
 
 		//note we don't care about the order the settings were applied with
 		//applyQueuedValues
 		//TODO document this aspect
-		Verify_True(signalResultVerifyTrue{ Key::GraphicsWindowHeight,
-											 QVariant(480)
-										   }));
+		VerifyTrue(signalResults.contains({ Key::GraphicsWindowHeight,
+											QVariant(480)
+					}));
 
-		Verify_True(signalResults.conVerifyTrue::GraphicsWindowWidth,
-											 QVariant(640)
-										   }));
+		VerifyTrue(signalResults.contains({ Key::GraphicsWindowWidth,
+											QVariant(640)
+	}));
 
-		Verify_True(siVerifyTrue.contains({ Key::GraphicsWindowBackgroundColor,
-											 QVariant("orange")
-										   }));
-	}
+	VerifyTrue(signalResults.contains({ Key::GraphicsWindowBackgroundColor,
+										QVariant("orange")
+									  }));
+}
 
 
-	VTEST void updateTypes()
-	{
-		VerifVerifyEqings.keyUpdateType(Key::GraphicsWindowHeight),
-				  KUT::Pending);
-		VVerifyEqsettings.keyUpdateType(Key::GraphicsWindowWidth),
-				  KUT::Pending);
-		Verify_Eq(settings.keyUpdateType(Key::GraphicsWindowIsFullscreen)VerifyEqUT::Pending);
-VerifyEqEq(settings.keyUpdateType(Key::GraphicsWindowBackgroundColor),
-				  KUT::Instant);
-	}
+VTEST void updateTypes()
+{
+	VerifyEq(settings.keyUpdateType(Key::GraphicsWindowHeight),
+			KUT::Pending);
+	VerifyEq(settings.keyUpdateType(Key::GraphicsWindowWidth),
+			KUT::Pending);
+	VerifyEq(settings.keyUpdateType(Key::GraphicsWindowIsFullscreen),
+			  KUT::Pending);
+	VerifyEq(settings.keyUpdateType(Key::GraphicsWindowBackgroundColor),
+			 KUT::Instant);
+}
+
+
 };
 
 ADD_TESTCLASS(Test_Settings)
