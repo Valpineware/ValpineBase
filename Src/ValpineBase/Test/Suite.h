@@ -23,6 +23,25 @@
 
 namespace vbase { namespace test {
 
+class TestClassPackageInterface
+{
+public:
+	virtual Class *makeTestClassInstance() = 0;
+};
+
+
+// TODO convert to private implementation
+template<typename T>
+class TestClassPackage : public TestClassPackageInterface
+{
+public:
+	virtual Class *makeTestClassInstance()
+	{
+		return new T;
+	}
+};
+
+
 class Suite
 {
 public:
@@ -110,36 +129,21 @@ private:
 
 	QDateTime mDateTime_started, mDateTime_finished;
 
-	class TestClassPackageInterface
-	{
-	public:
-		virtual Class *makeTestClassInstance() = 0;
-	};
-
-
-	// TODO convert to private implementation
-	template<typename T>
-	class TestClassPackage : public TestClassPackageInterface
-	{
-	public:
-		virtual Class *makeTestClassInstance()
-		{
-			return new T;
-		}
-	};
-
 	static QList<TestClassPackageInterface*>& registered()
 	{
 		static QList<TestClassPackageInterface*> reg;
 		return reg;
 	}
-
-	void runTestClass(TestClassPackageInterface *testClass);
 };
 
 #ifndef Q_MOC_RUN
-// define the tag text
-#  define VTEST
+
+//tags a method as a regular test method
+#define VTEST
+
+//tags a method as a test method to be run in an isolated process
+#define VTEST_ISOLATED
+
 #endif
 
 #define ADD_TESTCLASS(name) \
