@@ -31,8 +31,8 @@ QJsonObject jsonObjectFromResult(const Failure *failure)
 void Results::exportResults(QIODevice &outDevice)
 {
 	QJsonObject rootJson;
-	rootJson.insert("dateTime_started", _dateTime_started.toString(dateFormat()));
-	rootJson.insert("dateTime_finished", _dateTime_finished.toString(dateFormat()));
+	rootJson.insert("dateTime_started", _dateTimeStarted.toString(dateFormat()));
+	rootJson.insert("dateTime_finished", _dateTimeFinished.toString(dateFormat()));
 
 	QJsonArray classesJsonArray;
 

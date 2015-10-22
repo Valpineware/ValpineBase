@@ -65,8 +65,19 @@ public:
 		return fmt;
 	}
 
+	void setDateTimeStarted(const QDateTime &dateTimeStarted)
+	{
+		_dateTimeStarted = dateTimeStarted;
+	}
+
+	void setDateTimeFinished(const QDateTime &dateTimeFinished)
+	{
+		_dateTimeStarted = dateTimeFinished;
+	}
+private:
 	QMap<QString, QList<TestResult>> _results;
-	QDateTime _dateTime_started, _dateTime_finished;
+	QDateTime _dateTimeStarted;
+	QDateTime _dateTimeFinished;
 };
 
 END_NAMESPACE

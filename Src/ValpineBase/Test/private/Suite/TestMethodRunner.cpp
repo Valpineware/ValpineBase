@@ -14,6 +14,8 @@ TestClassRunner::TestClassRunner(Suite *hostSuite,
 
 void TestClassRunner::run()
 {
+	_testResults->setDateTimeStarted(QDateTime::currentDateTime());
+
 	std::unique_ptr<Class> defaultInstance(_testClass->makeTestClassInstance());
 	_metaObject = defaultInstance->metaObject();
 	_initMethodIndex = _metaObject->indexOfMethod("initTestMethod()");
@@ -28,6 +30,8 @@ void TestClassRunner::run()
 			runTestMethod(metaMethod);
 		}
 	}
+
+	_testResults->setDateTimeFinished(QDateTime::currentDateTime());
 }
 
 

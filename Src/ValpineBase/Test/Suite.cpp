@@ -54,14 +54,11 @@ void Suite::run(bool launchReviewGUI, const QString &testReviewGUIPath)
 
 void Suite::run(QIODevice &outputFileDevice)
 {
-	_testResults._dateTime_started = QDateTime::currentDateTime();
-
 	for (TestClassPackageInterface *testClass : registered())
 	{
 		_private::TestClassRunner(this, &_testResults, testClass).run();
 	}
 
-	_testResults._dateTime_finished = QDateTime::currentDateTime();
 	_testResults.exportResults(outputFileDevice);
 
 	qDebug() << "Finished running all tests";
