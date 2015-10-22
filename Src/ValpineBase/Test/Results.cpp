@@ -1,13 +1,13 @@
 #include <QtCore/QDirIterator>
 #include <QtCore/QFileInfo>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QJsonValue>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
+#include <QtCore/QJsonArray>
+#include <QtCore/QJsonValue>
 
 #include <ValpineBase/Test/Suite.h>
 
-#include "TestResults.h"
+#include "Results.h"
 
 namespace vbase { namespace test {
 
@@ -28,7 +28,7 @@ QJsonObject jsonObjectFromResult(const Failure *failure)
 }
 
 
-void TestResults::exportResults(QIODevice &ioDevice)
+void Results::exportResults(QIODevice &outDevice)
 {
 	QJsonObject rootJson;
 	rootJson.insert("dateTime_started", _dateTime_started.toString(dateFormat()));
@@ -74,13 +74,13 @@ void TestResults::exportResults(QIODevice &ioDevice)
 	rootJson.insert("results", classesJsonArray);
 
 	QJsonDocument doc(rootJson);
-	QTextStream out(&ioDevice);
+	QTextStream out(&outDevice);
 	out << doc.toJson();
 }
 
 
-TestResults::TestResult& TestResults::findTestResult(const QString&className,
-													 const QString&testName)
+Results::TestResult& Results::findTestResult(const QString&className,
+											 const QString&testName)
 {
 	auto classIter = _results.find(className);
 
@@ -106,7 +106,7 @@ TestResults::TestResult& TestResults::findTestResult(const QString&className,
 }
 
 
-void TestResults::printResults() const
+void Results::printResults() const
 {
 	QMapIterator<QString, QList<TestResult>> iter(_results);
 
@@ -135,7 +135,7 @@ void TestResults::printResults() const
 }
 
 
-void TestResults::cleanOldResults(int maxAgeSeconds) const
+void Results::cleanOldResults(int maxAgeSeconds) const
 {
 	QDirIterator iter("./TestResults", QDirIterator::Subdirectories);
 
@@ -152,7 +152,7 @@ void TestResults::cleanOldResults(int maxAgeSeconds) const
 }
 
 
-QString TestResults::TestResult::status() const
+QString Results::TestResult::status() const
 {
 	bool foundWarning = false;
 

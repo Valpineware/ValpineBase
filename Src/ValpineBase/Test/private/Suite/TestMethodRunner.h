@@ -16,14 +16,14 @@ class TestClassRunner
 {
 public:
 	TestClassRunner() = delete;
-	TestClassRunner(Suite *hostSuite, TestResults *testResults,
+	TestClassRunner(Suite *hostSuite, Results *testResults,
 					TestClassPackageInterface *testClass);
 
 	void run();
 
 private:
 	Suite *_hostSuite = nullptr;
-	TestResults *_testResults = nullptr;
+	Results *_testResults = nullptr;
 	TestClassPackageInterface *_testClass = nullptr;
 	const QMetaObject *_metaObject;
 	int _initMethodIndex = -1;

@@ -3,7 +3,7 @@
 namespace _private {
 
 TestClassRunner::TestClassRunner(Suite *hostSuite,
-								 TestResults *testResults,
+								 Results *testResults,
 								 TestClassPackageInterface *testClass) :
 	_hostSuite(hostSuite),
 	_testResults(testResults),

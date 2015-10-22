@@ -21,7 +21,7 @@
 #include <ValpineBase/Test/Failure.h>
 #include <ValpineBase/Test/Class.h>
 
-#include "private/Suite/TestResults.h"
+#include "ValpineBase/Test/Results.h"
 
 namespace vbase { namespace test {
 
@@ -69,7 +69,7 @@ public:
 
 	void postFailure(const QString &className, const QString &testName, Failure *result);
 
-	const TestResults& testResults() const { return _testResults; }
+	const Results& testResults() const { return _testResults; }
 
 	template<typename T>
 	struct TestAdder
@@ -87,7 +87,7 @@ private:
 		return reg;
 	}
 
-	TestResults _testResults;
+	Results _testResults;
 };
 
 #ifndef Q_MOC_RUN

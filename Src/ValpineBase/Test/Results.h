@@ -3,27 +3,47 @@
 // This file is licensed under the MIT License.
 //=============================================================================|
 
-#ifndef vbase_test_Suite_private_Suite_TestResults_h
-#define vbase_test_Suite_private_Suite_TestResults_h
+#ifndef vbase_test_Results_h
+#define vbase_test_Results_h
 
-#include <ValpineBase/ValpineBase.h>
+#include <QtCore/QIODevice>
+
+#include <ValpineBase/Test/Failure.h>
 
 namespace vbase { namespace test {
 
 class Suite;
 
-//TODO consider making this a public class
-class TestResults
+/**
+ * Stores test results organized per test class by name. Used as a result from
+ * running a Suite.
+ */
+class Results
 {
 public:
+	/**
+	 * Stores information about a test method that was executed.
+	 */
 	struct TestResult
 	{
+		/**
+		 * @brief The name of the test method.
+		 */
 		QString name;
+
+		/**
+		 * @brief The amount of time in milliseconds this test took to execute.
+		 * Includes the time to call initTestCase.
+		 */
 		int executionTime = 0;
+
+		/**
+		 * @brief List of all failures posted while running the test.
+		 */
 		QList<Failure*> messages;
 
 		/**
-		 * @return the status string which is based on the types of messages. If
+		 * @return the status string which is based on the types of failures. If
 		 * at least one message is type Error, "error" is returned. Otherwise
 		 * if at least one message is type Warn, "warning" is returned.
 		 * Otherwise "passed" is returned.
@@ -31,9 +51,10 @@ public:
 		QString status() const;
 	};
 
-	void exportResults(QIODevice &ioDevice);
-
 	TestResult& findTestResult(const QString &className, const QString &testName);
+
+	void exportResults(QIODevice &outDevice);
+
 	void printResults() const;
 
 	void cleanOldResults(int maxAgeSeconds) const;
