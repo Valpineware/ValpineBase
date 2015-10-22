@@ -9,11 +9,6 @@
 #include <QtCore/QProcess>
 #include <QStandardPaths>
 
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QJsonValue>
-
 #include "Suite.h"
 #include "private/Suite/TestMethodRunner.h"
 
@@ -59,161 +54,23 @@ void Suite::run(bool launchReviewGUI, const QString &testReviewGUIPath)
 
 void Suite::run(QIODevice &outputFileDevice)
 {
-	mDateTime_started = QDateTime::currentDateTime();
+	_testResults._dateTime_started = QDateTime::currentDateTime();
 
 	for (TestClassPackageInterface *testClass : registered())
 	{
-		TestClassRunner(testClass).run();
+		_private::TestClassRunner(this, &_testResults, testClass).run();
 	}
 
-	mDateTime_finished = QDateTime::currentDateTime();
-	exportResults(outputFileDevice);
+	_testResults._dateTime_finished = QDateTime::currentDateTime();
+	_testResults.exportResults(outputFileDevice);
 
 	qDebug() << "Finished running all tests";
 }
 
 
-void Suite::printResults()
-{
-	QMapIterator<QString, QList<TestResult>> iter(mResults);
-	while (iter.hasNext())
-	{
-		auto item = iter.next();
-
-		for (const TestResult &testResult : item.value())
-		{
-			for (Failure *failure : testResult.messages)
-			{
-				qDebug() << "FAILED: [" << testResult.name << "] - - - - - - - -";
-
-				for (auto line : failure->details)
-				{
-					qDebug() << "      -" << line;
-				}
-
-				qDebug() << "  At " << failure->filePath;
-				qDebug() << "  Line " << failure->lineNumber;
-
-				qDebug() << "";
-			}
-		}
-	}
-}
-
-
-void Suite::cleanOldResults(int maxAgeSeconds)
-{
-	QDirIterator iter("./TestResults", QDirIterator::Subdirectories);
-	while (iter.hasNext())
-	{
-		QFileInfo fi(iter.next());
-		int testAgeSec = fi.lastModified().secsTo(QDateTime::currentDateTime());
-
-		if (testAgeSec > maxAgeSeconds)
-		{
-			QFile::remove(fi.absoluteFilePath());
-		}
-	}
-}
-
-
 void Suite::postFailure(const QString &className, const QString &testName, Failure *failure)
 {
-	findTestResult(className, testName).messages.append(failure);
-}
-
-
-QJsonObject jsonObjectFromResult(const Failure *failure)
-{
-	QJsonObject o;
-	o.insert("filePath", failure->filePath);
-	o.insert("lineNumber", failure->lineNumber);
-	o.insert("type", static_cast<int>(failure->type));
-
-	QJsonArray messageArray;
-	for (const auto &message : failure->details)
-		messageArray.append(message);
-
-	o.insert("details", messageArray);
-
-	return o;
-}
-
-
-void Suite::exportResults(QIODevice &ioDevice)
-{
-	QJsonObject rootJson;
-	rootJson.insert("dateTime_started", mDateTime_started.toString(dateFormat()));
-	rootJson.insert("dateTime_finished", mDateTime_finished.toString(dateFormat()));
-
-	QJsonArray classesJsonArray;
-
-	//build array of results
-	QMapIterator<QString,QList<TestResult>> iter = mResults;
-
-	while (iter.hasNext())
-	{
-		auto a = iter.next();
-
-		QJsonObject co;
-		co.insert("className", QJsonValue(a.key()));
-
-		QJsonArray testsArray;
-
-		//TODO fix all of these magic strings
-		for (const TestResult &testResult : a.value())
-		{
-			QJsonObject to;
-			to.insert("name", testResult.name);
-			to.insert("status", testResult.status());
-			to.insert("executionTime", testResult.executionTime);
-
-			QJsonArray resultsArray;
-
-			for (const Failure *failure : testResult.messages)
-			{
-				resultsArray.append(jsonObjectFromResult(failure));
-			}
-
-			to.insert("messages", resultsArray);
-			testsArray.append(to);
-		}
-
-		co.insert("tests", testsArray);
-		classesJsonArray.append(co);
-	}
-
-	rootJson.insert("results", classesJsonArray);
-
-	QJsonDocument doc(rootJson);
-	QTextStream out(&ioDevice);
-	out << doc.toJson();
-}
-
-
-Suite::TestResult& Suite::findTestResult(const QString &className, const QString &testName)
-{
-	auto classIter = mResults.find(className);
-
-	//an entry for this className already exists
-	if (classIter != mResults.end())
-	{
-		for (auto &testResult : classIter.value())
-			if (testResult.name == testName)
-				return testResult;
-
-		classIter.value().append(TestResult());
-		classIter.value().last().name = testName;
-
-		return classIter.value().last();
-	}
-
-	auto &testResultList = mResults[className];
-	testResultList = QList<TestResult>();
-	testResultList.append(TestResult());
-	testResultList.last().name  = testName;
-
-	return testResultList.first();
+	_testResults.findTestResult(className, testName).messages.append(failure);
 }
 
 END_NAMESPACE

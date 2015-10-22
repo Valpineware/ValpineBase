@@ -21,6 +21,8 @@
 #include <ValpineBase/Test/Failure.h>
 #include <ValpineBase/Test/Class.h>
 
+#include "private/Suite/TestResults.h"
+
 namespace vbase { namespace test {
 
 class TestClassPackageInterface
@@ -45,13 +47,6 @@ public:
 class Suite
 {
 public:
-	static const QString& dateFormat()
-	{
-		static QString fmt = "yyyy-MM-dd HH:mm:ss:zzz";
-		return fmt;
-	}
-
-public:
 	/**
 	 * Runs all the tests registered with the Suite. The test results are
 	 * written to ./TestResults/ and are uniquely identified with a timestamp.
@@ -72,11 +67,9 @@ public:
 	 */
 	void run(QIODevice &outputFileDevice);
 
-	void printResults();
-
-	void cleanOldResults(int maxAgeSeconds);
-
 	void postFailure(const QString &className, const QString &testName, Failure *result);
+
+	const TestResults& testResults() const { return _testResults; }
 
 	template<typename T>
 	struct TestAdder
@@ -88,52 +81,13 @@ public:
 	};
 
 private:
-	struct TestResult
-	{
-		QString name;
-		int executionTime = 0;
-		QList<Failure*> messages;
-
-		/**
-		 * @return the status string which is based on the types of messages. If
-		 * at least one message is type Error, "error" is returned. Otherwise
-		 * if at least one message is type Warn, "warning" is returned.
-		 * Otherwise "passed" is returned.
-		 */
-		QString status() const
-		{
-			bool foundWarning = false;
-
-			for (Failure *message : messages)
-			{
-				if (message->type == Failure::Type::Error)
-					return "error";
-				else if (message->type == Failure::Type::Warn)
-					foundWarning = true;
-			}
-
-			if (foundWarning)
-				return "warning";
-
-			return "passed";
-		}
-	};
-
-	void exportResults(QIODevice &ioDevice);
-	TestResult& findTestResult(const QString &className, const QString &testName);
-
-	/**
-	 * @brief mResults
-	 */
-	QMap<QString, QList<TestResult>> mResults;
-
-	QDateTime mDateTime_started, mDateTime_finished;
-
 	static QList<TestClassPackageInterface*>& registered()
 	{
 		static QList<TestClassPackageInterface*> reg;
 		return reg;
 	}
+
+	TestResults _testResults;
 };
 
 #ifndef Q_MOC_RUN

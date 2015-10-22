@@ -10,18 +10,20 @@
 
 using namespace vbase::test;
 
-namespace _Private {
+namespace _private {
 
 class TestClassRunner
 {
 public:
 	TestClassRunner() = delete;
-	TestClassRunner(Suite *hostSuite, TestClassPackageInterface *testClass);
+	TestClassRunner(Suite *hostSuite, TestResults *testResults,
+					TestClassPackageInterface *testClass);
 
 	void run();
 
 private:
 	Suite *_hostSuite = nullptr;
+	TestResults *_testResults = nullptr;
 	TestClassPackageInterface *_testClass = nullptr;
 	const QMetaObject *_metaObject;
 	int _initMethodIndex = -1;

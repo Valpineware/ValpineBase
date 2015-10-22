@@ -1,9 +1,12 @@
 #include "TestMethodRunner.h"
 
-namespace _Private {
+namespace _private {
 
 TestClassRunner::TestClassRunner(Suite *hostSuite,
+								 TestResults *testResults,
 								 TestClassPackageInterface *testClass) :
+	_hostSuite(hostSuite),
+	_testResults(testResults),
 	_testClass(testClass)
 {
 }
@@ -42,7 +45,7 @@ void TestClassRunner::runTestMethod(const QMetaMethod &metaMethod)
 	try
 	{
 		testObject->currentlyExecutingMethodName = metaMethod.name();
-		_metaObject->invoke(testObject.get(), Qt::DirectConnection);
+		metaMethod.invoke(testObject.get(), Qt::DirectConnection);
 
 
 		//at this point, the test must have passed since no
@@ -57,7 +60,7 @@ void TestClassRunner::runTestMethod(const QMetaMethod &metaMethod)
 	}
 
 	int executionTime = testObject->executionTimer.elapsed();
-	auto &tr = findTestResult(_metaObject->className(),
+	auto &tr = _testResults->findTestResult(_metaObject->className(),
 							  metaMethod.name());
 	tr.executionTime = executionTime;
 }
