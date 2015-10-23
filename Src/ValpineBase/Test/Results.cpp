@@ -11,23 +11,6 @@
 
 namespace vbase { namespace test {
 
-QJsonObject jsonObjectFromResult(const Failure *failure)
-{
-	QJsonObject o;
-	o.insert("filePath", failure->filePath);
-	o.insert("lineNumber", failure->lineNumber);
-	o.insert("type", static_cast<int>(failure->type));
-
-	QJsonArray messageArray;
-	for (const auto &message : failure->details)
-		messageArray.append(message);
-
-	o.insert("details", messageArray);
-
-	return o;
-}
-
-
 void Results::exportResults(QIODevice &outDevice)
 {
 	QJsonObject rootJson;
@@ -37,38 +20,12 @@ void Results::exportResults(QIODevice &outDevice)
 	QJsonArray classesJsonArray;
 
 	//build array of results
-	QMapIterator<QString,QList<TestResult>> iter = _results;
+	QMapIterator<QString, ClassResult> iter = _results;
 
 	while (iter.hasNext())
 	{
 		auto a = iter.next();
-
-		QJsonObject co;
-		co.insert("className", QJsonValue(a.key()));
-
-		QJsonArray testsArray;
-
-		//TODO fix all of these magic strings
-		for (const TestResult &testResult : a.value())
-		{
-			QJsonObject to;
-			to.insert("name", testResult.name);
-			to.insert("status", testResult.status());
-			to.insert("executionTime", testResult.executionTime);
-
-			QJsonArray resultsArray;
-
-			for (const Failure *failure : testResult.messages)
-			{
-				resultsArray.append(jsonObjectFromResult(failure));
-			}
-
-			to.insert("messages", resultsArray);
-			testsArray.append(to);
-		}
-
-		co.insert("tests", testsArray);
-		classesJsonArray.append(co);
+		classesJsonArray.append(a.value().toJsonObject(a.key()));
 	}
 
 	rootJson.insert("results", classesJsonArray);
@@ -87,18 +44,18 @@ Results::TestResult& Results::findTestResult(const QString&className,
 	//an entry for this className already exists
 	if (classIter != _results.end())
 	{
-		for (auto &testResult : classIter.value())
+		for (auto &testResult : classIter.value().testResults)
 			if (testResult.name == testName)
 				return testResult;
 
-		classIter.value().append(TestResult());
-		classIter.value().last().name = testName;
+		classIter.value().testResults.append(TestResult());
+		classIter.value().testResults.last().name = testName;
 
-		return classIter.value().last();
+		return classIter.value().testResults.last();
 	}
 
-	auto &testResultList = _results[className];
-	testResultList = QList<TestResult>();
+	auto &testResultList = _results[className].testResults;
+	testResultList.clear();
 	testResultList.append(TestResult());
 	testResultList.last().name  = testName;
 
@@ -108,13 +65,13 @@ Results::TestResult& Results::findTestResult(const QString&className,
 
 void Results::printResults() const
 {
-	QMapIterator<QString, QList<TestResult>> iter(_results);
+	QMapIterator<QString, ClassResult> iter(_results);
 
 	while (iter.hasNext())
 	{
 		auto item = iter.next();
 
-		for (const TestResult &testResult : item.value())
+		for (const TestResult &testResult : item.value().testResults)
 		{
 			for (Failure *failure : testResult.messages)
 			{
@@ -168,6 +125,43 @@ QString Results::TestResult::status() const
 		return "warning";
 
 	return "passed";
+}
+
+
+QJsonObject Results::TestResult::toJsonObject() const
+{
+	QJsonObject jsonObject;
+	jsonObject.insert("name", name);
+	jsonObject.insert("status", status());
+	jsonObject.insert("executionTime", executionTime);
+
+	QJsonArray resultsArray;
+
+	for (const Failure *failure : messages)
+	{
+		resultsArray.append(failure->toJsonObject());
+	}
+
+	jsonObject.insert("messages", resultsArray);
+
+	return jsonObject;
+}
+
+
+QJsonObject Results::ClassResult::toJsonObject(const QString &key) const
+{
+	QJsonObject jsonObject;
+	jsonObject.insert("className", QJsonValue(key));
+
+	QJsonArray testsArray;
+
+	//TODO fix all of these magic strings
+	for (const TestResult &testResult : testResults)
+		testsArray.append(testResult.toJsonObject());
+
+	jsonObject.insert("tests", testsArray);
+
+	return jsonObject;
 }
 
 END_NAMESPACE

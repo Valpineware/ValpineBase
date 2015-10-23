@@ -49,6 +49,17 @@ public:
 		 * Otherwise "passed" is returned.
 		 */
 		QString status() const;
+
+		QJsonObject toJsonObject() const;
+	};
+
+
+	struct ClassResult
+	{
+		QList<TestResult> testResults;
+
+		//TODO remove the need to pass in the key for the name
+		QJsonObject toJsonObject(const QString &key) const;
 	};
 
 	TestResult& findTestResult(const QString &className, const QString &testName);
@@ -74,8 +85,9 @@ public:
 	{
 		_dateTimeStarted = dateTimeFinished;
 	}
+
 private:
-	QMap<QString, QList<TestResult>> _results;
+	QMap<QString, ClassResult> _results;
 	QDateTime _dateTimeStarted;
 	QDateTime _dateTimeFinished;
 };

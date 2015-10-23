@@ -12,6 +12,8 @@
 #include <QString>
 #include <QStringList>
 #include <QMetaMethod>
+#include <QtCore/QJsonObject>
+#include <QtCore/QJsonArray>
 
 #include <ValpineBase/ValpineBase.h>
 
@@ -41,6 +43,23 @@ public:
 		}
 
 		return "error";
+	}
+
+
+	QJsonObject toJsonObject() const
+	{
+		QJsonObject jsonObject;
+		jsonObject.insert("filePath", filePath);
+		jsonObject.insert("lineNumber", lineNumber);
+		jsonObject.insert("type", static_cast<int>(type));
+
+		QJsonArray messageArray;
+		for (const auto &message : details)
+			messageArray.append(message);
+
+		jsonObject.insert("details", messageArray);
+
+		return jsonObject;
 	}
 };
 
