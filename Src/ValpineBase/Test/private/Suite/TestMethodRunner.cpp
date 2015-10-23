@@ -1,3 +1,6 @@
+#include <QtCore/QProcess>
+#include <QtCore/QCoreApplication>
+
 #include "TestMethodRunner.h"
 
 namespace _private {
@@ -5,46 +8,57 @@ namespace _private {
 TestClassRunner::TestClassRunner(Suite *hostSuite,
 								 Results *testResults,
 								 TestClassPackageInterface *testClass) :
-	_hostSuite(hostSuite),
-	_testResults(testResults),
-	_testClass(testClass)
+	hostSuite(hostSuite),
+	testResults(testResults),
+	testClass(testClass)
 {
 }
 
 
 void TestClassRunner::run()
 {
-	_testResults->setDateTimeStarted(QDateTime::currentDateTime());
+	testResults->setDateTimeStarted(QDateTime::currentDateTime());
 
-	std::unique_ptr<Class> defaultInstance(_testClass->makeTestClassInstance());
-	_metaObject = defaultInstance->metaObject();
-	_initMethodIndex = _metaObject->indexOfMethod("initTestMethod()");
+	if (!isolatedDumpDir.isValid())
+	{
+		qFatal("Unable to create isolated dump directory!");
+		return;
+	}
+
+	std::unique_ptr<Class> defaultInstance(testClass->makeTestClassInstance());
+	metaObject = defaultInstance->metaObject();
+	initMethodIndex = metaObject->indexOfMethod("initTestMethod()");
 
 	//run each test method for this class
-	for (int i=0; i<_metaObject->methodCount(); i++)
+	for (int i=0; i<metaObject->methodCount(); i++)
 	{
-		auto metaMethod = _metaObject->method(i);
+		auto metaMethod = metaObject->method(i);
+		QString tag = QString(metaMethod.tag());
 
-		if (QString(metaMethod.tag()) == "VTEST")
+		if (tag == "VTEST")
 		{
 			runTestMethod(metaMethod);
 		}
+		else if (tag == "VTEST_ISOLATED")
+		{
+			runTestMethodIsolated(metaMethod);
+		}
 	}
 
-	_testResults->setDateTimeFinished(QDateTime::currentDateTime());
+	testResults->setDateTimeFinished(QDateTime::currentDateTime());
 }
 
 
 void TestClassRunner::runTestMethod(const QMetaMethod &metaMethod)
 {
-	std::unique_ptr<Class> testObject(_testClass->makeTestClassInstance());
+	std::unique_ptr<Class> testObject(testClass->makeTestClassInstance());
 
-	testObject->hostSuite = _hostSuite;
+	testObject->hostSuite = hostSuite;
 	testObject->executionTimer.start();	//TODO why does the testObject manage its own timer?
 
 	//run the init method if one exists
-	if (_initMethodIndex != -1)
-		_metaObject->method(_initMethodIndex).invoke(testObject.get(),
+	if (initMethodIndex != -1)
+		metaObject->method(initMethodIndex).invoke(testObject.get(),
 												   Qt::DirectConnection);
 	try
 	{
@@ -64,9 +78,28 @@ void TestClassRunner::runTestMethod(const QMetaMethod &metaMethod)
 	}
 
 	int executionTime = testObject->executionTimer.elapsed();
-	auto &tr = _testResults->findTestResult(_metaObject->className(),
+	auto &tr = testResults->findTestResult(metaObject->className(),
 							  metaMethod.name());
 	tr.executionTime = executionTime;
+}
+
+
+void TestClassRunner::runTestMethodIsolated(const QMetaMethod &metaMethod)
+{	
+	QStringList arguments;
+	{
+		arguments << "-runTestMethodIsolated";
+		arguments << "-testClass" << metaObject->className();
+		arguments << "-testMethod";// << metaMethod.name();
+		arguments << "-isolatedDumpDir" << isolatedDumpDir.path();
+	}
+
+	{
+		QProcess isolatedProcess;
+		QString path = QCoreApplication::instance()->arguments()[0];
+		isolatedProcess.start(path, arguments);
+		isolatedProcess.waitForFinished();
+	}
 }
 
 END_NAMESPACE

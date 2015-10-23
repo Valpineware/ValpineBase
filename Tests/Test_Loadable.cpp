@@ -3,11 +3,13 @@
 // This file is licensed under the MIT License.
 //=============================================================================|
 
-#include <ValpineBase/Test.h>
-#include <ValpineBase/Loadable.h>
+#include <thread>
+#include <chrono>
 
 #include <QtCore/QDateTime>
-#include <QtCore/QThread>
+
+#include <ValpineBase/Test.h>
+#include <ValpineBase/Loadable.h>
 
 using namespace vbase;
 
@@ -37,6 +39,15 @@ private slots:
 		Assert_True(loadable.pHasLoaded);
 		Assert_True(didIsLoading);
 
+	}
+
+
+	VTEST_ISOLATED void runMeAloneCauseIWontFinish()
+	{
+		std::thread([]
+		{
+			std::this_thread::sleep_for(std::chrono::hours(15));
+		});
 	}
 };
 

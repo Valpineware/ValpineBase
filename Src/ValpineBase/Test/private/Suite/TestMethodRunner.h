@@ -6,6 +6,8 @@
 #ifndef vbase_test_Suite_private_Suite_TestMethodRunner_h
 #define vbase_test_Suite_private_Suite_TestMethodRunner_h
 
+#include <QtCore/QTemporaryDir>
+
 #include <ValpineBase/Test/Suite.h>
 
 using namespace vbase::test;
@@ -22,13 +24,15 @@ public:
 	void run();
 
 private:
-	Suite *_hostSuite = nullptr;
-	Results *_testResults = nullptr;
-	TestClassPackageInterface *_testClass = nullptr;
-	const QMetaObject *_metaObject;
-	int _initMethodIndex = -1;
+	Suite *hostSuite = nullptr;
+	Results *testResults = nullptr;
+	TestClassPackageInterface *testClass = nullptr;
+	const QMetaObject *metaObject;
+	int initMethodIndex = -1;
+	QTemporaryDir isolatedDumpDir;
 
 	void runTestMethod(const QMetaMethod &metaMethod);
+	void runTestMethodIsolated(const QMetaMethod&metaMethod);
 };
 
 END_NAMESPACE
