@@ -22,9 +22,17 @@ namespace vbase { namespace test {
 class Failure
 {
 public:
+	//TODO encapsulate
 	QStringList details;
 	QString filePath;
 	int lineNumber = -1;
+
+	Failure() = default;
+
+	Failure(const QJsonObject &jsonObject)
+	{
+		fromJsonObject(jsonObject);
+	}
 
 	enum class Type
 	{
@@ -45,7 +53,6 @@ public:
 		return "error";
 	}
 
-
 	QJsonObject toJsonObject() const
 	{
 		QJsonObject jsonObject;
@@ -60,6 +67,20 @@ public:
 		jsonObject.insert("details", messageArray);
 
 		return jsonObject;
+	}
+
+
+private:
+	void fromJsonObject(const QJsonObject &jsonObject)
+	{
+		filePath = jsonObject["filePath"].toString();
+		lineNumber = jsonObject["lineNumber"].toInt();
+		type = static_cast<Type>(jsonObject["type"].toInt());
+
+		for (const auto &message : jsonObject["details"].toArray())
+		{
+			details.append(message.toString());
+		}
 	}
 };
 

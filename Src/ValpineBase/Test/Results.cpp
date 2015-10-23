@@ -148,6 +148,18 @@ QJsonObject Results::TestResult::toJsonObject() const
 }
 
 
+void Results::TestResult::fromJsonObject(const QJsonObject &jsonObject)
+{
+	name = jsonObject["name"].toString();
+	executionTime = jsonObject["executionTime"].toInt();
+
+	for (const auto &failureJsonObject : jsonObject["messages"].toArray())
+	{
+		messages.append(new Failure(failureJsonObject.toObject()));
+	}
+}
+
+
 QJsonObject Results::ClassResult::toJsonObject(const QString &key) const
 {
 	QJsonObject jsonObject;
@@ -162,6 +174,16 @@ QJsonObject Results::ClassResult::toJsonObject(const QString &key) const
 	jsonObject.insert("tests", testsArray);
 
 	return jsonObject;
+}
+
+
+void Results::ClassResult::fromJsonObject(const QJsonObject &jsonObject)
+{
+	//TODO wtf now?
+	QString name = jsonObject["className"].toString();
+
+	for (const auto &testResultJsonValue : jsonObject["tests"].toArray())
+		testResults.append(TestResult(testResultJsonValue.toObject()));
 }
 
 END_NAMESPACE

@@ -26,6 +26,13 @@ public:
 	 */
 	struct TestResult
 	{
+		TestResult() = default;
+
+		TestResult(const QJsonObject &jsonObject)
+		{
+			fromJsonObject(jsonObject);
+		}
+
 		/**
 		 * @brief The name of the test method.
 		 */
@@ -40,6 +47,8 @@ public:
 		/**
 		 * @brief List of all failures posted while running the test.
 		 */
+
+		//FIXME ram leak here?
 		QList<Failure*> messages;
 
 		/**
@@ -51,15 +60,28 @@ public:
 		QString status() const;
 
 		QJsonObject toJsonObject() const;
+
+	private:
+		void fromJsonObject(const QJsonObject &jsonObject);
 	};
 
 
 	struct ClassResult
 	{
+		ClassResult() = default;
+
+		ClassResult(const QJsonObject &jsonObject)
+		{
+			fromJsonObject(jsonObject);
+		}
+
 		QList<TestResult> testResults;
 
 		//TODO remove the need to pass in the key for the name
 		QJsonObject toJsonObject(const QString &key) const;
+
+	private:
+		void fromJsonObject(const QJsonObject &jsonObject);
 	};
 
 	TestResult& findTestResult(const QString &className, const QString &testName);
