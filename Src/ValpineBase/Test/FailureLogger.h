@@ -8,6 +8,9 @@
 
 #include <sstream>
 #include <type_traits>
+#include <functional>
+#include <thread>
+#include <chrono>
 
 #include <QtCore/QString>
 
@@ -110,6 +113,22 @@ public:
 		return r;
 	}
 
+
+	static void sleepUntilTrue(std::function<bool(void)> predicate,
+							  int timeLimitMs=10,
+							  int attemptIntervalMs=5)
+	{
+		const int tries = timeLimitMs / attemptIntervalMs;
+
+		for (int i=0; i<tries; i++)
+		{
+			if (predicate())
+				break;
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(attemptIntervalMs));
+		}
+	}
+
 private:
 	Class *mHostClass = nullptr;
 	QString mFilepath;
@@ -126,23 +145,27 @@ private:
 END_NAMESPACE
 END_NAMESPACE
 
-#define Verify_Eq(actual, expected) \
+#define VerifyEq(actual, expected) \
 	::vbase::test::FailureLogger(this, QString(__FILE__), __LINE__).areEq( \
 	QString(#actual), QString(#expected), \
 	actual, expected)
 
-#define Verify_True(what) \
+#define VerifyTrue(what) \
 	::vbase::test::FailureLogger(this, QString(__FILE__), __LINE__).isTrue( \
 	QString(#what), what)
 
-#define Verify_False(what) \
+#define VerifyFalse(what) \
 	::vbase::test::FailureLogger(this, QString(__FILE__), __LINE__).isFalse( \
 	QString(#what), what)
 
-#define Post_Failure(message) \
+#define VerifyTryTrue(what, timeLimitMs) \
+	::vbase::test::FailureLogger::sleepUntilTrue([&] { return what; }, timeLimitMs, 5); \
+	VerifyTrue(what)
+
+#define PostFailure(message) \
 	::vbase::test::FailureLogger(this, QString(__FILE__), __LINE__).failure(message)
 
-#define Post_Warning(message) \
+#define PostWarning(message) \
 	::vbase::test::FailureLogger(this, QString(__FILE__), __LINE__).warning(message)
 
 
