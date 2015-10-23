@@ -56,12 +56,25 @@ void Suite::run(QIODevice &outputFileDevice)
 {
 	for (TestClassPackageInterface *testClass : registered())
 	{
-		_private::TestClassRunner(this, &_testResults, testClass).run();
+		_private::TestClassRunner(this, &_testResults, testClass).runAllMethods();
 	}
 
 	_testResults.exportResults(outputFileDevice);
 
 	qDebug() << "Finished running all tests";
+}
+
+
+void Suite::runTestMethod(const QString &className, const QString &testName)
+{
+	for (TestClassPackageInterface *testClass : registered())
+	{
+		if (testClass->name == className)
+		{
+			Class *classInstance = testClass->makeTestClassInstance();
+
+		}
+	}
 }
 
 

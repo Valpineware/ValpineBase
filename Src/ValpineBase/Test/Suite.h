@@ -29,6 +29,7 @@ class TestClassPackageInterface
 {
 public:
 	virtual Class *makeTestClassInstance() = 0;
+	QString name;
 };
 
 
@@ -67,6 +68,8 @@ public:
 	 */
 	void run(QIODevice &outputFileDevice);
 
+	void runTestMethod(const QString &className, const QString &testName);
+
 	void postFailure(const QString &className, const QString &testName, Failure *result);
 
 	const Results& testResults() const { return _testResults; }
@@ -74,9 +77,12 @@ public:
 	template<typename T>
 	struct TestAdder
 	{
-		TestAdder()
+		TestAdder() = delete;
+
+		TestAdder(const QString &name)
 		{
 			registered().append(new TestClassPackage<T>);
+			registered().last()->name = name;
 		}
 	};
 
@@ -101,7 +107,7 @@ private:
 #endif
 
 #define ADD_TESTCLASS(name) \
-	static vbase::test::Suite::TestAdder<name> t_##name;
+	static vbase::test::Suite::TestAdder<name> t_##name(#name);
 
 END_NAMESPACE
 END_NAMESPACE

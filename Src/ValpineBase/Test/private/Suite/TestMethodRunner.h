@@ -21,7 +21,9 @@ public:
 	TestClassRunner(Suite *hostSuite, Results *testResults,
 					TestClassPackageInterface *testClass);
 
-	void run();
+	void runAllMethods();
+
+	void runMethod(const QString &methodName);
 
 private:
 	Suite *hostSuite = nullptr;
@@ -31,8 +33,8 @@ private:
 	int initMethodIndex = -1;
 	QTemporaryDir isolatedDumpDir;
 
-	void runTestMethod(const QMetaMethod &metaMethod);
-	void runTestMethodIsolated(const QMetaMethod&metaMethod);
+	void runMethod(const QMetaMethod &metaMethod);
+	void runMethodInSeparateProcess(const QMetaMethod &metaMethod);
 };
 
 END_NAMESPACE

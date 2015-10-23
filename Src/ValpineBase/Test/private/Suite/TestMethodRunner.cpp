@@ -15,7 +15,7 @@ TestClassRunner::TestClassRunner(Suite *hostSuite,
 }
 
 
-void TestClassRunner::run()
+void TestClassRunner::runAllMethods()
 {
 	testResults->setDateTimeStarted(QDateTime::currentDateTime());
 
@@ -37,11 +37,11 @@ void TestClassRunner::run()
 
 		if (tag == "VTEST")
 		{
-			runTestMethod(metaMethod);
+			runMethod(metaMethod);
 		}
 		else if (tag == "VTEST_ISOLATED")
 		{
-			runTestMethodIsolated(metaMethod);
+			runMethodInSeparateProcess(metaMethod);
 		}
 	}
 
@@ -49,7 +49,13 @@ void TestClassRunner::run()
 }
 
 
-void TestClassRunner::runTestMethod(const QMetaMethod &metaMethod)
+void TestClassRunner::runMethod(const QString &methodName)
+{
+
+}
+
+
+void TestClassRunner::runMethod(const QMetaMethod &metaMethod)
 {
 	std::unique_ptr<Class> testObject(testClass->makeTestClassInstance());
 
@@ -84,13 +90,13 @@ void TestClassRunner::runTestMethod(const QMetaMethod &metaMethod)
 }
 
 
-void TestClassRunner::runTestMethodIsolated(const QMetaMethod &metaMethod)
+void TestClassRunner::runMethodInSeparateProcess(const QMetaMethod &metaMethod)
 {	
 	QStringList arguments;
 	{
 		arguments << "-runTestMethodIsolated";
 		arguments << "-testClass" << metaObject->className();
-		arguments << "-testMethod";// << metaMethod.name();
+		arguments << "-testMethod" << metaMethod.name();
 		arguments << "-isolatedDumpDir" << isolatedDumpDir.path();
 	}
 

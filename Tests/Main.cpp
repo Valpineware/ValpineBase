@@ -13,6 +13,13 @@
 #include <ValpineBase/Test.h>
 #include "Main.h"
 
+struct
+{
+	QString testClass;
+	QString testMethod;
+	QString isolatedDumpDir;
+} isolatedInfo;
+
 
 bool checkForIsolatedRun(const QCoreApplication &app)
 {
@@ -38,25 +45,26 @@ void getInfo(const QCoreApplication &app)
 {
 	const QStringList args = app.arguments();
 
-	auto getArgParam1 = [&args](const QString &argName)
+	auto getArgParam1 = [&args](const QString &argName) -> QString
 	{
 		int testClassIndex = args.indexOf("-" + argName);
 
 		if (testClassIndex != -1 && args.count()-1 > testClassIndex)
-		{
-			QString testClass = args.at(testClassIndex+1);
+			return args.at(testClassIndex+1);
 
-			QFile file(QDir::currentPath() + "/" + argName + ".txt");
-			file.open(QFile::WriteOnly | QFile::Text);
-
-			QTextStream ts(&file);
-			ts << testClass;
-		}
+		return "";
 	};
 
-	getArgParam1("testClass");
-	getArgParam1("testMethod");
-	getArgParam1("isolatedDumpDir");
+	isolatedInfo.testClass = getArgParam1("testClass");
+	isolatedInfo.testMethod = getArgParam1("testMethod");
+	isolatedInfo.isolatedDumpDir = getArgParam1("isolatedDumpDir");
+}
+
+
+void runIsolatedTestMethod()
+{
+	vbase::test::Suite suite;
+	suite.runTestMethod(isolatedInfo.testClass, isolatedInfo.testMethod);
 }
 
 
@@ -67,6 +75,7 @@ int main(int argc, char *argv[])
 	if (checkForIsolatedRun(app))
 	{
 		getInfo(app);
+		runIsolatedTestMethod();
 
 		return 0;
 	}
