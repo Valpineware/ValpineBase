@@ -9,6 +9,7 @@
 #include <QtCore/QStandardPaths>
 #include <QtCore/QTextStream>
 #include <QtCore/QFile>
+#include <QtCore/QJsonDocument>
 
 #include <ValpineBase/Test.h>
 #include "Main.h"
@@ -64,7 +65,15 @@ void getInfo(const QCoreApplication &app)
 void runIsolatedTestMethod()
 {
 	vbase::test::Suite suite;
-	suite.runTestMethod(isolatedInfo.testClass, isolatedInfo.testMethod);
+	auto jsonObject = suite.runTestMethod(isolatedInfo.testClass, isolatedInfo.testMethod);
+
+	QJsonDocument jsonDocument(jsonObject);
+
+	QFile file(QDir::currentPath() + "/jsonDump.txt");
+	file.open(QFile::WriteOnly | QFile::Text);
+
+	QTextStream ts(&file);
+	ts << jsonDocument.toJson();
 }
 
 

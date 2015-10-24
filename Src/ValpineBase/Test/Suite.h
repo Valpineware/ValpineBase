@@ -70,7 +70,7 @@ public:
 	 */
 	void run(QIODevice &outputFileDevice);
 
-	void runTestMethod(const QString &className, const QString &testName);
+	static QJsonObject runTestMethod(const QString &className, const QString &testName);
 
 	void postFailure(const QString &className, const QString &testName, Failure *result);
 

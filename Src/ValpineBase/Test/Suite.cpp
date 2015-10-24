@@ -65,18 +65,24 @@ void Suite::run(QIODevice &outputFileDevice)
 }
 
 
-void Suite::runTestMethod(const QString &className, const QString &testName)
+QJsonObject Suite::runTestMethod(const QString &className, const QString &testName)
 {
+	Suite suite;
 	for (TestClassPackageInterface *testClass : registered())
 	{
 		if (testClass->name == className)
 		{
-			_private::TestClassRunner testClassRunner(this, &_testResults, testClass);
+			_private::TestClassRunner testClassRunner(&suite, &suite._testResults, testClass);
 			testClassRunner.runMethod(testName);
 
-			return;
+			return suite._testResults.findTestResult(className, testName).toJsonObject();
 		}
 	}
+
+	System::warn() << "Unable to run test method " << testName
+				   << " for test class " << className;
+
+	return QJsonObject();
 }
 
 

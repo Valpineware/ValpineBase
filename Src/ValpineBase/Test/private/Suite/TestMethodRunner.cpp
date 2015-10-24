@@ -26,6 +26,7 @@ void TestClassRunner::runAllMethods()
 	}
 
 	auto classInstance(testClass->makeTestClassInstance());
+	metaObject = classInstance->metaObject();
 	queryInitMethodIndex(classInstance.get());
 
 	//run each test method for this class
@@ -51,6 +52,7 @@ void TestClassRunner::runAllMethods()
 void TestClassRunner::runMethod(const QString &methodName)
 {
 	auto classInstance(testClass->makeTestClassInstance());
+	metaObject = classInstance->metaObject();
 	queryInitMethodIndex(classInstance.get());
 
 	int metaMethodIndex = classInstance->metaObject()
@@ -65,7 +67,7 @@ void TestClassRunner::runMethod(const QString &methodName)
 
 void TestClassRunner::queryInitMethodIndex(Class *classInstance)
 {
-	if (initMethodIndex == -1)
+	if (initMethodIndex == -2)
 	{
 		metaObject = classInstance->metaObject();
 		initMethodIndex = metaObject->indexOfMethod("initTestMethod()");

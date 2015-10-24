@@ -36,8 +36,8 @@ void Results::exportResults(QIODevice &outDevice)
 }
 
 
-Results::TestResult& Results::findTestResult(const QString&className,
-											 const QString&testName)
+Results::TestResult& Results::findTestResult(const QString &className,
+											 const QString &testName)
 {
 	auto classIter = _results.find(className);
 
