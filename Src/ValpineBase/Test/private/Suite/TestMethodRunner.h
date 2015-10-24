@@ -30,9 +30,10 @@ private:
 	Results *testResults = nullptr;
 	TestClassPackageInterface *testClass = nullptr;
 	const QMetaObject *metaObject;
-	int initMethodIndex = -1;
+	int initMethodIndex = -2;
 	QTemporaryDir isolatedDumpDir;
 
+	void queryInitMethodIndex(Class *classInstance);
 	void runMethod(const QMetaMethod &metaMethod);
 	void runMethodInSeparateProcess(const QMetaMethod &metaMethod);
 };

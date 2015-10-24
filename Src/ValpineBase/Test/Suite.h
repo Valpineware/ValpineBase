@@ -6,6 +6,8 @@
 #ifndef vbase_test_Suite_h
 #define vbase_test_Suite_h
 
+#include <memory>
+
 #include <QtCore/QObject>
 #include <QtCore/QDebug>
 #include <QtCore/QString>
@@ -28,7 +30,7 @@ namespace vbase { namespace test {
 class TestClassPackageInterface
 {
 public:
-	virtual Class *makeTestClassInstance() = 0;
+	virtual std::unique_ptr<Class> makeTestClassInstance() = 0;
 	QString name;
 };
 
@@ -38,9 +40,9 @@ template<typename T>
 class TestClassPackage : public TestClassPackageInterface
 {
 public:
-	virtual Class *makeTestClassInstance()
+	virtual std::unique_ptr<Class> makeTestClassInstance()
 	{
-		return new T;
+		return std::unique_ptr<Class>(new T);
 	}
 };
 

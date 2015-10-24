@@ -25,9 +25,8 @@ void TestClassRunner::runAllMethods()
 		return;
 	}
 
-	std::unique_ptr<Class> defaultInstance(testClass->makeTestClassInstance());
-	metaObject = defaultInstance->metaObject();
-	initMethodIndex = metaObject->indexOfMethod("initTestMethod()");
+	auto classInstance(testClass->makeTestClassInstance());
+	queryInitMethodIndex(classInstance.get());
 
 	//run each test method for this class
 	for (int i=0; i<metaObject->methodCount(); i++)
@@ -51,7 +50,26 @@ void TestClassRunner::runAllMethods()
 
 void TestClassRunner::runMethod(const QString &methodName)
 {
+	auto classInstance(testClass->makeTestClassInstance());
+	queryInitMethodIndex(classInstance.get());
 
+	int metaMethodIndex = classInstance->metaObject()
+						  ->indexOfMethod(methodName.toStdString().c_str());
+
+	if (metaMethodIndex != -1)
+	{
+		runMethod(classInstance->metaObject()->method(metaMethodIndex));
+	}
+}
+
+
+void TestClassRunner::queryInitMethodIndex(Class *classInstance)
+{
+	if (initMethodIndex == -1)
+	{
+		metaObject = classInstance->metaObject();
+		initMethodIndex = metaObject->indexOfMethod("initTestMethod()");
+	}
 }
 
 
@@ -85,7 +103,7 @@ void TestClassRunner::runMethod(const QMetaMethod &metaMethod)
 
 	int executionTime = testObject->executionTimer.elapsed();
 	auto &tr = testResults->findTestResult(metaObject->className(),
-							  metaMethod.name());
+										   metaMethod.name());
 	tr.executionTime = executionTime;
 }
 

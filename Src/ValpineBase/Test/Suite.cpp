@@ -71,8 +71,10 @@ void Suite::runTestMethod(const QString &className, const QString &testName)
 	{
 		if (testClass->name == className)
 		{
-			Class *classInstance = testClass->makeTestClassInstance();
+			_private::TestClassRunner testClassRunner(this, &_testResults, testClass);
+			testClassRunner.runMethod(testName);
 
+			return;
 		}
 	}
 }
