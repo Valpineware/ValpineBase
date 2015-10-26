@@ -49,8 +49,6 @@ public:
 		if (v != newValue)
 		{
 			QString name = stringNameForKey(key);
-			qDebug() << "Settings value changed for key=" << name
-					 << " value=" << newValue.toString();
 
 			settings->setValue(name, newValue);
 			settings->sync();

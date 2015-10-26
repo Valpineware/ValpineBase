@@ -55,8 +55,17 @@ void TestClassRunner::runMethod(const QString &methodName)
 	metaObject = classInstance->metaObject();
 	queryInitMethodIndex(classInstance.get());
 
-	int metaMethodIndex = classInstance->metaObject()
-						  ->indexOfMethod(methodName.toStdString().c_str());
+	QString normalizeMethodName = methodName + "()";
+	int metaMethodIndex = metaObject->indexOfMethod(normalizeMethodName.toStdString().c_str());
+
+	qDebug() << "Available methods:";
+
+	for (int i=0; i<metaObject->methodCount(); i++)
+	{
+		qDebug() << "\t" << metaObject->method(i).name();
+	}
+
+	qDebug() << "runMethod on " << methodName << " index is " << metaMethodIndex;
 
 	if (metaMethodIndex != -1)
 	{

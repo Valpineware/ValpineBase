@@ -56,10 +56,10 @@ void Suite::run(QIODevice &outputFileDevice)
 {
 	for (TestClassPackageInterface *testClass : registered())
 	{
-		_private::TestClassRunner(this, &_testResults, testClass).runAllMethods();
+		_private::TestClassRunner(this, &_results, testClass).runAllMethods();
 	}
 
-	_testResults.exportResults(outputFileDevice);
+	_results.exportResults(outputFileDevice);
 
 	qDebug() << "Finished running all tests";
 }
@@ -72,10 +72,14 @@ QJsonObject Suite::runTestMethod(const QString &className, const QString &testNa
 	{
 		if (testClass->name == className)
 		{
-			_private::TestClassRunner testClassRunner(&suite, &suite._testResults, testClass);
+			_private::TestClassRunner testClassRunner(&suite, &suite._results, testClass);
 			testClassRunner.runMethod(testName);
 
-			return suite._testResults.findTestResult(className, testName).toJsonObject();
+			QFile file(QDir::currentPath() + QString("/dump123.txt"));
+			file.open(QFile::WriteOnly | QFile::Text);
+			suite._results.exportResults(file);
+
+			return suite._results.findTestResult(className, testName).toJsonObject();
 		}
 	}
 
@@ -88,7 +92,8 @@ QJsonObject Suite::runTestMethod(const QString &className, const QString &testNa
 
 void Suite::postFailure(const QString &className, const QString &testName, Failure *failure)
 {
-	_testResults.findTestResult(className, testName).messages.append(failure);
+	qDebug() << "Posting failure " << className << " " << testName;
+	_results.findTestResult(className, testName).messages.append(failure);
 }
 
 END_NAMESPACE

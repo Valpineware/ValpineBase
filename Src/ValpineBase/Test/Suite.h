@@ -74,7 +74,7 @@ public:
 
 	void postFailure(const QString &className, const QString &testName, Failure *result);
 
-	const Results& testResults() const { return _testResults; }
+	const Results& testResults() const { return _results; }
 
 	template<typename T>
 	struct TestAdder
@@ -95,7 +95,7 @@ private:
 		return reg;
 	}
 
-	Results _testResults;
+	Results _results;
 };
 
 #ifndef Q_MOC_RUN

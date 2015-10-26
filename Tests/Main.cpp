@@ -14,6 +14,8 @@
 #include <ValpineBase/Test.h>
 #include "Main.h"
 
+#include <Windows.h>
+
 struct
 {
 	QString testClass;
@@ -79,12 +81,19 @@ void runIsolatedTestMethod()
 
 int main(int argc, char *argv[])
 {
+	AllocConsole();
+	freopen("CONIN$", "r", stdin);
+	freopen("CONOUT$", "w", stdout);
+	freopen("CONOUT$", "w", stderr);
+
 	QCoreApplication app(argc, argv);
 
 	if (checkForIsolatedRun(app))
 	{
 		getInfo(app);
 		runIsolatedTestMethod();
+
+		system("pause");
 
 		return 0;
 	}

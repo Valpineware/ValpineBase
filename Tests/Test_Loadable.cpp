@@ -44,10 +44,15 @@ private slots:
 
 	VTEST_ISOLATED void runMeAloneCauseIWontFinish()
 	{
-		std::thread([]
-		{
-			std::this_thread::sleep_for(std::chrono::hours(15));
-		});
+		qDebug() << " Blah blah ";
+
+		PostFailure("Hey");
+		PostWarning("Lo");
+
+//		std::thread([]
+//		{
+//			std::this_thread::sleep_for(std::chrono::hours(15));
+//		});
 	}
 };
 
