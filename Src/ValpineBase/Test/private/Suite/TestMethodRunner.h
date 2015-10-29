@@ -35,7 +35,9 @@ private:
 
 	void queryInitMethodIndex(Class *classInstance);
 	void runMethod(const QMetaMethod &metaMethod);
-	void runMethodInSeparateProcess(const QMetaMethod &metaMethod);
+	void runMethodInSeparateProcess(const QMetaMethod &metaMethod,
+									int timeoutSeconds);
+	int extractTimeTagValue(const QStringList &tags) const;
 };
 
 END_NAMESPACE

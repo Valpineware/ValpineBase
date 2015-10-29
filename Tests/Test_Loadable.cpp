@@ -42,17 +42,17 @@ private slots:
 	}
 
 
-	VTEST_ISOLATED void runMeAloneCauseIWontFinish()
+	VTEST_ISOLATED VTIME_5 void runMeAloneCauseIWontFinish()
 	{
 		qDebug() << " Blah blah ";
 
 		PostFailure("Hey");
 		PostWarning("Lo");
 
-//		std::thread([]
-//		{
-//			std::this_thread::sleep_for(std::chrono::hours(15));
-//		});
+		std::thread([]
+		{
+			std::this_thread::sleep_for(std::chrono::hours(15));
+		}).join();
 	}
 };
 

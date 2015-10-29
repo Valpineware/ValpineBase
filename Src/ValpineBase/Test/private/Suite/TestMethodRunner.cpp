@@ -1,3 +1,8 @@
+//=============================================================================|
+// Copyright (C) 2015 Valpineware
+// This file is licensed under the MIT License.
+//=============================================================================|
+
 #include <QtCore/QProcess>
 #include <QtCore/QCoreApplication>
 
@@ -13,7 +18,6 @@ TestClassRunner::TestClassRunner(Suite *hostSuite,
 	testClass(testClass)
 {
 }
-
 
 void TestClassRunner::runAllMethods()
 {
@@ -33,15 +37,15 @@ void TestClassRunner::runAllMethods()
 	for (int i=0; i<metaObject->methodCount(); i++)
 	{
 		auto metaMethod = metaObject->method(i);
-		QString tag = QString(metaMethod.tag());
+		QStringList tags = QString(metaMethod.tag()).split(" ");
 
-		if (tag == "VTEST")
+		if (tags.contains("VTEST"))
 		{
 			runMethod(metaMethod);
 		}
-		else if (tag == "VTEST_ISOLATED")
+		else if (tags.contains("VTEST_ISOLATED"))
 		{
-			runMethodInSeparateProcess(metaMethod);
+			runMethodInSeparateProcess(metaMethod, extractTimeTagValue(tags));
 		}
 	}
 
@@ -58,14 +62,10 @@ void TestClassRunner::runMethod(const QString &methodName)
 	QString normalizeMethodName = methodName + "()";
 	int metaMethodIndex = metaObject->indexOfMethod(normalizeMethodName.toStdString().c_str());
 
-	qDebug() << "Available methods:";
-
 	for (int i=0; i<metaObject->methodCount(); i++)
 	{
 		qDebug() << "\t" << metaObject->method(i).name();
 	}
-
-	qDebug() << "runMethod on " << methodName << " index is " << metaMethodIndex;
 
 	if (metaMethodIndex != -1)
 	{
@@ -95,6 +95,7 @@ void TestClassRunner::runMethod(const QMetaMethod &metaMethod)
 	if (initMethodIndex != -1)
 		metaObject->method(initMethodIndex).invoke(testObject.get(),
 												   Qt::DirectConnection);
+
 	try
 	{
 		testObject->currentlyExecutingMethodName = metaMethod.name();
@@ -119,7 +120,8 @@ void TestClassRunner::runMethod(const QMetaMethod &metaMethod)
 }
 
 
-void TestClassRunner::runMethodInSeparateProcess(const QMetaMethod &metaMethod)
+void TestClassRunner::runMethodInSeparateProcess(const QMetaMethod &metaMethod,
+												 int timeoutSeconds)
 {	
 	QStringList arguments;
 	{
@@ -133,8 +135,42 @@ void TestClassRunner::runMethodInSeparateProcess(const QMetaMethod &metaMethod)
 		QProcess isolatedProcess;
 		QString path = QCoreApplication::instance()->arguments()[0];
 		isolatedProcess.start(path, arguments);
-		isolatedProcess.waitForFinished();
+		isolatedProcess.waitForFinished(timeoutSeconds * 1000);
+
+		if (isolatedProcess.error() == QProcess::Timedout)
+		{
+			auto failure = new Failure;
+			failure->type = Failure::Type::Error;
+			QString msg = QString("The test timed out after " ) +
+						  QString::number(timeoutSeconds) + " seconds.";
+			failure->details.append(msg);
+
+			hostSuite->postFailure(QString(metaObject->className()),
+								   metaMethod.name(), failure);
+		}
 	}
+}
+
+
+int TestClassRunner::extractTimeTagValue(const QStringList &tags) const
+{
+	static std::map<QString,int> lk
+	{
+		{ "VTIME_5", 5 },
+		{ "VTIME_10", 10 },
+		{ "VTIME_30", 30 },
+		{ "VTIME_60", 60 },
+		{ "VTIME_300", 300 },
+		{ "VTIME_600", 600 }
+	};
+
+	for (const auto &timeTag : lk)
+	{
+		if (tags.contains(timeTag.first))
+			return timeTag.second;
+	}
+
+	return 0;
 }
 
 END_NAMESPACE
