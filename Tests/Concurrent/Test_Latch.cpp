@@ -29,7 +29,7 @@ private:
 	}
 
 private slots:
-	VTEST void noExecutionBeforeRelease()
+	VTEST_ISOLATED VTIME_1 void noExecutionBeforeRelease()
 	{
 		concurrent::Latch latch;
 		bool didStart = false;
@@ -48,10 +48,12 @@ private slots:
 		VerifyTryTrue(didExecute, 10);
 
 		finalizeThread(t1, didExecute);
+
+		PostFailure("hey");
 	}
 
 
-	VTEST void waitingAfterUnlockShouldNotHang()
+	VTEST_ISOLATED VTIME_1 void waitingAfterUnlockShouldNotHang()
 	{
 		concurrent::Latch latch;
 		bool didStart = false;
@@ -67,7 +69,10 @@ private slots:
 
 		VerifyTryTrue(didStart, 10);
 		VerifyTryTrue(didExecute, 10);
+
 		finalizeThread(t1, didExecute);
+
+		PostWarning("lah");
 	}
 };
 

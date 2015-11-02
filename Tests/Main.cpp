@@ -18,7 +18,7 @@ struct
 {
 	QString testClass;
 	QString testMethod;
-	QString isolatedDumpDir;
+	QString dumpFile;
 } isolatedInfo;
 
 
@@ -58,18 +58,19 @@ void getInfo(const QCoreApplication &app)
 
 	isolatedInfo.testClass = getArgParam1("testClass");
 	isolatedInfo.testMethod = getArgParam1("testMethod");
-	isolatedInfo.isolatedDumpDir = getArgParam1("isolatedDumpDir");
+	isolatedInfo.dumpFile = getArgParam1("isolatedDumpFile");
 }
 
 
 void runIsolatedTestMethod()
 {
 	vbase::test::Suite suite;
-	auto jsonObject = suite.runTestMethod(isolatedInfo.testClass, isolatedInfo.testMethod);
+	auto jsonObject = suite.runTestMethod(isolatedInfo.testClass,
+										  isolatedInfo.testMethod);
 
 	QJsonDocument jsonDocument(jsonObject);
 
-	QFile file(QDir::currentPath() + "/jsonDump.txt");
+	QFile file(isolatedInfo.dumpFile);
 	file.open(QFile::WriteOnly | QFile::Text);
 
 	QTextStream ts(&file);

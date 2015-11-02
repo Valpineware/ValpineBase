@@ -5,6 +5,9 @@
 
 #include <QtCore/QProcess>
 #include <QtCore/QCoreApplication>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QTemporaryFile>
+#include <QtCore/QFileInfo>
 
 #include "TestMethodRunner.h"
 
@@ -13,30 +16,24 @@ namespace _private {
 TestClassRunner::TestClassRunner(Suite *hostSuite,
 								 Results *testResults,
 								 TestClassPackageInterface *testClass) :
-	hostSuite(hostSuite),
-	testResults(testResults),
-	testClass(testClass)
+	_hostSuite(hostSuite),
+	_testResults(testResults),
+	_testClass(testClass)
 {
 }
 
 void TestClassRunner::runAllMethods()
 {
-	testResults->setDateTimeStarted(QDateTime::currentDateTime());
+	_testResults->setDateTimeStarted(QDateTime::currentDateTime());
 
-	if (!isolatedDumpDir.isValid())
-	{
-		qFatal("Unable to create isolated dump directory!");
-		return;
-	}
-
-	auto classInstance(testClass->makeTestClassInstance());
-	metaObject = classInstance->metaObject();
+	auto classInstance(_testClass->makeTestClassInstance());
+	_metaObject = classInstance->metaObject();
 	queryInitMethodIndex(classInstance.get());
 
 	//run each test method for this class
-	for (int i=0; i<metaObject->methodCount(); i++)
+	for (int i=0; i<_metaObject->methodCount(); i++)
 	{
-		auto metaMethod = metaObject->method(i);
+		auto metaMethod = _metaObject->method(i);
 		QStringList tags = QString(metaMethod.tag()).split(" ");
 
 		if (tags.contains("VTEST"))
@@ -49,22 +46,22 @@ void TestClassRunner::runAllMethods()
 		}
 	}
 
-	testResults->setDateTimeFinished(QDateTime::currentDateTime());
+	_testResults->setDateTimeFinished(QDateTime::currentDateTime());
 }
 
 
 void TestClassRunner::runMethod(const QString &methodName)
 {
-	auto classInstance(testClass->makeTestClassInstance());
-	metaObject = classInstance->metaObject();
+	auto classInstance(_testClass->makeTestClassInstance());
+	_metaObject = classInstance->metaObject();
 	queryInitMethodIndex(classInstance.get());
 
 	QString normalizeMethodName = methodName + "()";
-	int metaMethodIndex = metaObject->indexOfMethod(normalizeMethodName.toStdString().c_str());
+	int metaMethodIndex = _metaObject->indexOfMethod(normalizeMethodName.toStdString().c_str());
 
-	for (int i=0; i<metaObject->methodCount(); i++)
+	for (int i=0; i<_metaObject->methodCount(); i++)
 	{
-		qDebug() << "\t" << metaObject->method(i).name();
+		qDebug() << "\t" << _metaObject->method(i).name();
 	}
 
 	if (metaMethodIndex != -1)
@@ -76,24 +73,24 @@ void TestClassRunner::runMethod(const QString &methodName)
 
 void TestClassRunner::queryInitMethodIndex(Class *classInstance)
 {
-	if (initMethodIndex == -2)
+	if (_initMethodIndex == -2)
 	{
-		metaObject = classInstance->metaObject();
-		initMethodIndex = metaObject->indexOfMethod("initTestMethod()");
+		_metaObject = classInstance->metaObject();
+		_initMethodIndex = _metaObject->indexOfMethod("initTestMethod()");
 	}
 }
 
 
 void TestClassRunner::runMethod(const QMetaMethod &metaMethod)
 {
-	std::unique_ptr<Class> testObject(testClass->makeTestClassInstance());
+	std::unique_ptr<Class> testObject(_testClass->makeTestClassInstance());
 
-	testObject->hostSuite = hostSuite;
+	testObject->hostSuite = _hostSuite;
 	testObject->executionTimer.start();	//TODO why does the testObject manage its own timer?
 
 	//run the init method if one exists
-	if (initMethodIndex != -1)
-		metaObject->method(initMethodIndex).invoke(testObject.get(),
+	if (_initMethodIndex != -1)
+		_metaObject->method(_initMethodIndex).invoke(testObject.get(),
 												   Qt::DirectConnection);
 
 	try
@@ -114,7 +111,7 @@ void TestClassRunner::runMethod(const QMetaMethod &metaMethod)
 	}
 
 	int executionTime = testObject->executionTimer.elapsed();
-	auto &tr = testResults->findTestResult(metaObject->className(),
+	auto &tr = _testResults->findTestResult(_metaObject->className(),
 										   metaMethod.name());
 	tr.executionTime = executionTime;
 }
@@ -123,20 +120,35 @@ void TestClassRunner::runMethod(const QMetaMethod &metaMethod)
 void TestClassRunner::runMethodInSeparateProcess(const QMetaMethod &metaMethod,
 												 int timeoutSeconds)
 {	
+	QTemporaryFile isolatedDumpFile;
+	isolatedDumpFile.open();
+
+	if (!isolatedDumpFile.isOpen())
+	{
+		qFatal("Unable to create isolated dump file!");
+		return;
+	}
+
 	QStringList arguments;
 	{
 		arguments << "-runTestMethodIsolated";
-		arguments << "-testClass" << metaObject->className();
+		arguments << "-testClass" << _metaObject->className();
 		arguments << "-testMethod" << metaMethod.name();
-		arguments << "-isolatedDumpDir" << isolatedDumpDir.path();
+		arguments << "-isolatedDumpFile"
+					 << QFileInfo(isolatedDumpFile).absoluteFilePath();
 	}
 
+	qDebug() << "symlink " << QFileInfo(isolatedDumpFile).absoluteFilePath();
+
+	//run the process
 	{
 		QProcess isolatedProcess;
 		QString path = QCoreApplication::instance()->arguments()[0];
 		isolatedProcess.start(path, arguments);
 		isolatedProcess.waitForFinished(timeoutSeconds * 1000);
 
+		//if the test timed out, we don't use the Json dump file because the
+		//process was forcibly terminated which means the file could be corrupt
 		if (isolatedProcess.error() == QProcess::Timedout)
 		{
 			auto failure = new Failure;
@@ -145,8 +157,31 @@ void TestClassRunner::runMethodInSeparateProcess(const QMetaMethod &metaMethod,
 						  QString::number(timeoutSeconds) + " seconds.";
 			failure->details.append(msg);
 
-			hostSuite->postFailure(QString(metaObject->className()),
+			_hostSuite->postFailure(QString(_metaObject->className()),
 								   metaMethod.name(), failure);
+		}
+		//use the Json dump file
+		else
+		{
+			QTextStream ts(&isolatedDumpFile);
+			QJsonParseError jsonParseError;
+			QString buffer = ts.readAll();
+			auto jsonDocument =
+					QJsonDocument::fromJson(QByteArray(buffer.toLocal8Bit()),
+											&jsonParseError);
+
+			qDebug() << buffer;
+
+			if (jsonParseError.error != QJsonParseError::NoError)
+			{
+				qDebug() << "Parse error: " << jsonParseError.errorString();
+			}
+			else
+			{
+				auto &classResult = _testResults->findClassResult(_metaObject->className());
+				auto testResult = Results::TestResult(jsonDocument.object());
+				classResult.testResults.append(testResult);
+			}
 		}
 	}
 }
@@ -156,6 +191,7 @@ int TestClassRunner::extractTimeTagValue(const QStringList &tags) const
 {
 	static std::map<QString,int> lk
 	{
+		{ "VTIME_1", 1 },
 		{ "VTIME_5", 5 },
 		{ "VTIME_10", 10 },
 		{ "VTIME_30", 30 },

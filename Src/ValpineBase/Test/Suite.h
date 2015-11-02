@@ -106,6 +106,7 @@ private:
 //tags a method as a test method to be run in an isolated process
 #define VTEST_ISOLATED
 
+#define VTIME_1
 #define VTIME_5
 #define VTIME_10
 #define VTIME_30

@@ -63,6 +63,12 @@ Results::TestResult& Results::findTestResult(const QString &className,
 }
 
 
+Results::ClassResult& Results::findClassResult(const QString &className)
+{
+	return _results[className];
+}
+
+
 void Results::printResults() const
 {
 	QMapIterator<QString, ClassResult> iter(_results);

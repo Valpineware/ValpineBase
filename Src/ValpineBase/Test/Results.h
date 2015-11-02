@@ -28,7 +28,7 @@ public:
 	{
 		TestResult() = default;
 
-		TestResult(const QJsonObject &jsonObject)
+		explicit TestResult(const QJsonObject &jsonObject)
 		{
 			fromJsonObject(jsonObject);
 		}
@@ -85,6 +85,8 @@ public:
 	};
 
 	TestResult& findTestResult(const QString &className, const QString &testName);
+
+	ClassResult& findClassResult(const QString &className);
 
 	void exportResults(QIODevice &outDevice);
 
