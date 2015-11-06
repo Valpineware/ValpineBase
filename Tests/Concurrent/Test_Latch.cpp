@@ -48,8 +48,6 @@ private slots:
 		VerifyTryTrue(didExecute, 10);
 
 		finalizeThread(t1, didExecute);
-
-		PostFailure("hey");
 	}
 
 
@@ -71,8 +69,6 @@ private slots:
 		VerifyTryTrue(didExecute, 10);
 
 		finalizeThread(t1, didExecute);
-
-		PostWarning("lah");
 	}
 };
 

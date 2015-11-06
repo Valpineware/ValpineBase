@@ -16,8 +16,8 @@ class TestClassRunner
 {
 public:
 	TestClassRunner() = delete;
-	TestClassRunner(Suite *_hostSuite, Results *_testResults,
-					TestClassPackageInterface *_testClass);
+	TestClassRunner(Suite *_hostSuite, Results *testResults,
+					TestClassPackageInterface *testClass);
 
 	void runAllMethods();
 
@@ -29,6 +29,8 @@ private:
 	TestClassPackageInterface *_testClass = nullptr;
 	const QMetaObject *_metaObject;
 	int _initMethodIndex = -2;
+
+	const int _defaultIsolatedTestTimeout = 1;
 
 	void queryInitMethodIndex(Class *classInstance);
 	void runMethod(const QMetaMethod &metaMethod);

@@ -59,11 +59,6 @@ void TestClassRunner::runMethod(const QString &methodName)
 	QString normalizeMethodName = methodName + "()";
 	int metaMethodIndex = _metaObject->indexOfMethod(normalizeMethodName.toStdString().c_str());
 
-	for (int i=0; i<_metaObject->methodCount(); i++)
-	{
-		qDebug() << "\t" << _metaObject->method(i).name();
-	}
-
 	if (metaMethodIndex != -1)
 	{
 		runMethod(classInstance->metaObject()->method(metaMethodIndex));
@@ -138,8 +133,6 @@ void TestClassRunner::runMethodInSeparateProcess(const QMetaMethod &metaMethod,
 					 << QFileInfo(isolatedDumpFile).absoluteFilePath();
 	}
 
-	qDebug() << "symlink " << QFileInfo(isolatedDumpFile).absoluteFilePath();
-
 	//run the process
 	{
 		QProcess isolatedProcess;
@@ -165,12 +158,8 @@ void TestClassRunner::runMethodInSeparateProcess(const QMetaMethod &metaMethod,
 		{
 			QTextStream ts(&isolatedDumpFile);
 			QJsonParseError jsonParseError;
-			QString buffer = ts.readAll();
-			auto jsonDocument =
-					QJsonDocument::fromJson(QByteArray(buffer.toLocal8Bit()),
-											&jsonParseError);
-
-			qDebug() << buffer;
+			QByteArray buffer = ts.readAll().toLocal8Bit();
+			auto jsonDocument = QJsonDocument::fromJson(buffer, &jsonParseError);
 
 			if (jsonParseError.error != QJsonParseError::NoError)
 			{
@@ -206,7 +195,7 @@ int TestClassRunner::extractTimeTagValue(const QStringList &tags) const
 			return timeTag.second;
 	}
 
-	return 0;
+	return _defaultIsolatedTestTimeout;
 }
 
 END_NAMESPACE

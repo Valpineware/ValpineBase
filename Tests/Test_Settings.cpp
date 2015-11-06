@@ -55,8 +55,6 @@ class Test_Settings : public test::Class
 private slots:
 	void initTestMethod()
 	{
-		qDebug() << "Running initTestMethod";
-
 		AssertTrue(tmpFile.open());
 		AssertTrue(settings.load(tmpFile.fileName()));
 	}

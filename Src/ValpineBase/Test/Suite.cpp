@@ -32,8 +32,6 @@ void Suite::run(bool launchReviewGUI, const QString &testReviewGUIPath)
 	}
 	else
 	{
-		qDebug() << "Full path is " << QFileInfo(ba).absoluteFilePath();
-
 		run(ba);
 
 		if (launchReviewGUI)
