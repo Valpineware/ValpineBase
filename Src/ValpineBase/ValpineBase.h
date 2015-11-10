@@ -6,6 +6,8 @@
 #ifndef ValpineBase_h
 #define ValpineBase_h
 
+#include <memory>
+
 #include <QtCore/QString>
 #include <QtQml/QQmlEngine>
 
@@ -15,6 +17,15 @@
 #define END_NAMESPACE }
 
 namespace vbase {
+
+template <typename T>
+using Shared = std::shared_ptr<T>;
+
+template <typename T>
+using Weak = std::weak_ptr<T>;
+
+template <typename T>
+using Unique = std::unique_ptr<T>;
 
 class ValpineBase
 {

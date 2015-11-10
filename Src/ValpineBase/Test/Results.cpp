@@ -44,20 +44,20 @@ Results::TestResult& Results::findTestResult(const QString &className,
 	//an entry for this className already exists
 	if (classIter != _results.end())
 	{
-		for (auto &testResult : classIter.value().testResults)
-			if (testResult.name == testName)
+		for (TestResult &testResult : classIter.value()._testResults)
+			if (testResult._name == testName)
 				return testResult;
 
-		classIter.value().testResults.append(TestResult());
-		classIter.value().testResults.last().name = testName;
+		classIter.value()._testResults.append(TestResult());
+		classIter.value()._testResults.last()._name = testName;
 
-		return classIter.value().testResults.last();
+		return classIter.value()._testResults.last();
 	}
 
-	auto &testResultList = _results[className].testResults;
+	auto &testResultList = _results[className]._testResults;
 	testResultList.clear();
 	testResultList.append(TestResult());
-	testResultList.last().name  = testName;
+	testResultList.last()._name  = testName;
 
 	return testResultList.first();
 }
@@ -75,13 +75,13 @@ void Results::printResults() const
 
 	while (iter.hasNext())
 	{
-		auto item = iter.next();
+		auto classResultIter = iter.next();
 
-		for (const TestResult &testResult : item.value().testResults)
+		for (const TestResult &testResult : classResultIter.value()._testResults)
 		{
-			for (Failure *failure : testResult.messages)
+			for (auto failure : testResult._failures)
 			{
-				qDebug() << "FAILED: [" << testResult.name << "] - - - - - - - -";
+				qDebug() << "FAILED: [" << testResult._name << "] - - - - - - - -";
 
 				for (auto line : failure->details)
 				{
@@ -100,11 +100,11 @@ void Results::printResults() const
 
 void Results::cleanOldResults(int maxAgeSeconds) const
 {
-	QDirIterator iter("./TestResults", QDirIterator::Subdirectories);
+	QDirIterator dirIter("./TestResults", QDirIterator::Subdirectories);
 
-	while (iter.hasNext())
+	while (dirIter.hasNext())
 	{
-		QFileInfo fi(iter.next());
+		QFileInfo fi(dirIter.next());
 		int testAgeSec = fi.lastModified().secsTo(QDateTime::currentDateTime());
 
 		if (testAgeSec > maxAgeSeconds)
@@ -119,11 +119,11 @@ QString Results::TestResult::status() const
 {
 	bool foundWarning = false;
 
-	for (Failure *message : messages)
+	for (const Shared<Failure> &failure : _failures)
 	{
-		if (message->type == Failure::Type::Error)
+		if (failure->type == Failure::Type::Error)
 			return "error";
-		else if (message->type == Failure::Type::Warn)
+		else if (failure->type == Failure::Type::Warn)
 			foundWarning = true;
 	}
 
@@ -137,13 +137,13 @@ QString Results::TestResult::status() const
 QJsonObject Results::TestResult::toJsonObject() const
 {
 	QJsonObject jsonObject;
-	jsonObject.insert("name", name);
+	jsonObject.insert("name", _name);
 	jsonObject.insert("status", status());
-	jsonObject.insert("executionTime", executionTime);
+	jsonObject.insert("executionTime", _executionTime);
 
 	QJsonArray resultsArray;
 
-	for (const Failure *failure : messages)
+	for (const Shared<Failure> &failure : _failures)
 	{
 		resultsArray.append(failure->toJsonObject());
 	}
@@ -156,12 +156,12 @@ QJsonObject Results::TestResult::toJsonObject() const
 
 void Results::TestResult::fromJsonObject(const QJsonObject &jsonObject)
 {
-	name = jsonObject["name"].toString();
-	executionTime = jsonObject["executionTime"].toInt();
+	_name = jsonObject["name"].toString();
+	_executionTime = jsonObject["executionTime"].toInt();
 
 	for (const auto &failureJsonObject : jsonObject["messages"].toArray())
 	{
-		messages.append(new Failure(failureJsonObject.toObject()));
+		_failures.append(Shared<Failure>(new Failure(failureJsonObject.toObject())));
 	}
 }
 
@@ -174,7 +174,7 @@ QJsonObject Results::ClassResult::toJsonObject(const QString &key) const
 	QJsonArray testsArray;
 
 	//TODO fix all of these magic strings
-	for (const TestResult &testResult : testResults)
+	for (const TestResult &testResult : _testResults)
 		testsArray.append(testResult.toJsonObject());
 
 	jsonObject.insert("tests", testsArray);
@@ -189,7 +189,7 @@ void Results::ClassResult::fromJsonObject(const QJsonObject &jsonObject)
 	QString name = jsonObject["className"].toString();
 
 	for (const auto &testResultJsonValue : jsonObject["tests"].toArray())
-		testResults.append(TestResult(testResultJsonValue.toObject()));
+		_testResults.append(TestResult(testResultJsonValue.toObject()));
 }
 
 END_NAMESPACE

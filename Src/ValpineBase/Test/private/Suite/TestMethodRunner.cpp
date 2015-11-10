@@ -78,10 +78,11 @@ void TestClassRunner::queryInitMethodIndex(Class *classInstance)
 
 void TestClassRunner::runMethod(const QMetaMethod &metaMethod)
 {
-	std::unique_ptr<Class> testObject(_testClass->makeTestClassInstance());
+	QElapsedTimer executionTimer;
+	executionTimer.start();
 
-	testObject->hostSuite = _hostSuite;
-	testObject->executionTimer.start();	//TODO why does the testObject manage its own timer?
+	std::unique_ptr<Class> testObject(_testClass->makeTestClassInstance());
+	testObject->_hostSuite = _hostSuite;
 
 	//run the init method if one exists
 	if (_initMethodIndex != -1)
@@ -90,7 +91,7 @@ void TestClassRunner::runMethod(const QMetaMethod &metaMethod)
 
 	try
 	{
-		testObject->currentlyExecutingMethodName = metaMethod.name();
+		testObject->_currentlyExecutingMethodName = metaMethod.name();
 		metaMethod.invoke(testObject.get(), Qt::DirectConnection);
 
 
@@ -105,10 +106,10 @@ void TestClassRunner::runMethod(const QMetaMethod &metaMethod)
 		//(even from sub-routines)
 	}
 
-	int executionTime = testObject->executionTimer.elapsed();
+	int executionTime = executionTimer.elapsed();
 	auto &tr = _testResults->findTestResult(_metaObject->className(),
 										   metaMethod.name());
-	tr.executionTime = executionTime;
+	tr._executionTime = executionTime;
 }
 
 
@@ -168,8 +169,7 @@ void TestClassRunner::runMethodInSeparateProcess(const QMetaMethod &metaMethod,
 			else
 			{
 				auto &classResult = _testResults->findClassResult(_metaObject->className());
-				auto testResult = Results::TestResult(jsonDocument.object());
-				classResult.testResults.append(testResult);
+				classResult._testResults.append(Results::TestResult(jsonDocument.object()));
 			}
 		}
 	}

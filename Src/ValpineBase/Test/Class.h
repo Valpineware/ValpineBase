@@ -21,9 +21,8 @@ class Class : public QObject
 	Q_OBJECT
 
 public:
-	Suite* hostSuite;
-	QElapsedTimer executionTimer;
-	QString currentlyExecutingMethodName;
+	Suite* _hostSuite;
+	QString _currentlyExecutingMethodName;
 };
 
 END_NAMESPACE

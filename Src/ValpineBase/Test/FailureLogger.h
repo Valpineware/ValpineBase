@@ -136,8 +136,8 @@ private:
 
 	void postFailure(Failure *failure)
 	{
-		mHostClass->hostSuite->postFailure(mHostClass->metaObject()->className(),
-									mHostClass->currentlyExecutingMethodName,
+		mHostClass->_hostSuite->postFailure(mHostClass->metaObject()->className(),
+									mHostClass->_currentlyExecutingMethodName,
 									failure);
 	}
 };

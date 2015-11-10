@@ -91,7 +91,7 @@ QJsonObject Suite::runTestMethod(const QString &className, const QString &testNa
 void Suite::postFailure(const QString &className, const QString &testName, Failure *failure)
 {
 	qDebug() << "Posting failure " << className << " " << testName;
-	_results.findTestResult(className, testName).messages.append(failure);
+	_results.findTestResult(className, testName)._failures.append(Shared<Failure>(failure));
 }
 
 END_NAMESPACE

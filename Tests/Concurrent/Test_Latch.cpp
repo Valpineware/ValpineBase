@@ -17,17 +17,6 @@ class Test_Latch : public test::Class
 {
 	Q_OBJECT
 
-private:
-	void finalizeThread(std::thread &thread, bool didExecute)
-	{
-		//TODO what else can I do here?
-		//there is no way to terminate the thread...
-		if (!didExecute)
-			thread.detach();
-		else
-			thread.join();
-	}
-
 private slots:
 	VTEST_ISOLATED VTIME_1 void noExecutionBeforeRelease()
 	{
@@ -47,7 +36,7 @@ private slots:
 		latch.unlock();
 		VerifyTryTrue(didExecute, 10);
 
-		finalizeThread(t1, didExecute);
+		t1.join();
 	}
 
 
@@ -68,7 +57,7 @@ private slots:
 		VerifyTryTrue(didStart, 10);
 		VerifyTryTrue(didExecute, 10);
 
-		finalizeThread(t1, didExecute);
+		t1.join();
 	}
 };
 

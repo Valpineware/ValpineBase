@@ -50,7 +50,6 @@ public:
 
 	/**
 	 * Unlocks the Latch. All threads currently blocked on wait() are unblocked.
-	 * TODO what about threads that haven't gotten to wait() yet?
 	 */
 	void unlock() noexcept
 	{
