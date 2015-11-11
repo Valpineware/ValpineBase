@@ -9,7 +9,10 @@
 #include <QtCore/QTemporaryFile>
 #include <QtCore/QFileInfo>
 
+#include <ValpineBase/ValpineBase.h>
 #include "TestMethodRunner.h"
+
+using namespace vbase;
 
 namespace _private {
 
@@ -21,6 +24,7 @@ TestClassRunner::TestClassRunner(Suite *hostSuite,
 	_testClass(testClass)
 {
 }
+
 
 void TestClassRunner::runAllMethods()
 {
@@ -81,7 +85,7 @@ void TestClassRunner::runMethod(const QMetaMethod &metaMethod)
 	QElapsedTimer executionTimer;
 	executionTimer.start();
 
-	std::unique_ptr<Class> testObject(_testClass->makeTestClassInstance());
+	Unique<Class> testObject(_testClass->makeTestClassInstance());
 	testObject->_hostSuite = _hostSuite;
 
 	//run the init method if one exists

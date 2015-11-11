@@ -60,7 +60,7 @@ public:
 private:
 	std::condition_variable _conditionVariable;
 	std::mutex _mutex;
-	std::unique_ptr<std::lock_guard<std::mutex>> _mutexLock = nullptr;
+	Unique<std::lock_guard<std::mutex>> _mutexLock = nullptr;
 };
 
 END_NAMESPACE

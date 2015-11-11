@@ -9,7 +9,7 @@ namespace vbase {
 
 SingleInstance::SingleInstance(QObject *parent) : QObject(parent)
 {
-	connect(&mServer, SIGNAL(newConnection()),
+	connect(&_server, SIGNAL(newConnection()),
 			this, SLOT(newConnection()));
 }
 
@@ -21,12 +21,12 @@ SingleInstance::~SingleInstance()
 
 void SingleInstance::listen(const QString &name)
 {
-	mServer.removeServer(name);
-	if (!mServer.listen(name))
+	_server.removeServer(name);
+	if (!_server.listen(name))
 		qDebug() << "Unable to listen";
 
 	qDebug() << "Listening for " << name;
-	qDebug() << mServer.errorString();
+	qDebug() << _server.errorString();
 }
 
 
@@ -66,15 +66,15 @@ void SingleInstance::newConnection()
 {
 	emit newInstance();
 
-	mSocket = mServer.nextPendingConnection();
-	connect(mSocket, SIGNAL(readyRead()),
+	_socket = _server.nextPendingConnection();
+	connect(_socket, SIGNAL(readyRead()),
 			this, SLOT(readyRead()));
 }
 
 
 void SingleInstance::readyRead()
 {
-	QString argsString = mSocket->readAll();
+	QString argsString = _socket->readAll();
 
 	QVariantList argsList;
 	for (auto line : argsString.split("\n"))
@@ -90,7 +90,7 @@ void SingleInstance::readyRead()
 
 	emit receivedArguments(argsList);
 
-	mSocket->deleteLater();
+	_socket->deleteLater();
 }
 
 END_NAMESPACE

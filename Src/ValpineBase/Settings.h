@@ -29,9 +29,9 @@ class Settings : public SettingsBase
 public:
 	bool load(const QString &filePath)
 	{
-		settings = new QSettings(filePath, QSettings::IniFormat);
-		settings->setValue("Sample", "100");
-		settings->sync();
+		_settings = new QSettings(filePath, QSettings::IniFormat);
+		_settings->setValue("Sample", "100");
+		_settings->sync();
 
 		return true;
 	}
@@ -50,8 +50,8 @@ public:
 		{
 			QString name = stringNameForKey(key);
 
-			settings->setValue(name, newValue);
-			settings->sync();
+			_settings->setValue(name, newValue);
+			_settings->sync();
 			SettingsBase::emitValueChanged(static_cast<int>(key), newValue);
 		}
 	}
@@ -67,7 +67,7 @@ public:
 	{
 		const auto &name = stringNameForKey(key);
 
-		QVariant value = settings->value(name);
+		QVariant value = _settings->value(name);
 
 		if (!value.isValid())
 		{
@@ -98,7 +98,7 @@ public:
 		QueuePair pair(key, newValue);
 		bool reusedExistingEntry = false;
 
-		for (QueuePair &queuePair : settingsQueue)
+		for (QueuePair &queuePair : _settingsQueue)
 		{
 			if (queuePair.first == key)
 			{
@@ -108,16 +108,16 @@ public:
 		}
 
 		if (!reusedExistingEntry)
-			settingsQueue.append(pair);
+			_settingsQueue.append(pair);
 	}
 
 
 	void setQueuedValues()
 	{
-		for (const QueuePair &queuePair : settingsQueue)
+		for (const QueuePair &queuePair : _settingsQueue)
 			setValue(queuePair.first, queuePair.second);
 
-		settingsQueue.clear();
+		_settingsQueue.clear();
 	}
 
 private:
@@ -133,10 +133,10 @@ private:
 	}
 
 private:
-	QSettings *settings;
+	QSettings *_settings;
 
 	using QueuePair = QPair<KeyType, QVariant>;
-	QList<QueuePair> settingsQueue;
+	QList<QueuePair> _settingsQueue;
 };
 
 END_NAMESPACE

@@ -35,8 +35,8 @@ public slots:
 	void readyRead();
 
 private:
-	QLocalSocket *mSocket = nullptr;
-	QLocalServer mServer;
+	QLocalSocket *_socket = nullptr;
+	QLocalServer _server;
 };
 
 END_NAMESPACE

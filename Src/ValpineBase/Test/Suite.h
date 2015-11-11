@@ -30,7 +30,7 @@ namespace vbase { namespace test {
 class TestClassPackageInterface
 {
 public:
-	virtual std::unique_ptr<Class> makeTestClassInstance() = 0;
+	virtual Unique<Class> makeTestClassInstance() = 0;
 	QString name;
 };
 
@@ -40,9 +40,9 @@ template<typename T>
 class TestClassPackage : public TestClassPackageInterface
 {
 public:
-	virtual std::unique_ptr<Class> makeTestClassInstance()
+	virtual Unique<Class> makeTestClassInstance()
 	{
-		return std::unique_ptr<Class>(new T);
+		return Unique<Class>(new T);
 	}
 };
 
