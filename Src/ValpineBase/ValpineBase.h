@@ -18,14 +18,26 @@
 
 namespace vbase {
 
-template <typename T>
+template<typename T>
 using Shared = std::shared_ptr<T>;
 
-template <typename T>
+template<typename T, typename ...Args>
+Shared<T> makeShared(Args&& ...args)
+{
+	return Shared<T>(new T(std::forward<Args>(args)...));
+}
+
+template<typename T>
 using Weak = std::weak_ptr<T>;
 
-template <typename T>
+template<typename T>
 using Unique = std::unique_ptr<T>;
+
+template<typename T, typename ...Args>
+Unique<T> makeUnique(Args&& ...args)
+{
+	return Unique<T>(new T(std::forward<Args>(args)...));
+}
 
 class ValpineBase
 {
